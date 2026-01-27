@@ -10,8 +10,14 @@ export type ChatScreenProps = NativeStackScreenProps<RootStackParamList, 'Chat'>
 export type AddGirlScreenProps = NativeStackScreenProps<RootStackParamList, 'AddGirl'>;
 export type GirlProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'GirlProfile'>;
 export type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'Settings'>;
-export type ApiKeySetupScreenProps = NativeStackScreenProps<RootStackParamList, 'ApiKeySetup'>;
+export type WelcomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 export type OnboardingScreenProps = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
+export type ApiKeySetupScreenProps = NativeStackScreenProps<RootStackParamList, 'ApiKeySetup'>;
+export type PermissionsScreenProps = NativeStackScreenProps<RootStackParamList, 'Permissions'>;
+export type UserProfileSetupScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'UserProfileSetup'
+>;
 
 // Navigation prop type for useNavigation hook
 export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;

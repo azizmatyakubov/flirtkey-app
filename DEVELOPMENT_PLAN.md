@@ -179,21 +179,21 @@
 
 ### 3.1 Onboarding Flow (15 tasks)
 
-- [ ] 3.1.1 Create WelcomeScreen
-- [ ] 3.1.2 Create OnboardingScreen with slides
-- [ ] 3.1.3 Design onboarding illustrations
-- [ ] 3.1.4 Add "How it works" explanation
-- [ ] 3.1.5 Add privacy notice
-- [ ] 3.1.6 Add terms of service link
-- [ ] 3.1.7 Create "Get Started" button
-- [ ] 3.1.8 Add skip onboarding option
-- [ ] 3.1.9 Store onboarding completion status
-- [ ] 3.1.10 Add animation between slides
-- [ ] 3.1.11 Add progress indicators
-- [ ] 3.1.12 Test onboarding on both platforms
-- [ ] 3.1.13 Add analytics for drop-off points
-- [ ] 3.1.14 A/B test onboarding variants
-- [ ] 3.1.15 Localize onboarding text
+- [x] 3.1.1 Create WelcomeScreen
+- [x] 3.1.2 Create OnboardingScreen with slides
+- [x] 3.1.3 Design onboarding illustrations
+- [x] 3.1.4 Add "How it works" explanation
+- [x] 3.1.5 Add privacy notice
+- [x] 3.1.6 Add terms of service link
+- [x] 3.1.7 Create "Get Started" button
+- [x] 3.1.8 Add skip onboarding option
+- [x] 3.1.9 Store onboarding completion status
+- [x] 3.1.10 Add animation between slides
+- [x] 3.1.11 Add progress indicators
+- [x] 3.1.12 Test onboarding on both platforms
+- [x] 3.1.13 Add analytics for drop-off points
+- [x] 3.1.14 A/B test onboarding variants
+- [x] 3.1.15 Localize onboarding text
 
 ### 3.2 API Key Setup (12 tasks)
 

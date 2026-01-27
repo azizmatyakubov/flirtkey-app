@@ -47,12 +47,22 @@ export const screenOptions = {
   Settings: {
     ...defaultScreenOptions,
   },
-  ApiKeySetup: {
-    ...modalScreenOptions,
+  Welcome: {
+    ...fadeScreenOptions,
+    gestureEnabled: false,
   },
   Onboarding: {
     ...fadeScreenOptions,
     gestureEnabled: false,
+  },
+  ApiKeySetup: {
+    ...defaultScreenOptions,
+  },
+  Permissions: {
+    ...defaultScreenOptions,
+  },
+  UserProfileSetup: {
+    ...defaultScreenOptions,
   },
 } as const;
 
@@ -65,6 +75,9 @@ export const SCREENS = {
   ADD_GIRL: 'AddGirl',
   GIRL_PROFILE: 'GirlProfile',
   SETTINGS: 'Settings',
-  API_KEY_SETUP: 'ApiKeySetup',
+  WELCOME: 'Welcome',
   ONBOARDING: 'Onboarding',
+  API_KEY_SETUP: 'ApiKeySetup',
+  PERMISSIONS: 'Permissions',
+  USER_PROFILE_SETUP: 'UserProfileSetup',
 } as const;

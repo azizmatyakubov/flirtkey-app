@@ -41,6 +41,8 @@ export default ({ config }) => {
       debugMode: process.env.DEBUG_MODE === 'true',
       logLevel: process.env.LOG_LEVEL || 'info',
     },
-    plugins: [],
+    plugins: [
+      'expo-localization',
+    ],
   };
 };

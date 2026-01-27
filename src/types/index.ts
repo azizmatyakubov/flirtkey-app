@@ -73,8 +73,11 @@ export type RootStackParamList = {
   AddGirl: undefined;
   GirlProfile: { girlId?: number };
   Settings: undefined;
-  ApiKeySetup: undefined;
+  Welcome: undefined;
   Onboarding: undefined;
+  ApiKeySetup: { fromSettings?: boolean };
+  Permissions: { fromSettings?: boolean };
+  UserProfileSetup: { fromSettings?: boolean };
 };
 
 // Navigation prop types for screens
