@@ -75,12 +75,12 @@
 - [x] 1.3.4 Define AnalysisResult interface
 - [x] 1.3.5 Define Culture type
 - [x] 1.3.6 Define RelationshipStage type
-- [ ] 1.3.7 Define APIError interface
-- [ ] 1.3.8 Define NavigationParams types
-- [ ] 1.3.9 Define FormState types
-- [ ] 1.3.10 Define AsyncState<T> generic
-- [ ] 1.3.11 Define Theme interface
-- [ ] 1.3.12 Export all types from index.ts
+- [x] 1.3.7 Define APIError interface
+- [x] 1.3.8 Define NavigationParams types
+- [x] 1.3.9 Define FormState types
+- [x] 1.3.10 Define AsyncState<T> generic
+- [x] 1.3.11 Define Theme interface
+- [x] 1.3.12 Export all types from index.ts
 
 ### 1.4 Navigation Setup (8 tasks)
 
