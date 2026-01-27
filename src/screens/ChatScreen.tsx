@@ -25,17 +25,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { useStore } from '../stores/useStore';
 import { generateResponse, analyzeScreenshotLegacy } from '../services/ai';
 import { AnalysisResult, Suggestion } from '../types';
-import {
-  CharacterCount,
-  QuickPhrases,
-  TypingIndicator,
-  LoadingShimmer,
-  AnimatedSuggestionCard,
-  InterestLevelDisplay,
-  ProTipCard,
-  ConversationContext,
-  LastTopicIndicator,
-} from '../components';
+import { CharacterCount } from '../components/CharacterCount';
+import { QuickPhrases } from '../components/QuickPhrases';
+import { TypingIndicator } from '../components/TypingIndicator';
+import { LoadingShimmer } from '../components/ShimmerEffect';
+import { AnimatedSuggestionCard } from '../components/AnimatedSuggestionCard';
+import { InterestLevelDisplay } from '../components/InterestLevelDisplay';
+import { ProTipCard } from '../components/ProTipCard';
+import { ConversationContext, LastTopicIndicator } from '../components/ConversationContext';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 const MAX_INPUT_LENGTH = 500;

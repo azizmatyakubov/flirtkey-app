@@ -16,18 +16,15 @@ import {
 } from 'react-native';
 import { useStore } from '../stores/useStore';
 import { RelationshipStage } from '../types';
-import {
-  TextInput,
-  Select,
-  Avatar,
-  Button,
-  Card,
-  Badge,
-  Modal,
-  DeleteDialog,
-  UnsavedChangesDialog,
-  useToast,
-} from '../components';
+import { TextInput } from '../components/TextInput';
+import { Select } from '../components/Select';
+import { Avatar } from '../components/Avatar';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { Badge } from '../components/Badge';
+import { Modal } from '../components/Modal';
+import { DeleteDialog, UnsavedChangesDialog } from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 

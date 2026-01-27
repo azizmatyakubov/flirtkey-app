@@ -17,15 +17,12 @@ import {
 } from 'react-native';
 import { useStore } from '../stores/useStore';
 import { Culture, RelationshipStage } from '../types';
-import {
-  TextInput,
-  Select,
-  Avatar,
-  Button,
-  ConfirmDialog,
-  UnsavedChangesDialog,
-  useToast,
-} from '../components';
+import { TextInput } from '../components/TextInput';
+import { Select } from '../components/Select';
+import { Avatar } from '../components/Avatar';
+import { Button } from '../components/Button';
+import { ConfirmDialog, UnsavedChangesDialog } from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { validateName, validateAge } from '../utils/validation';
 import { spacing } from '../constants/theme';

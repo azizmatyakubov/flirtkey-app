@@ -20,16 +20,14 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStore } from '../stores/useStore';
 import { Girl } from '../types';
-import {
-  Avatar,
-  StageBadge,
-  SearchBar,
-  SortMenu,
-  SwipeableRow,
-  EmptyState,
-  DeleteDialog,
-  useToast,
-} from '../components';
+import { Avatar } from '../components/Avatar';
+import { StageBadge } from '../components/Badge';
+import { SearchBar } from '../components/SearchBar';
+import { SortMenu } from '../components/SortMenu';
+import { SwipeableRow } from '../components/SwipeableRow';
+import { EmptyState } from '../components/EmptyState';
+import { DeleteDialog } from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
 import { darkColors, spacing } from '../constants/theme';
 
 // Enable layout animations on Android
