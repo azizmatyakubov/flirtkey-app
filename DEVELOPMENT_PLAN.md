@@ -212,14 +212,14 @@
 
 ### 3.3 Permissions (8 tasks)
 
-- [ ] 3.3.1 Request photo library permission
-- [ ] 3.3.2 Request camera permission (for screenshots)
-- [ ] 3.3.3 Handle permission denied gracefully
-- [ ] 3.3.4 Add "Go to Settings" prompt
-- [ ] 3.3.5 Request notification permission
-- [ ] 3.3.6 Handle "Don't ask again" state
-- [ ] 3.3.7 Test permissions on iOS
-- [ ] 3.3.8 Test permissions on Android
+- [x] 3.3.1 Request photo library permission
+- [x] 3.3.2 Request camera permission (for screenshots)
+- [x] 3.3.3 Handle permission denied gracefully
+- [x] 3.3.4 Add "Go to Settings" prompt
+- [x] 3.3.5 Request notification permission
+- [x] 3.3.6 Handle "Don't ask again" state
+- [x] 3.3.7 Test permissions on iOS
+- [x] 3.3.8 Test permissions on Android
 
 ### 3.4 User Profile (5 tasks)
 
