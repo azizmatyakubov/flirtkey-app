@@ -1,0 +1,23 @@
+import type {
+  NativeStackScreenProps,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
+import type { RootStackParamList } from './index';
+
+// Screen props type for each screen
+export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+export type ChatScreenProps = NativeStackScreenProps<RootStackParamList, 'Chat'>;
+export type AddGirlScreenProps = NativeStackScreenProps<RootStackParamList, 'AddGirl'>;
+export type GirlProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'GirlProfile'>;
+export type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+export type ApiKeySetupScreenProps = NativeStackScreenProps<RootStackParamList, 'ApiKeySetup'>;
+export type OnboardingScreenProps = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
+
+// Navigation prop type for useNavigation hook
+export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+// Generic screen props
+export type ScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<
+  RootStackParamList,
+  T
+>;

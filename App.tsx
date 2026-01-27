@@ -8,14 +8,17 @@ import { ChatScreen } from './src/screens/ChatScreen';
 import { AddGirlScreen } from './src/screens/AddGirlScreen';
 import { GirlProfileScreen } from './src/screens/GirlProfileScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { RootStackParamList } from './src/types';
 
-const Stack = createNativeStackNavigator();
+// Create typed navigator
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
     <NavigationContainer>
       <StatusBar style="light" />
       <Stack.Navigator
+        initialRouteName="Home"
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: '#0a0a0a' },

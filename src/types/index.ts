@@ -176,3 +176,6 @@ export interface Theme {
   borderRadius: ThemeBorderRadius;
   isDark: boolean;
 }
+
+// Re-export navigation types
+export * from './navigation';
