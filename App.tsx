@@ -19,7 +19,7 @@ import { UserProfileSetupScreen } from './src/screens/UserProfileSetupScreen';
 import { RootStackParamList } from './src/types';
 import { defaultScreenOptions, screenOptions, linking } from './src/constants';
 import { darkColors } from './src/constants/theme';
-import { ToastProvider } from './src/components';
+import { ToastProvider } from './src/components/Toast';
 
 const ONBOARDING_COMPLETE_KEY = 'flirtkey_onboarding_complete';
 
