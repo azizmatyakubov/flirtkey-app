@@ -11,7 +11,7 @@ interface AppState {
   // Girls
   girls: Girl[];
   selectedGirl: Girl | null;
-  addGirl: (girl: Omit<Girl, 'id' | 'messageCount' | 'relationshipStage'>) => void;
+  addGirl: (girl: Omit<Girl, 'id' | 'messageCount'> & { relationshipStage?: Girl['relationshipStage'] }) => void;
   updateGirl: (id: number, data: Partial<Girl>) => void;
   deleteGirl: (id: number) => void;
   selectGirl: (girl: Girl | null) => void;
@@ -42,7 +42,7 @@ export const useStore = create<AppState>()(
           ...girlData,
           id: Date.now(),
           messageCount: 0,
-          relationshipStage: 'just_met',
+          relationshipStage: girlData.relationshipStage || 'just_met',
         };
         set({ girls: [...girls, newGirl], selectedGirl: newGirl });
       },
