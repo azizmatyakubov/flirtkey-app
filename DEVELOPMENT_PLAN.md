@@ -199,16 +199,16 @@
 
 - [x] 3.2.1 Create API key input screen
 - [x] 3.2.2 Add secure key storage
-- [ ] 3.2.3 Add key validation (test API call)
-- [ ] 3.2.4 Add "How to get API key" guide
-- [ ] 3.2.5 Add link to OpenAI platform
-- [ ] 3.2.6 Show key status (valid/invalid/missing)
-- [ ] 3.2.7 Add key update functionality
-- [ ] 3.2.8 Add key deletion with confirmation
-- [ ] 3.2.9 Handle rate limit errors gracefully
-- [ ] 3.2.10 Handle invalid key errors
-- [ ] 3.2.11 Add usage tracking display
-- [ ] 3.2.12 Test key rotation scenarios
+- [x] 3.2.3 Add key validation (test API call)
+- [x] 3.2.4 Add "How to get API key" guide
+- [x] 3.2.5 Add link to OpenAI platform
+- [x] 3.2.6 Show key status (valid/invalid/missing)
+- [x] 3.2.7 Add key update functionality
+- [x] 3.2.8 Add key deletion with confirmation
+- [x] 3.2.9 Handle rate limit errors gracefully
+- [x] 3.2.10 Handle invalid key errors
+- [x] 3.2.11 Add usage tracking display
+- [x] 3.2.12 Test key rotation scenarios
 
 ### 3.3 Permissions (8 tasks)
 
