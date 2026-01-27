@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -18,6 +19,7 @@ import { UserProfileSetupScreen } from './src/screens/UserProfileSetupScreen';
 import { RootStackParamList } from './src/types';
 import { defaultScreenOptions, screenOptions, linking } from './src/constants';
 import { darkColors } from './src/constants/theme';
+import { ToastProvider } from './src/components';
 
 const ONBOARDING_COMPLETE_KEY = 'flirtkey_onboarding_complete';
 
@@ -54,47 +56,51 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer linking={linking}>
-      <StatusBar style="light" />
-      <Stack.Navigator
-        initialRouteName={isFirstLaunch ? 'Welcome' : 'Home'}
-        screenOptions={defaultScreenOptions}
-      >
-        {/* Onboarding Flow */}
-        <Stack.Screen name="Welcome" component={WelcomeScreen} options={screenOptions.Welcome} />
-        <Stack.Screen
-          name="Onboarding"
-          component={OnboardingScreen}
-          options={screenOptions.Onboarding}
-        />
-        <Stack.Screen
-          name="ApiKeySetup"
-          component={ApiKeySetupScreen}
-          options={screenOptions.ApiKeySetup}
-        />
-        <Stack.Screen
-          name="Permissions"
-          component={PermissionsScreen}
-          options={screenOptions.Permissions}
-        />
-        <Stack.Screen
-          name="UserProfileSetup"
-          component={UserProfileSetupScreen}
-          options={screenOptions.UserProfileSetup}
-        />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ToastProvider>
+        <NavigationContainer linking={linking}>
+          <StatusBar style="light" />
+          <Stack.Navigator
+            initialRouteName={isFirstLaunch ? 'Welcome' : 'Home'}
+            screenOptions={defaultScreenOptions}
+          >
+            {/* Onboarding Flow */}
+            <Stack.Screen name="Welcome" component={WelcomeScreen} options={screenOptions.Welcome} />
+            <Stack.Screen
+              name="Onboarding"
+              component={OnboardingScreen}
+              options={screenOptions.Onboarding}
+            />
+            <Stack.Screen
+              name="ApiKeySetup"
+              component={ApiKeySetupScreen}
+              options={screenOptions.ApiKeySetup}
+            />
+            <Stack.Screen
+              name="Permissions"
+              component={PermissionsScreen}
+              options={screenOptions.Permissions}
+            />
+            <Stack.Screen
+              name="UserProfileSetup"
+              component={UserProfileSetupScreen}
+              options={screenOptions.UserProfileSetup}
+            />
 
-        {/* Main App Flow */}
-        <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
-        <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
-        <Stack.Screen name="AddGirl" component={AddGirlScreen} options={screenOptions.AddGirl} />
-        <Stack.Screen
-          name="GirlProfile"
-          component={GirlProfileScreen}
-          options={screenOptions.GirlProfile}
-        />
-        <Stack.Screen name="Settings" component={SettingsScreen} options={screenOptions.Settings} />
-      </Stack.Navigator>
-    </NavigationContainer>
+            {/* Main App Flow */}
+            <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
+            <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
+            <Stack.Screen name="AddGirl" component={AddGirlScreen} options={screenOptions.AddGirl} />
+            <Stack.Screen
+              name="GirlProfile"
+              component={GirlProfileScreen}
+              options={screenOptions.GirlProfile}
+            />
+            <Stack.Screen name="Settings" component={SettingsScreen} options={screenOptions.Settings} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ToastProvider>
+    </GestureHandlerRootView>
   );
 }
 

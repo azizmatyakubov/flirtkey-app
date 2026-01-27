@@ -1,7 +1,34 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+/**
+ * AddGirlScreen
+ * Form to add a new girl profile with photo, validation, and confirmations
+ * Tasks: 4.1.9-4.1.15
+ */
+
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useStore } from '../stores/useStore';
 import { Culture, RelationshipStage } from '../types';
+import {
+  TextInput,
+  Select,
+  Avatar,
+  Button,
+  ConfirmDialog,
+  UnsavedChangesDialog,
+  useToast,
+} from '../components';
+import { useImagePicker } from '../hooks/useImagePicker';
+import { validateName, validateAge } from '../utils/validation';
+import { spacing } from '../constants/theme';
 
 const CULTURES: { key: Culture; label: string; emoji: string }[] = [
   { key: 'uzbek', label: 'Uzbek', emoji: '🇺🇿' },
@@ -19,9 +46,21 @@ const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
   { key: 'serious', label: 'Serious', emoji: '💑' },
 ];
 
+interface FormErrors {
+  name?: string;
+  age?: string;
+}
+
 export function AddGirlScreen({ navigation }: any) {
   const { addGirl } = useStore();
+  const { showToast } = useToast();
+  const { pickFromLibrary, image: selectedImage, clear: clearImage } = useImagePicker({
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.8,
+  });
 
+  // Form state
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [culture, setCulture] = useState<Culture>('universal');
@@ -29,126 +68,309 @@ export function AddGirlScreen({ navigation }: any) {
   const [interests, setInterests] = useState('');
   const [howMet, setHowMet] = useState('');
   const [stage, setStage] = useState<RelationshipStage>('just_met');
+  const [avatar, setAvatar] = useState<string | undefined>();
 
-  const handleSave = () => {
-    if (!name.trim()) return;
+  // UI state
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-    addGirl({
-      name: name.trim(),
-      age: age ? parseInt(age) : undefined,
-      culture,
-      personality: personality || undefined,
-      interests: interests || undefined,
-      howMet: howMet || undefined,
-      relationshipStage: stage,
-    });
+  // Refs for scroll
+  const scrollViewRef = useRef<ScrollView>(null);
+  const nameInputRef = useRef<any>(null);
 
-    navigation.navigate('Chat');
+  // Check if form is dirty
+  const isDirty = name || age || personality || interests || howMet || avatar;
+
+  // Update avatar when image is selected
+  useEffect(() => {
+    if (selectedImage?.uri) {
+      setAvatar(selectedImage.uri);
+    }
+  }, [selectedImage]);
+
+  // Dismiss keyboard on tap outside
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
+  // Validate form
+  const validateForm = useCallback((): boolean => {
+    const newErrors: FormErrors = {};
+    let isValid = true;
+
+    // Validate name
+    const nameResult = validateName(name);
+    if (!nameResult.valid) {
+      newErrors.name = nameResult.error;
+      isValid = false;
+    }
+
+    // Validate age (optional but must be valid if provided)
+    if (age) {
+      const ageResult = validateAge(parseInt(age, 10));
+      if (!ageResult.valid) {
+        newErrors.age = ageResult.error;
+        isValid = false;
+      }
+    }
+
+    setErrors(newErrors);
+
+    // Scroll to first error
+    if (!isValid) {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    }
+
+    return isValid;
+  }, [name, age]);
+
+  // Handle photo selection
+  const handleSelectPhoto = async () => {
+    const result = await pickFromLibrary();
+    if (result?.uri) {
+      setAvatar(result.uri);
+    }
+  };
+
+  // Handle remove photo
+  const handleRemovePhoto = () => {
+    setAvatar(undefined);
+    clearImage();
+  };
+
+  // Handle save with confirmation
+  const handleSavePress = () => {
+    dismissKeyboard();
+    if (!validateForm()) {
+      showToast({
+        message: 'Please fix the errors above',
+        type: 'error',
+      });
+      return;
+    }
+    setShowSaveConfirm(true);
+  };
+
+  // Perform save
+  const handleConfirmSave = async () => {
+    setIsSaving(true);
+    try {
+      addGirl({
+        name: name.trim(),
+        age: age ? parseInt(age, 10) : undefined,
+        culture,
+        personality: personality || undefined,
+        interests: interests || undefined,
+        howMet: howMet || undefined,
+        relationshipStage: stage,
+        avatar,
+      });
+
+      showToast({
+        message: `${name.trim()} added successfully! 🎉`,
+        type: 'success',
+      });
+
+      navigation.navigate('Chat');
+    } catch (error) {
+      showToast({
+        message: 'Failed to save. Please try again.',
+        type: 'error',
+      });
+    } finally {
+      setIsSaving(false);
+      setShowSaveConfirm(false);
+    }
+  };
+
+  // Handle cancel with confirmation if dirty
+  const handleCancel = () => {
+    dismissKeyboard();
+    if (isDirty) {
+      setShowDiscardConfirm(true);
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  // Handle discard
+  const handleDiscard = () => {
+    setShowDiscardConfirm(false);
+    navigation.goBack();
+  };
+
+  // Clear field error on change
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (errors.name) {
+      setErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  };
+
+  const handleAgeChange = (value: string) => {
+    // Only allow digits
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setAge(numericValue);
+    if (errors.age) {
+      setErrors((prev) => ({ ...prev, age: undefined }));
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={handleCancel}>
           <Text style={styles.cancel}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Add Someone</Text>
-        <TouchableOpacity onPress={handleSave}>
-          <Text style={[styles.save, !name.trim() && styles.saveDisabled]}>Save</Text>
+        <TouchableOpacity onPress={handleSavePress} disabled={!name.trim() || isSaving}>
+          <Text style={[styles.save, (!name.trim() || isSaving) && styles.saveDisabled]}>
+            {isSaving ? 'Saving...' : 'Save'}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.form}>
-        {/* Name */}
-        <Text style={styles.label}>Name *</Text>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.form}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Photo (4.1.9) */}
+        <View style={styles.photoSection}>
+          <Avatar
+            name={name || 'New'}
+            imageUri={avatar}
+            size="xl"
+            onPress={handleSelectPhoto}
+            showEditBadge
+          />
+          <View style={styles.photoButtons}>
+            <Button
+              title="Choose Photo"
+              onPress={handleSelectPhoto}
+              variant="outline"
+              size="sm"
+            />
+            {avatar && (
+              <Button
+                title="Remove"
+                onPress={handleRemovePhoto}
+                variant="ghost"
+                size="sm"
+              />
+            )}
+          </View>
+        </View>
+
+        {/* Name (4.1.10) */}
         <TextInput
-          style={styles.input}
-          placeholder="Her name"
-          placeholderTextColor="#666"
+          ref={nameInputRef}
+          label="Name"
           value={name}
-          onChangeText={setName}
+          onChangeText={handleNameChange}
+          placeholder="Her name"
+          error={errors.name}
+          required
+          autoFocus
+          returnKeyType="next"
         />
 
-        {/* Age */}
-        <Text style={styles.label}>Age</Text>
+        {/* Age (4.1.10) */}
         <TextInput
-          style={styles.input}
-          placeholder="Age"
-          placeholderTextColor="#666"
+          label="Age"
           value={age}
-          onChangeText={setAge}
+          onChangeText={handleAgeChange}
+          placeholder="Age"
+          error={errors.age}
           keyboardType="number-pad"
+          maxLength={3}
+          returnKeyType="next"
         />
 
         {/* Culture */}
-        <Text style={styles.label}>Her Culture</Text>
-        <View style={styles.options}>
-          {CULTURES.map((c) => (
-            <TouchableOpacity
-              key={c.key}
-              style={[styles.option, culture === c.key && styles.optionSelected]}
-              onPress={() => setCulture(c.key)}
-            >
-              <Text style={styles.optionEmoji}>{c.emoji}</Text>
-              <Text style={[styles.optionText, culture === c.key && styles.optionTextSelected]}>
-                {c.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Select
+          label="Her Culture"
+          value={culture}
+          options={CULTURES}
+          onChange={setCulture}
+        />
 
         {/* Stage */}
-        <Text style={styles.label}>Relationship Stage</Text>
-        <View style={styles.options}>
-          {STAGES.map((s) => (
-            <TouchableOpacity
-              key={s.key}
-              style={[styles.option, stage === s.key && styles.optionSelected]}
-              onPress={() => setStage(s.key)}
-            >
-              <Text style={styles.optionEmoji}>{s.emoji}</Text>
-              <Text style={[styles.optionText, stage === s.key && styles.optionTextSelected]}>
-                {s.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Select
+          label="Relationship Stage"
+          value={stage}
+          options={STAGES}
+          onChange={setStage}
+        />
 
         {/* Personality */}
-        <Text style={styles.label}>Her Personality</Text>
         <TextInput
-          style={styles.input}
-          placeholder="shy, outgoing, funny, intellectual..."
-          placeholderTextColor="#666"
+          label="Her Personality"
           value={personality}
           onChangeText={setPersonality}
+          placeholder="shy, outgoing, funny, intellectual..."
+          multiline
+          maxLength={500}
+          showCharCount
         />
 
         {/* Interests */}
-        <Text style={styles.label}>Her Interests</Text>
         <TextInput
-          style={styles.input}
-          placeholder="What does she like?"
-          placeholderTextColor="#666"
+          label="Her Interests"
           value={interests}
           onChangeText={setInterests}
+          placeholder="What does she like?"
+          multiline
+          maxLength={500}
+          showCharCount
         />
 
         {/* How Met */}
-        <Text style={styles.label}>How You Met</Text>
         <TextInput
-          style={styles.input}
-          placeholder="Tinder, Instagram, university..."
-          placeholderTextColor="#666"
+          label="How You Met"
           value={howMet}
           onChangeText={setHowMet}
+          placeholder="Tinder, Instagram, university..."
+          multiline
+          maxLength={200}
         />
 
         <Text style={styles.hint}>
           💡 You can add more details later (inside jokes, things to avoid, etc.)
         </Text>
+
+        {/* Extra padding for keyboard */}
+        <View style={styles.bottomPadding} />
       </ScrollView>
-    </View>
+
+      {/* Save Confirmation Dialog (4.1.11) */}
+      <ConfirmDialog
+        visible={showSaveConfirm}
+        onClose={() => setShowSaveConfirm(false)}
+        onConfirm={handleConfirmSave}
+        title={`Add ${name.trim()}?`}
+        message="You can always edit their profile later to add more details."
+        confirmText="Add"
+        cancelText="Keep Editing"
+        confirmVariant="primary"
+        isLoading={isSaving}
+        icon="👩"
+      />
+
+      {/* Discard Confirmation Dialog (4.1.12) */}
+      <UnsavedChangesDialog
+        visible={showDiscardConfirm}
+        onClose={() => setShowDiscardConfirm(false)}
+        onDiscard={handleDiscard}
+      />
+    </KeyboardAvoidingView>
   );
 }
 
@@ -185,54 +407,25 @@ const styles = StyleSheet.create({
   form: {
     padding: 20,
   },
-  label: {
-    color: '#888',
-    fontSize: 14,
-    marginBottom: 8,
-    marginTop: 20,
-  },
-  input: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 15,
-    color: '#fff',
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  options: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  option: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#333',
-    flexDirection: 'row',
+  photoSection: {
     alignItems: 'center',
-    gap: 6,
+    marginBottom: spacing.lg,
+    paddingVertical: spacing.md,
   },
-  optionSelected: {
-    backgroundColor: '#6366f120',
-    borderColor: '#6366f1',
-  },
-  optionEmoji: {
-    fontSize: 16,
-  },
-  optionText: {
-    color: '#888',
-    fontSize: 14,
-  },
-  optionTextSelected: {
-    color: '#fff',
+  photoButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   hint: {
     color: '#666',
     fontSize: 13,
-    marginTop: 30,
+    marginTop: 20,
     textAlign: 'center',
   },
+  bottomPadding: {
+    height: 100,
+  },
 });
+
+export default AddGirlScreen;

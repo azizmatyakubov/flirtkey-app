@@ -29,3 +29,39 @@ export {
   // Component styles
   componentStyles,
 } from './theme';
+
+// Prompts (Phase 5.2)
+export {
+  // Version
+  PROMPT_VERSION,
+  // Culture & Stage definitions
+  CULTURE_STYLES,
+  STAGES,
+  // Prompt builders
+  buildFlirtPrompt,
+  buildScreenshotPrompt,
+  buildConversationStarterPrompt,
+  buildDateIdeaPrompt,
+  buildWhatToAvoidPrompt,
+  buildInterestLevelPrompt,
+  buildRedFlagPrompt,
+  buildTimingPrompt,
+  // Utilities
+  sanitizeInput,
+  estimateTokens,
+  isPromptWithinLimit,
+  // Types
+  type PromptType,
+  type PromptMetadata,
+  type FlirtPromptParams,
+  type ScreenshotPromptParams,
+  type ConversationStarterParams,
+  type DateIdeaParams,
+  type WhatToAvoidParams,
+  type InterestLevelParams,
+  type RedFlagParams,
+  type TimingParams,
+  // Registry
+  PROMPT_TEMPLATES,
+  PROMPT_STRATEGIES,
+} from './prompts';
