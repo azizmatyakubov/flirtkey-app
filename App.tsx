@@ -9,6 +9,7 @@ import { AddGirlScreen } from './src/screens/AddGirlScreen';
 import { GirlProfileScreen } from './src/screens/GirlProfileScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { RootStackParamList } from './src/types';
+import { defaultScreenOptions, screenOptions, SCREENS } from './src/constants';
 
 // Create typed navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -17,19 +18,16 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar style="light" />
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: '#0a0a0a' },
-          animation: 'slide_from_right',
-        }}
-      >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="AddGirl" component={AddGirlScreen} />
-        <Stack.Screen name="GirlProfile" component={GirlProfileScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Navigator initialRouteName={SCREENS.HOME} screenOptions={defaultScreenOptions}>
+        <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
+        <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
+        <Stack.Screen name="AddGirl" component={AddGirlScreen} options={screenOptions.AddGirl} />
+        <Stack.Screen
+          name="GirlProfile"
+          component={GirlProfileScreen}
+          options={screenOptions.GirlProfile}
+        />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={screenOptions.Settings} />
       </Stack.Navigator>
     </NavigationContainer>
   );
