@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useStore } from '../stores/useStore';
 import { Girl } from '../types';
 
@@ -34,14 +28,9 @@ export function HomeScreen({ navigation }: any) {
   };
 
   const renderGirl = ({ item }: { item: Girl }) => (
-    <TouchableOpacity
-      style={styles.girlCard}
-      onPress={() => handleSelectGirl(item)}
-    >
+    <TouchableOpacity style={styles.girlCard} onPress={() => handleSelectGirl(item)}>
       <View style={styles.avatar}>
-        <Text style={styles.avatarText}>
-          {item.name.charAt(0).toUpperCase()}
-        </Text>
+        <Text style={styles.avatarText}>{item.name.charAt(0).toUpperCase()}</Text>
       </View>
       <View style={styles.girlInfo}>
         <Text style={styles.girlName}>{item.name}</Text>
@@ -61,7 +50,7 @@ export function HomeScreen({ navigation }: any) {
           <Text style={styles.title}>💘 FlirtKey</Text>
           <Text style={styles.subtitle}>Your secret texting weapon</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingsButton}
           onPress={() => navigation.navigate('Settings')}
         >
@@ -71,13 +60,8 @@ export function HomeScreen({ navigation }: any) {
 
       {/* API Key Warning */}
       {!apiKey && (
-        <TouchableOpacity
-          style={styles.warning}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <Text style={styles.warningText}>
-            ⚠️ Set up your API key to start
-          </Text>
+        <TouchableOpacity style={styles.warning} onPress={() => navigation.navigate('Settings')}>
+          <Text style={styles.warningText}>⚠️ Set up your API key to start</Text>
         </TouchableOpacity>
       )}
 
@@ -86,9 +70,7 @@ export function HomeScreen({ navigation }: any) {
         <View style={styles.empty}>
           <Text style={styles.emptyIcon}>👩</Text>
           <Text style={styles.emptyText}>No one added yet</Text>
-          <Text style={styles.emptySubtext}>
-            Add someone you're texting to get started
-          </Text>
+          <Text style={styles.emptySubtext}>Add someone you're texting to get started</Text>
         </View>
       ) : (
         <FlatList
@@ -100,10 +82,7 @@ export function HomeScreen({ navigation }: any) {
       )}
 
       {/* Add Button */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('AddGirl')}
-      >
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddGirl')}>
         <Text style={styles.addButtonText}>+ Add Someone</Text>
       </TouchableOpacity>
     </View>

@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useStore } from '../stores/useStore';
 import { Culture } from '../types';
 
@@ -40,9 +33,7 @@ export function SettingsScreen({ navigation }: any) {
       <View style={styles.content}>
         {/* API Key */}
         <Text style={styles.sectionTitle}>🔑 OpenAI API Key</Text>
-        <Text style={styles.hint}>
-          Get your key from platform.openai.com
-        </Text>
+        <Text style={styles.hint}>Get your key from platform.openai.com</Text>
         <TextInput
           style={styles.input}
           placeholder="sk-..."
@@ -57,29 +48,17 @@ export function SettingsScreen({ navigation }: any) {
         </TouchableOpacity>
 
         {/* Culture */}
-        <Text style={[styles.sectionTitle, { marginTop: 30 }]}>
-          🌍 Your Dating Culture
-        </Text>
-        <Text style={styles.hint}>
-          This affects how suggestions are calibrated
-        </Text>
+        <Text style={[styles.sectionTitle, { marginTop: 30 }]}>🌍 Your Dating Culture</Text>
+        <Text style={styles.hint}>This affects how suggestions are calibrated</Text>
         <View style={styles.options}>
           {CULTURES.map((c) => (
             <TouchableOpacity
               key={c.key}
-              style={[
-                styles.option,
-                userCulture === c.key && styles.optionSelected,
-              ]}
+              style={[styles.option, userCulture === c.key && styles.optionSelected]}
               onPress={() => setUserCulture(c.key)}
             >
               <Text style={styles.optionEmoji}>{c.emoji}</Text>
-              <Text
-                style={[
-                  styles.optionText,
-                  userCulture === c.key && styles.optionTextSelected,
-                ]}
-              >
+              <Text style={[styles.optionText, userCulture === c.key && styles.optionTextSelected]}>
                 {c.label}
               </Text>
             </TouchableOpacity>

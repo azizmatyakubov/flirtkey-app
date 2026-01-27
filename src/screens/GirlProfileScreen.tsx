@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useStore } from '../stores/useStore';
-import { Culture, RelationshipStage } from '../types';
+import { RelationshipStage } from '../types';
 
 const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
   { key: 'just_met', label: 'Just Met', emoji: '🆕' },
@@ -21,7 +21,7 @@ const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
 
 export function GirlProfileScreen({ navigation }: any) {
   const { selectedGirl, updateGirl, deleteGirl } = useStore();
-  
+
   const [personality, setPersonality] = useState(selectedGirl?.personality || '');
   const [interests, setInterests] = useState(selectedGirl?.interests || '');
   const [greenLights, setGreenLights] = useState(selectedGirl?.greenLights || '');
@@ -52,21 +52,17 @@ export function GirlProfileScreen({ navigation }: any) {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      'Delete ' + selectedGirl.name + '?',
-      'This cannot be undone',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteGirl(selectedGirl.id);
-            navigation.navigate('Home');
-          },
+    Alert.alert('Delete ' + selectedGirl.name + '?', 'This cannot be undone', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          deleteGirl(selectedGirl.id);
+          navigation.navigate('Home');
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -158,9 +154,7 @@ export function GirlProfileScreen({ navigation }: any) {
         <View style={styles.stats}>
           <Text style={styles.statsTitle}>📊 Stats</Text>
           <Text style={styles.stat}>Messages: {selectedGirl.messageCount}</Text>
-          <Text style={styles.stat}>
-            Last topic: {selectedGirl.lastTopic || 'None'}
-          </Text>
+          <Text style={styles.stat}>Last topic: {selectedGirl.lastTopic || 'None'}</Text>
         </View>
 
         {/* Delete */}

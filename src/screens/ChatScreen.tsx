@@ -47,22 +47,18 @@ export function ChatScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      const response = await generateResponse(
-        apiKey,
-        selectedGirl,
-        herMessage,
-        userCulture
-      );
+      const response = await generateResponse(apiKey, selectedGirl, herMessage, userCulture);
       setResult(response);
-      
+
       // Update message count
       updateGirl(selectedGirl.id, {
         messageCount: selectedGirl.messageCount + 1,
         lastTopic: herMessage.substring(0, 100),
         lastMessageDate: new Date().toISOString(),
       });
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Something went wrong');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
+      Alert.alert('Error', errorMessage);
     }
     setLoading(false);
   };
@@ -79,20 +75,20 @@ export function ChatScreen({ navigation }: any) {
       quality: 0.8,
     });
 
-    if (!result.canceled && result.assets[0].base64) {
-      setLoading(true);
-      try {
-        const response = await analyzeScreenshot(
-          apiKey,
-          result.assets[0].base64,
-          selectedGirl,
-          userCulture
-        );
-        setResult(response);
-      } catch (error: any) {
-        Alert.alert('Error', error.message || 'Failed to analyze screenshot');
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const asset = result.assets[0];
+      if (asset?.base64) {
+        setLoading(true);
+        try {
+          const response = await analyzeScreenshot(apiKey, asset.base64, selectedGirl, userCulture);
+          setResult(response);
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to analyze screenshot';
+          Alert.alert('Error', errorMessage);
+        }
+        setLoading(false);
       }
-      setLoading(false);
     }
   };
 
@@ -149,7 +145,7 @@ export function ChatScreen({ navigation }: any) {
             onChangeText={setHerMessage}
             multiline
           />
-          
+
           <View style={styles.buttons}>
             <TouchableOpacity
               style={styles.generateButton}
@@ -162,7 +158,7 @@ export function ChatScreen({ navigation }: any) {
                 <Text style={styles.generateButtonText}>✨ Generate Replies</Text>
               )}
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={styles.screenshotButton}
               onPress={handleScreenshot}
@@ -181,12 +177,7 @@ export function ChatScreen({ navigation }: any) {
               <View style={styles.interestLevel}>
                 <Text style={styles.interestLabel}>Her Interest Level</Text>
                 <View style={styles.interestBar}>
-                  <View 
-                    style={[
-                      styles.interestFill, 
-                      { width: `${result.interestLevel * 10}%` }
-                    ]} 
-                  />
+                  <View style={[styles.interestFill, { width: `${result.interestLevel * 10}%` }]} />
                 </View>
                 <Text style={styles.interestValue}>{result.interestLevel}/10</Text>
               </View>

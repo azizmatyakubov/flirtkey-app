@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useStore } from '../stores/useStore';
 import { Culture, RelationshipStage } from '../types';
 
@@ -28,7 +21,7 @@ const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
 
 export function AddGirlScreen({ navigation }: any) {
   const { addGirl } = useStore();
-  
+
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [culture, setCulture] = useState<Culture>('universal');
@@ -39,7 +32,7 @@ export function AddGirlScreen({ navigation }: any) {
 
   const handleSave = () => {
     if (!name.trim()) return;
-    
+
     addGirl({
       name: name.trim(),
       age: age ? parseInt(age) : undefined,
@@ -49,7 +42,7 @@ export function AddGirlScreen({ navigation }: any) {
       howMet: howMet || undefined,
       relationshipStage: stage,
     });
-    
+
     navigation.navigate('Chat');
   };
 
@@ -61,9 +54,7 @@ export function AddGirlScreen({ navigation }: any) {
         </TouchableOpacity>
         <Text style={styles.title}>Add Someone</Text>
         <TouchableOpacity onPress={handleSave}>
-          <Text style={[styles.save, !name.trim() && styles.saveDisabled]}>
-            Save
-          </Text>
+          <Text style={[styles.save, !name.trim() && styles.saveDisabled]}>Save</Text>
         </TouchableOpacity>
       </View>
 
