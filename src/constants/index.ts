@@ -8,3 +8,24 @@ export {
   SCREENS,
 } from './navigation';
 export { linking, isValidDeepLink, getScreenFromUrl } from './deepLinking';
+export {
+  // Colors
+  darkColors,
+  lightColors,
+  // Spacing
+  spacing,
+  // Typography
+  fontSizes,
+  fontWeights,
+  lineHeights,
+  // Shadows
+  shadows,
+  // Border radius
+  borderRadius,
+  // Complete themes
+  darkTheme,
+  lightTheme,
+  defaultTheme,
+  // Component styles
+  componentStyles,
+} from './theme';

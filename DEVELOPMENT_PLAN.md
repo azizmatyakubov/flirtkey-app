@@ -96,12 +96,12 @@
 ### 1.5 Theme & Styling (7 tasks)
 
 - [x] 1.5.1 Define color palette (dark theme)
-- [ ] 1.5.2 Create spacing constants
-- [ ] 1.5.3 Create typography scale
-- [ ] 1.5.4 Create shadow presets
-- [ ] 1.5.5 Create border radius constants
-- [ ] 1.5.6 Setup theme context/provider
-- [ ] 1.5.7 Create base component styles
+- [x] 1.5.2 Create spacing constants
+- [x] 1.5.3 Create typography scale
+- [x] 1.5.4 Create shadow presets
+- [x] 1.5.5 Create border radius constants
+- [x] 1.5.6 Setup theme context/provider
+- [x] 1.5.7 Create base component styles
 
 **Phase 1 Status: 18/45 complete (40%)**
 
