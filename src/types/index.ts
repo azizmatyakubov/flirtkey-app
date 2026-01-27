@@ -67,6 +67,7 @@ export type APIErrorCode =
 
 // 1.3.8: Navigation types
 export type RootStackParamList = {
+  Main: undefined; // Bottom tab navigator
   Home: undefined;
   Chat: undefined;
   AddGirl: undefined;
