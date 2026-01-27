@@ -9,14 +9,14 @@ import { AddGirlScreen } from './src/screens/AddGirlScreen';
 import { GirlProfileScreen } from './src/screens/GirlProfileScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { RootStackParamList } from './src/types';
-import { defaultScreenOptions, screenOptions, SCREENS } from './src/constants';
+import { defaultScreenOptions, screenOptions, SCREENS, linking } from './src/constants';
 
 // Create typed navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <StatusBar style="light" />
       <Stack.Navigator initialRouteName={SCREENS.HOME} screenOptions={defaultScreenOptions}>
         <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />

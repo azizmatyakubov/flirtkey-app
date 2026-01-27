@@ -7,3 +7,4 @@ export {
   screenOptions,
   SCREENS,
 } from './navigation';
+export { linking, isValidDeepLink, getScreenFromUrl } from './deepLinking';

@@ -90,7 +90,7 @@
 - [x] 1.4.4 Add typed navigation props
 - [x] 1.4.5 Configure screen options (headers, animations)
 - [x] 1.4.6 Add bottom tab navigator (if needed)
-- [ ] 1.4.7 Setup deep linking configuration
+- [x] 1.4.7 Setup deep linking configuration
 - [ ] 1.4.8 Add navigation state persistence
 
 ### 1.5 Theme & Styling (7 tasks)
