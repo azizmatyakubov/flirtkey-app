@@ -1,7 +1,7 @@
-// Utility functions barrel export
-// Add utility exports here as they are created
+/**
+ * Utils - Export all utility modules
+ */
 
-// Example structure:
-// export { formatDate, formatTime } from './date';
-// export { sanitizeInput, validateEmail } from './validation';
-// export { truncateText, capitalizeFirst } from './string';
+// Validation
+export * from './validation';
+export { default as validation } from './validation';

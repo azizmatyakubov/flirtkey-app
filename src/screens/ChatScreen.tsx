@@ -12,7 +12,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import * as ImagePicker from 'expo-image-picker';
 import { useStore } from '../stores/useStore';
-import { generateResponse, analyzeScreenshot } from '../services/ai';
+import { generateResponse, analyzeScreenshotLegacy } from '../services/ai';
 import { AnalysisResult, Suggestion } from '../types';
 
 const SUGGESTION_COLORS = {
@@ -80,7 +80,12 @@ export function ChatScreen({ navigation }: any) {
       if (asset?.base64) {
         setLoading(true);
         try {
-          const response = await analyzeScreenshot(apiKey, asset.base64, selectedGirl, userCulture);
+          const response = await analyzeScreenshotLegacy(
+            apiKey,
+            asset.base64,
+            selectedGirl,
+            userCulture
+          );
           setResult(response);
         } catch (error: unknown) {
           const errorMessage =
