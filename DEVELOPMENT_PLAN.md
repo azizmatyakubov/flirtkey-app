@@ -63,9 +63,9 @@
 - [x] 1.2.3 Create src/services folder
 - [x] 1.2.4 Create src/stores folder
 - [x] 1.2.5 Create src/types folder
-- [ ] 1.2.6 Create src/hooks folder
-- [ ] 1.2.7 Create src/utils folder
-- [ ] 1.2.8 Create src/constants folder
+- [x] 1.2.6 Create src/hooks folder
+- [x] 1.2.7 Create src/utils folder
+- [x] 1.2.8 Create src/constants folder
 
 ### 1.3 Type Definitions (12 tasks)
 
