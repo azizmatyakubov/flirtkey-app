@@ -51,7 +51,7 @@
 - [x] 1.1.4 Configure ESLint + Prettier
 - [x] 1.1.5 Setup Husky pre-commit hooks
 - [x] 1.1.6 Configure TypeScript strict mode
-- [ ] 1.1.7 Setup path aliases (@/components, @/screens, etc.)
+- [x] 1.1.7 Setup path aliases (@/components, @/screens, etc.)
 - [ ] 1.1.8 Create .env.example with required variables
 - [ ] 1.1.9 Setup environment variable handling (expo-constants)
 - [ ] 1.1.10 Configure Metro bundler for performance
