@@ -1,7 +1,11 @@
 import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { Girl, User, Culture, Suggestion } from '../types';
+
+// Get API key from env config (falls back to empty string)
+const ENV_API_KEY = Constants.expoConfig?.extra?.openaiApiKey || '';
 
 // ==========================================
 // State Types
@@ -284,8 +288,8 @@ const storeCreator: AppStateCreator = (set, get) => ({
   userCulture: 'universal',
   setUserCulture: (culture) => set({ userCulture: culture }),
 
-  // API
-  apiKey: '',
+  // API — auto-load from env if no key is persisted
+  apiKey: ENV_API_KEY,
   setApiKey: (key) => set({ apiKey: key }),
 
   // Clear all data (2.1.13)

@@ -76,6 +76,7 @@ export default ({ config }) => {
       maxRetryAttempts: parseInt(process.env.MAX_RETRY_ATTEMPTS || '3', 10),
       debugMode: process.env.DEBUG_MODE === 'true',
       logLevel: process.env.LOG_LEVEL || 'info',
+      openaiApiKey: process.env.OPENAI_API_KEY || '',
       eas: {
         projectId: 'YOUR_EAS_PROJECT_ID', // Run `eas init` to get this
       },
