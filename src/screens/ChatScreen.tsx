@@ -783,7 +783,6 @@ const styles = StyleSheet.create({
     paddingRight: 60,
     color: darkColors.text,
     fontSize: fontSizes.md,
-    fontFamily: fonts.regular,
     minHeight: 120,
     textAlignVertical: 'top',
   },
