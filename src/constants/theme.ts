@@ -1,58 +1,74 @@
 import type { Theme, ThemeColors, ThemeSpacing, ThemeFontSizes, ThemeBorderRadius } from '../types';
 
 // ========================================
-// 1.5.1: Color Palette (already exists, moved here)
+// 1.5.1: Color Palette — Premium Warm Romantic
 // ========================================
 export const darkColors: ThemeColors = {
-  // Brand colors
-  primary: '#6366f1',
-  secondary: '#8b5cf6',
+  // Brand colors — warm rose/coral
+  primary: '#FF6B6B',
+  secondary: '#FF8E53',
 
-  // Background colors
-  background: '#0a0a0a',
-  surface: '#1a1a1a',
+  // Background colors — deep navy
+  background: '#0F0F1A',
+  surface: '#1A1B2E',
 
   // Text colors
-  text: '#ffffff',
-  textSecondary: '#888888',
-  textTertiary: '#555555',
+  text: '#FFFFFF',
+  textSecondary: '#9BA1B7',
+  textTertiary: '#5C6180',
 
   // UI colors
-  border: '#333333',
-  error: '#ef4444',
-  success: '#22c55e',
-  warning: '#f59e0b',
+  border: '#2A2B45',
+  error: '#FF4757',
+  success: '#2ED573',
+  warning: '#FFBE76',
 
   // Suggestion colors
-  safe: '#22c55e',
-  balanced: '#f59e0b',
-  bold: '#ef4444',
+  safe: '#2ED573',
+  balanced: '#FFBE76',
+  bold: '#FF4757',
 };
 
 export const lightColors: ThemeColors = {
   // Brand colors
-  primary: '#6366f1',
-  secondary: '#8b5cf6',
+  primary: '#FF6B6B',
+  secondary: '#FF8E53',
 
   // Background colors
-  background: '#f8f9fa',
-  surface: '#ffffff',
+  background: '#FFF5F5',
+  surface: '#FFFFFF',
 
   // Text colors
-  text: '#111827',
-  textSecondary: '#6b7280',
-  textTertiary: '#9ca3af',
+  text: '#1A1B2E',
+  textSecondary: '#6B7280',
+  textTertiary: '#9CA3AF',
 
   // UI colors
-  border: '#e5e7eb',
-  error: '#dc2626',
-  success: '#16a34a',
-  warning: '#d97706',
+  border: '#FFE0E0',
+  error: '#DC2626',
+  success: '#16A34A',
+  warning: '#D97706',
 
   // Suggestion colors
-  safe: '#16a34a',
-  balanced: '#d97706',
-  bold: '#dc2626',
+  safe: '#16A34A',
+  balanced: '#D97706',
+  bold: '#DC2626',
+};
+
+// ========================================
+// Premium accent colors (non-theme, shared)
+// ========================================
+export const accentColors = {
+  gold: '#FFD700',
+  goldLight: '#FFF3C4',
+  rose: '#FF6B6B',
+  coral: '#FF8E53',
+  pink: '#FFB4C2',
+  pinkLight: '#FFE0E6',
+  gradientStart: '#FF6B6B',
+  gradientEnd: '#FF8E53',
+  gradientPurple: '#A855F7',
+  surfaceHighlight: '#252640',
 };
 
 // ========================================
@@ -75,8 +91,8 @@ export const fontSizes: ThemeFontSizes = {
   sm: 13,
   md: 16,
   lg: 20,
-  xl: 24,
-  xxl: 32,
+  xl: 28,
+  xxl: 36,
 };
 
 export const fontWeights = {
@@ -84,6 +100,7 @@ export const fontWeights = {
   medium: '500' as const,
   semibold: '600' as const,
   bold: '700' as const,
+  extraBold: '800' as const,
 };
 
 export const lineHeights = {
@@ -112,24 +129,31 @@ export const shadows = {
   },
   md: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
     elevation: 4,
   },
   lg: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
     elevation: 8,
   },
   xl: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.37,
-    shadowRadius: 7.49,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
     elevation: 12,
+  },
+  glow: {
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
 };
 
@@ -137,9 +161,9 @@ export const shadows = {
 // 1.5.5: Border Radius Constants
 // ========================================
 export const borderRadius: ThemeBorderRadius = {
-  sm: 4,
-  md: 8,
-  lg: 12,
+  sm: 8,
+  md: 12,
+  lg: 16,
   full: 9999,
 };
 
@@ -238,5 +262,7 @@ export const componentStyles = {
     color: darkColors.textSecondary,
     fontSize: fontSizes.sm,
     marginBottom: spacing.xs,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase' as const,
   },
 };

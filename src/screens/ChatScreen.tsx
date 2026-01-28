@@ -20,6 +20,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '../stores/useStore';
 import { generateResponse } from '../services/ai';
@@ -44,7 +46,7 @@ import { RegenerateButton } from '../components/SuggestionRegenerate';
 import { shareSuggestion } from '../components/ShareSuggestion';
 import { InterestLevelChart } from '../components/InterestLevelChart';
 import { useOrientation } from '../hooks/useOrientation';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, fontSizes, spacing, borderRadius, accentColors, shadows } from '../constants/theme';
 
 const MAX_INPUT_LENGTH = 500;
 const INPUT_ACCESSORY_ID = 'chat-input-accessory';
@@ -358,15 +360,21 @@ export function ChatScreen({ navigation }: any) {
         clipboardContent={clipboardContent}
       />
 
-      {/* Header */}
-      <View style={[styles.header, isSplitScreen && styles.headerCompact]}>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, isSplitScreen && styles.headerCompact]}
+      >
         <TouchableOpacity
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             navigation.goBack();
           }}
+          style={styles.backBtn}
         >
-          <Text style={styles.backButton}>← Back</Text>
+          <Ionicons name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerName}>{selectedGirl.name}</Text>
@@ -377,15 +385,15 @@ export function ChatScreen({ navigation }: any) {
                 navigation.navigate('GirlProfile');
               }}
             >
-              <Text style={styles.editProfile}>Edit Profile →</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowHistory(true)} style={styles.historyButton}>
-              <Text style={styles.historyButtonText}>📜</Text>
+              <Text style={styles.editProfile}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
           <LastTopicIndicator topic={selectedGirl.lastTopic} />
         </View>
-      </View>
+        <TouchableOpacity onPress={() => setShowHistory(true)} style={styles.historyButton}>
+          <Ionicons name="time-outline" size={22} color="#fff" />
+        </TouchableOpacity>
+      </LinearGradient>
 
       <ScrollView
         ref={scrollViewRef}
@@ -402,8 +410,13 @@ export function ChatScreen({ navigation }: any) {
       >
         {/* Conversation Context Toggle (6.1.16) */}
         <TouchableOpacity style={styles.contextToggle} onPress={() => setShowContext(!showContext)}>
+          <Ionicons
+            name={showContext ? 'chevron-down' : 'chevron-forward'}
+            size={14}
+            color={accentColors.rose}
+          />
           <Text style={styles.contextToggleText}>
-            {showContext ? '▼ Hide context' : '▶ Show conversation context'}
+            {showContext ? 'Hide context' : 'Show conversation context'}
           </Text>
         </TouchableOpacity>
 
@@ -434,13 +447,13 @@ export function ChatScreen({ navigation }: any) {
 
         {/* Input Section */}
         <View style={inputSectionStyle}>
-          <Text style={styles.label}>What did she say?</Text>
+          <Text style={styles.label}>WHAT DID SHE SAY?</Text>
           <View style={styles.inputContainer}>
             <TextInput
               ref={inputRef}
               style={styles.input}
               placeholder="Paste her message here..."
-              placeholderTextColor="#666"
+              placeholderTextColor={darkColors.textTertiary}
               value={herMessage}
               onChangeText={setHerMessage}
               multiline
@@ -468,16 +481,25 @@ export function ChatScreen({ navigation }: any) {
           <View style={styles.buttons}>
             <Animated.View style={[styles.generateButtonWrapper, buttonAnimatedStyle]}>
               <TouchableOpacity
-                style={styles.generateButton}
                 onPress={handleGenerate}
                 disabled={loading}
-                activeOpacity={0.8}
+                activeOpacity={0.85}
               >
-                {loading ? (
-                  <TypingIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.generateButtonText}>✨ Generate Replies</Text>
-                )}
+                <LinearGradient
+                  colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.generateButton}
+                >
+                  {loading ? (
+                    <TypingIndicator color="#fff" />
+                  ) : (
+                    <>
+                      <Ionicons name="sparkles" size={18} color="#fff" />
+                      <Text style={styles.generateButtonText}>Generate Replies</Text>
+                    </>
+                  )}
+                </LinearGradient>
               </TouchableOpacity>
             </Animated.View>
 
@@ -487,7 +509,7 @@ export function ChatScreen({ navigation }: any) {
               disabled={loading}
               activeOpacity={0.7}
             >
-              <Text style={styles.screenshotButtonText}>📸</Text>
+              <Ionicons name="camera-outline" size={22} color={accentColors.rose} />
             </TouchableOpacity>
           </View>
         </View>
@@ -508,13 +530,15 @@ export function ChatScreen({ navigation }: any) {
                 onPress={() => setUseSwipeView(false)}
                 style={[styles.viewToggleBtn, !useSwipeView && styles.viewToggleBtnActive]}
               >
-                <Text style={styles.viewToggleText}>📝 List</Text>
+                <Ionicons name="list-outline" size={14} color={!useSwipeView ? accentColors.rose : darkColors.textSecondary} />
+                <Text style={[styles.viewToggleText, !useSwipeView && styles.viewToggleTextActive]}>List</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setUseSwipeView(true)}
                 style={[styles.viewToggleBtn, useSwipeView && styles.viewToggleBtnActive]}
               >
-                <Text style={styles.viewToggleText}>📱 Swipe</Text>
+                <Ionicons name="phone-portrait-outline" size={14} color={useSwipeView ? accentColors.rose : darkColors.textSecondary} />
+                <Text style={[styles.viewToggleText, useSwipeView && styles.viewToggleTextActive]}>Swipe</Text>
               </TouchableOpacity>
               <RegenerateButton onRegenerate={handleRegenerate} disabled={loading} compact />
             </View>
@@ -535,8 +559,9 @@ export function ChatScreen({ navigation }: any) {
                   onPress={() => setShowChart(!showChart)}
                   style={styles.chartToggle}
                 >
+                  <Ionicons name={showChart ? 'chevron-down' : 'bar-chart-outline'} size={14} color={accentColors.rose} />
                   <Text style={styles.chartToggleText}>
-                    {showChart ? '▼ Hide trend chart' : '📊 Show trend chart'}
+                    {showChart ? 'Hide trend chart' : 'Show trend chart'}
                   </Text>
                 </TouchableOpacity>
 
@@ -643,28 +668,35 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   header: {
-    padding: spacing.lg,
     paddingTop: 60,
-    backgroundColor: darkColors.surface,
+    paddingBottom: 20,
+    paddingHorizontal: spacing.lg,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   headerCompact: {
     paddingTop: 40,
-    padding: spacing.md,
+    paddingBottom: 14,
+    paddingHorizontal: spacing.md,
   },
-  backButton: {
-    color: darkColors.primary,
-    fontSize: fontSizes.md,
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerInfo: {
-    marginLeft: spacing.lg,
+    marginLeft: spacing.md,
     flex: 1,
   },
   headerName: {
-    color: darkColors.text,
+    color: '#fff',
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   headerActions: {
     flexDirection: 'row',
@@ -672,26 +704,32 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   editProfile: {
-    color: darkColors.textSecondary,
+    color: 'rgba(255,255,255,0.75)',
     fontSize: fontSizes.xs,
+    fontWeight: '500',
   },
   historyButton: {
-    marginLeft: spacing.md,
-    padding: spacing.xs,
-  },
-  historyButtonText: {
-    fontSize: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,
   },
   contextToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: spacing.md,
     paddingBottom: 0,
+    gap: 6,
   },
   contextToggleText: {
-    color: darkColors.primary,
+    color: accentColors.rose,
     fontSize: fontSizes.sm,
+    fontWeight: '500',
   },
   inputSection: {
     padding: spacing.lg,
@@ -700,10 +738,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   label: {
-    color: darkColors.text,
-    fontSize: fontSizes.md,
+    color: darkColors.textSecondary,
+    fontSize: 11,
     fontWeight: '600',
     marginBottom: spacing.sm,
+    letterSpacing: 1.2,
   },
   inputContainer: {
     position: 'relative',
@@ -717,7 +756,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.md,
     minHeight: 100,
     textAlignVertical: 'top',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: darkColors.border,
   },
   voiceInputWrapper: {
@@ -732,19 +771,22 @@ const styles = StyleSheet.create({
   },
   generateButtonWrapper: {
     flex: 1,
+    ...shadows.glow,
+    borderRadius: borderRadius.lg,
   },
   generateButton: {
-    backgroundColor: darkColors.primary,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 52,
+    flexDirection: 'row',
+    gap: 8,
   },
   generateButtonText: {
     color: '#fff',
     fontSize: fontSizes.md,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   screenshotButton: {
     backgroundColor: darkColors.surface,
@@ -753,11 +795,8 @@ const styles = StyleSheet.create({
     width: 55,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: darkColors.border,
-  },
-  screenshotButtonText: {
-    fontSize: 20,
+    borderWidth: 1.5,
+    borderColor: accentColors.rose + '30',
   },
   results: {
     padding: spacing.lg,
@@ -770,26 +809,37 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   viewToggleBtn: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm + 4,
     borderRadius: borderRadius.md,
     backgroundColor: darkColors.surface,
     borderWidth: 1,
     borderColor: darkColors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   viewToggleBtnActive: {
-    borderColor: darkColors.primary,
-    backgroundColor: darkColors.primary + '20',
+    borderColor: accentColors.rose + '50',
+    backgroundColor: accentColors.rose + '12',
   },
   viewToggleText: {
-    color: darkColors.text,
+    color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
+    fontWeight: '500',
+  },
+  viewToggleTextActive: {
+    color: accentColors.rose,
   },
   chartToggle: {
     paddingVertical: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   chartToggleText: {
-    color: darkColors.primary,
+    color: accentColors.rose,
     fontSize: fontSizes.sm,
+    fontWeight: '500',
   },
 });

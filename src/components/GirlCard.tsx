@@ -5,11 +5,12 @@
 
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Girl } from '../types';
 import { Avatar } from './Avatar';
 import { StageBadge } from './Badge';
 import { SwipeableRow } from './SwipeableRow';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { darkColors, spacing, fontSizes, borderRadius, shadows, accentColors } from '../constants/theme';
 
 interface GirlCardProps {
   girl: Girl;
@@ -70,13 +71,17 @@ export const GirlCard = React.memo<GirlCardProps>(
               <StageBadge stage={girl.relationshipStage} size="sm" />
             </View>
             <View style={styles.girlMeta}>
-              <Text style={styles.messageCount}>{girl.messageCount} 💬</Text>
+              <View style={styles.messageCountRow}>
+                <Ionicons name="chatbubble-outline" size={13} color={darkColors.textSecondary} />
+                <Text style={styles.messageCount}>{girl.messageCount}</Text>
+              </View>
               {girl.lastMessageDate && (
                 <Text style={styles.lastMessage}>
                   {formatRelativeTime(new Date(girl.lastMessageDate))}
                 </Text>
               )}
             </View>
+            <Ionicons name="chevron-forward" size={18} color={darkColors.textTertiary} style={styles.chevron} />
           </TouchableOpacity>
         </SwipeableRow>
       </Animated.View>
@@ -104,7 +109,7 @@ function formatRelativeTime(date: Date): string {
 
 const styles = StyleSheet.create({
   cardWrapper: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.sm + 4,
   },
   girlCard: {
     backgroundColor: darkColors.surface,
@@ -114,6 +119,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: darkColors.border,
+    ...shadows.md,
   },
   girlInfo: {
     flex: 1,
@@ -123,19 +129,29 @@ const styles = StyleSheet.create({
   girlName: {
     color: darkColors.text,
     fontSize: fontSizes.md,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   girlMeta: {
     alignItems: 'flex-end',
+    marginRight: 4,
+  },
+  messageCountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   messageCount: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.sm,
+    fontWeight: '500',
   },
   lastMessage: {
     color: darkColors.textTertiary,
     fontSize: fontSizes.xs,
-    marginTop: 2,
+    marginTop: 3,
+  },
+  chevron: {
+    marginLeft: 8,
   },
 });
 

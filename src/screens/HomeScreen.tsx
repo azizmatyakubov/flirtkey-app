@@ -17,6 +17,8 @@ import {
   Platform,
   UIManager,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStore } from '../stores/useStore';
 import { Girl } from '../types';
@@ -28,7 +30,7 @@ import { SwipeableRow } from '../components/SwipeableRow';
 import { EmptyState } from '../components/EmptyState';
 import { DeleteDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
-import { darkColors, spacing } from '../constants/theme';
+import { darkColors, spacing, accentColors, shadows, borderRadius } from '../constants/theme';
 
 // Enable layout animations on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -228,9 +230,9 @@ export function HomeScreen({ navigation }: any) {
 
     return (
       <EmptyState
-        icon="👩"
-        title="No one added yet"
-        message="Add someone you're texting to get started"
+        icon="💌"
+        title="Your love life starts here"
+        message="Add someone you're texting to unlock AI-powered replies"
         action={{
           label: '+ Add Someone',
           onPress: () => navigation.navigate('AddGirl'),
@@ -241,24 +243,32 @@ export function HomeScreen({ navigation }: any) {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>💘 FlirtKey</Text>
-          <Text style={styles.subtitle}>Your secret texting weapon</Text>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        <View style={styles.headerContent}>
+          <View>
+            <Text style={styles.title}>FlirtKey</Text>
+            <Text style={styles.subtitle}>Your secret texting weapon</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.settingsButton}
+            onPress={() => navigation.navigate('Settings')}
+          >
+            <Ionicons name="settings-outline" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       {/* API Key Warning */}
       {!apiKey && (
         <TouchableOpacity style={styles.warning} onPress={() => navigation.navigate('Settings')}>
-          <Text style={styles.warningText}>⚠️ Set up your API key to start</Text>
+          <Ionicons name="warning-outline" size={18} color={accentColors.gold} />
+          <Text style={styles.warningText}>Set up your API key to start</Text>
         </TouchableOpacity>
       )}
 
@@ -297,15 +307,26 @@ export function HomeScreen({ navigation }: any) {
         windowSize={5}
         initialNumToRender={10}
         getItemLayout={(_data, index) => ({
-          length: 82, // Height of each card + margin
-          offset: 82 * index,
+          length: 88,
+          offset: 88 * index,
           index,
         })}
       />
 
-      {/* Add Button */}
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddGirl')}>
-        <Text style={styles.addButtonText}>+ Add Someone</Text>
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('AddGirl')}
+        activeOpacity={0.85}
+      >
+        <LinearGradient
+          colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}
+        >
+          <Ionicons name="add" size={28} color="#fff" />
+        </LinearGradient>
       </TouchableOpacity>
 
       {/* Delete Confirmation Dialog */}
@@ -322,44 +343,55 @@ export function HomeScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: darkColors.background,
   },
   header: {
-    padding: 20,
     paddingTop: 60,
-    backgroundColor: '#1a1a2e',
+    paddingBottom: 24,
+    paddingHorizontal: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+  },
+  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#fff',
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 4,
+    letterSpacing: 0.3,
   },
   settingsButton: {
-    padding: 10,
-  },
-  settingsIcon: {
-    fontSize: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   warning: {
-    backgroundColor: '#f59e0b20',
-    padding: 15,
-    margin: 15,
-    borderRadius: 10,
+    backgroundColor: 'rgba(255,215,0,0.1)',
+    padding: 14,
+    margin: 16,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: '#f59e0b',
+    borderColor: 'rgba(255,215,0,0.3)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   warningText: {
-    color: '#f59e0b',
-    textAlign: 'center',
+    color: accentColors.gold,
     fontWeight: '600',
+    fontSize: 14,
   },
   toolbar: {
     flexDirection: 'row',
@@ -372,56 +404,54 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    padding: 15,
+    padding: 16,
     paddingBottom: 100,
   },
   listEmpty: {
     flex: 1,
   },
   cardWrapper: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   girlCard: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 15,
+    backgroundColor: darkColors.surface,
+    borderRadius: borderRadius.lg,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: darkColors.border,
+    ...shadows.md,
   },
   girlInfo: {
     flex: 1,
-    marginLeft: 15,
+    marginLeft: 16,
     gap: spacing.xs,
   },
   girlName: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   girlMeta: {
     alignItems: 'flex-end',
   },
   messageCount: {
-    color: '#666',
+    color: darkColors.textSecondary,
     fontSize: 14,
   },
-  addButton: {
-    backgroundColor: '#6366f1',
-    margin: 15,
-    padding: 18,
-    borderRadius: 12,
-    alignItems: 'center',
+  fab: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    bottom: 28,
+    right: 20,
+    ...shadows.glow,
   },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+  fabGradient: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
