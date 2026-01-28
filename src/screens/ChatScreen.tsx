@@ -68,6 +68,8 @@ export function ChatScreen({ navigation }: any) {
     userCulture,
     addConversation,
     getConversationsForGirl,
+    selectSuggestion,
+    getLastConversationForGirl,
   } = useStore();
 
   // Orientation support (6.1.19, 6.1.20)
@@ -333,6 +335,20 @@ export function ChatScreen({ navigation }: any) {
     Alert.alert('Feedback recorded', message);
   };
 
+  // Handle "Send This" — mark selected suggestion & copy to clipboard
+  const handleSendThis = (suggestion: Suggestion) => {
+    if (!selectedGirl) return;
+    // Find the most recent conversation entry for this girl
+    const lastConvo = getLastConversationForGirl(selectedGirl.id);
+    if (lastConvo) {
+      selectSuggestion(lastConvo.id, suggestion);
+    }
+    // Scroll down to show the update
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 300);
+  };
+
   // Save pro tip (6.4.5)
   const handleSaveTip = (tip: string) => {
     if (!savedTips.includes(tip)) {
@@ -411,6 +427,10 @@ export function ChatScreen({ navigation }: any) {
           <TouchableOpacity style={styles.contextMenuItem} onPress={() => { setShowHistory(true); setShowContextMenu(false); }}>
             <Ionicons name="time-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate('ChatHistory', { girlId: selectedGirl.id }); setShowContextMenu(false); }}>
+            <Ionicons name="chatbubbles-outline" size={18} color={darkColors.text} />
+            <Text style={styles.contextMenuText}>Chat Timeline</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.contextMenuItem} onPress={() => { setShowContext(!showContext); setShowContextMenu(false); }}>
             <Ionicons name="information-circle-outline" size={18} color={darkColors.text} />
@@ -571,6 +591,7 @@ export function ChatScreen({ navigation }: any) {
                   suggestion={suggestion}
                   index={index}
                   onUse={handleSuggestionUse}
+                  onSendThis={handleSendThis}
                   onFavorite={handleFavorite}
                   onEdit={handleEditSuggestion}
                   onFeedback={handleFeedback}

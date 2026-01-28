@@ -111,6 +111,11 @@ export const screenOptions = {
     animation: 'slide_from_bottom' as const,
     animationDuration: 350,
   },
+  ChatHistory: {
+    ...defaultScreenOptions,
+    animation: 'slide_from_right' as const,
+    animationDuration: 250,
+  },
 } as const;
 
 /**
@@ -128,4 +133,5 @@ export const SCREENS = {
   PERMISSIONS: 'Permissions',
   USER_PROFILE_SETUP: 'UserProfileSetup',
   SCREENSHOT_ANALYSIS: 'ScreenshotAnalysis',
+  CHAT_HISTORY: 'ChatHistory',
 } as const;

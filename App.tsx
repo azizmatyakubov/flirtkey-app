@@ -25,6 +25,7 @@ import { ApiKeySetupScreen } from './src/screens/ApiKeySetupScreen';
 import { PermissionsScreen } from './src/screens/PermissionsScreen';
 import { UserProfileSetupScreen } from './src/screens/UserProfileSetupScreen';
 import { ScreenshotAnalysisScreen } from './src/screens/ScreenshotAnalysisScreen';
+import { ChatHistoryScreen } from './src/screens/ChatHistoryScreen';
 import { PreferencesScreen } from './src/screens/PreferencesScreen';
 import { AboutScreen } from './src/screens/AboutScreen';
 import { RootStackParamList } from './src/types';
@@ -115,6 +116,11 @@ function AppContent() {
           name="ScreenshotAnalysis"
           component={ScreenshotAnalysisScreen}
           options={screenOptions.ScreenshotAnalysis}
+        />
+        <Stack.Screen
+          name="ChatHistory"
+          component={ChatHistoryScreen}
+          options={screenOptions.ChatHistory}
         />
 
         {/* Phase 8: Settings Screens */}

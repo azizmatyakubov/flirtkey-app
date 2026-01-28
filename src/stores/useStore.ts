@@ -58,6 +58,8 @@ interface AppState {
   addConversation: (entry: Omit<ConversationEntry, 'id' | 'timestamp'>) => void;
   getConversationsForGirl: (girlId: number) => ConversationEntry[];
   clearConversationHistory: (girlId?: number) => void;
+  selectSuggestion: (conversationId: string, suggestion: Suggestion) => void;
+  getLastConversationForGirl: (girlId: number) => ConversationEntry | null;
 
   // Suggestions Cache (2.1.12)
   suggestionsCache: CachedSuggestion[];
@@ -234,6 +236,20 @@ const storeCreator: AppStateCreator = (set, get) => ({
     } else {
       set({ conversationHistory: [] });
     }
+  },
+
+  selectSuggestion: (conversationId, suggestion) => {
+    const updatedHistory = get().conversationHistory.map((c) =>
+      c.id === conversationId ? { ...c, selectedSuggestion: suggestion } : c
+    );
+    set({ conversationHistory: updatedHistory });
+  },
+
+  getLastConversationForGirl: (girlId) => {
+    const convos = get()
+      .conversationHistory.filter((c) => c.girlId === girlId)
+      .sort((a, b) => b.timestamp - a.timestamp);
+    return convos.length > 0 ? (convos[0] ?? null) : null;
   },
 
   // Suggestions Cache (2.1.12)

@@ -22,6 +22,7 @@ export type ScreenshotAnalysisScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'ScreenshotAnalysis'
 >;
+export type ChatHistoryScreenProps = NativeStackScreenProps<RootStackParamList, 'ChatHistory'>;
 
 // Navigation prop type for useNavigation hook
 export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;

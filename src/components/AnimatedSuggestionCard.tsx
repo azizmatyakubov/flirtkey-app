@@ -15,7 +15,9 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Suggestion } from '../types';
+import { LinearGradient } from 'expo-linear-gradient';
 import { darkColors, accentColors, fontSizes, spacing, borderRadius, shadows } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 const SUGGESTION_COLORS = {
   safe: { bg: `${darkColors.safe}15`, border: darkColors.safe, label: 'SAFE' },
@@ -27,6 +29,7 @@ interface AnimatedSuggestionCardProps {
   suggestion: Suggestion;
   index: number;
   onUse?: (suggestion: Suggestion) => void;
+  onSendThis?: (suggestion: Suggestion) => void;
   onFavorite?: (suggestion: Suggestion) => void;
   onEdit?: (suggestion: Suggestion) => void;
   onFeedback?: (suggestion: Suggestion, positive: boolean) => void;
@@ -50,6 +53,7 @@ function AnimatedSuggestionCardBase({
   suggestion,
   index,
   onUse,
+  onSendThis,
   onFavorite,
   onEdit,
   onFeedback,
@@ -58,6 +62,7 @@ function AnimatedSuggestionCardBase({
   const colors = SUGGESTION_COLORS[suggestion.type];
   const scale = useSharedValue(1);
   const [copied, setCopied] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -76,6 +81,19 @@ function AnimatedSuggestionCardBase({
     Alert.alert('Copied!', 'Paste it in your chat');
 
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSendThis = async () => {
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    await Clipboard.setStringAsync(suggestion.text);
+    setSent(true);
+    onSendThis?.(suggestion);
+
+    scale.value = withSpring(0.93, {}, () => {
+      scale.value = withSpring(1);
+    });
+
+    setTimeout(() => setSent(false), 3000);
   };
 
   const handleFeedback = async (positive: boolean) => {
@@ -122,6 +140,34 @@ function AnimatedSuggestionCardBase({
         {/* Reason */}
         <Text style={styles.reason}>{suggestion.reason}</Text>
       </TouchableOpacity>
+
+      {/* Send This Button */}
+      {onSendThis && (
+        <TouchableOpacity
+          onPress={handleSendThis}
+          activeOpacity={0.8}
+          style={styles.sendThisWrapper}
+        >
+          <LinearGradient
+            colors={sent
+              ? [darkColors.success, darkColors.success]
+              : [accentColors.gradientStart, accentColors.gradientEnd]
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.sendThisButton}
+          >
+            <Ionicons
+              name={sent ? 'checkmark-circle' : 'send'}
+              size={16}
+              color="#fff"
+            />
+            <Text style={styles.sendThisText}>
+              {sent ? 'Copied! Go send it 💬' : 'Send This'}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      )}
 
       {/* Actions */}
       <View style={styles.actions}>
@@ -221,6 +267,23 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     marginTop: spacing.sm,
     fontStyle: 'italic',
+  },
+  sendThisWrapper: {
+    marginTop: spacing.sm,
+  },
+  sendThisButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: borderRadius.md,
+    gap: 6,
+  },
+  sendThisText: {
+    color: '#fff',
+    fontSize: fontSizes.sm,
+    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   actions: {
     flexDirection: 'row',

@@ -82,6 +82,8 @@ export type RootStackParamList = {
   // Phase 8: Settings screens
   Preferences: undefined;
   About: undefined;
+  // Chat History Timeline
+  ChatHistory: { girlId: number };
 };
 
 // Navigation prop types for screens
