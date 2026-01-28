@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from '
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { spacing, fontSizes, borderRadius, accentColors, shadows } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -104,6 +105,10 @@ export function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         >
           <Ionicons name="heart" size={48} color="#fff" />
         </LinearGradient>
+        {/* Key badge */}
+        <View style={styles.keyBadge}>
+          <Ionicons name="key" size={18} color="#fff" />
+        </View>
       </Animated.View>
 
       {/* Title and Tagline */}
@@ -203,6 +208,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  keyBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: accentColors.coral,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#0F0F1A',
+  },
   textContainer: {
     alignItems: 'center',
     marginBottom: spacing.xl,
@@ -212,6 +230,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -1.5,
+    fontFamily: fonts.extraBold,
   },
   tagline: {
     fontSize: fontSizes.lg,
@@ -219,6 +238,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.sm,
     lineHeight: 28,
+    fontFamily: fonts.regular,
   },
   features: {
     marginVertical: spacing.xl,
@@ -247,6 +267,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.md,
     color: '#CCCED8',
     fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   buttonContainer: {
     width: '100%',
@@ -269,5 +290,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: fontSizes.lg,
     fontWeight: '700',
+    fontFamily: fonts.bold,
   },
 });

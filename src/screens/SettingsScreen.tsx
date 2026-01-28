@@ -21,6 +21,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Culture } from '../types';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 // ==========================================
 // Constants
@@ -621,6 +622,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.lg,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    fontFamily: fonts.bold,
   },
   content: {
     flex: 1,
@@ -650,6 +652,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: fontSizes.md,
     fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
   sectionContent: {
     paddingHorizontal: spacing.md,

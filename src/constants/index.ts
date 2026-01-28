@@ -1,4 +1,5 @@
 // Constants barrel export
+export { fonts } from './fonts';
 export { Config, isDevelopment, isProduction, isStaging, AppInfo } from './config';
 export {
   defaultScreenOptions,

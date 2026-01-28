@@ -1,4 +1,5 @@
 import type { Theme, ThemeColors, ThemeSpacing, ThemeFontSizes, ThemeBorderRadius } from '../types';
+import { fonts } from './fonts';
 
 // ========================================
 // 1.5.1: Color Palette — Premium Warm Romantic
@@ -233,6 +234,7 @@ export const componentStyles = {
     color: '#ffffff',
     fontSize: fontSizes.md,
     fontWeight: fontWeights.semibold,
+    fontFamily: fonts.semiBold,
   },
 
   // Text styles
@@ -240,22 +242,26 @@ export const componentStyles = {
     color: darkColors.text,
     fontSize: fontSizes.xl,
     fontWeight: fontWeights.bold,
+    fontFamily: fonts.bold,
   },
 
   subheading: {
     color: darkColors.text,
     fontSize: fontSizes.lg,
     fontWeight: fontWeights.semibold,
+    fontFamily: fonts.semiBold,
   },
 
   body: {
     color: darkColors.text,
     fontSize: fontSizes.md,
+    fontFamily: fonts.regular,
   },
 
   caption: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.sm,
+    fontFamily: fonts.regular,
   },
 
   label: {
@@ -264,5 +270,6 @@ export const componentStyles = {
     marginBottom: spacing.xs,
     letterSpacing: 0.5,
     textTransform: 'uppercase' as const,
+    fontFamily: fonts.medium,
   },
 };

@@ -30,7 +30,8 @@ import { SwipeableRow } from '../components/SwipeableRow';
 import { EmptyState } from '../components/EmptyState';
 import { DeleteDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
-import { darkColors, spacing, accentColors, shadows, borderRadius } from '../constants/theme';
+import { darkColors, spacing, accentColors, shadows, borderRadius, fontSizes } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 // Enable layout animations on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -221,7 +222,7 @@ export function HomeScreen({ navigation }: any) {
         <EmptyState
           icon="🔍"
           title="No Results"
-          message={`No matches found for "${searchQuery}"`}
+          message={`No connections found for "${searchQuery}"`}
           action={{
             label: 'Clear Search',
             onPress: () => setSearchQuery(''),
@@ -232,15 +233,33 @@ export function HomeScreen({ navigation }: any) {
     }
 
     return (
-      <EmptyState
-        icon="💌"
-        title="Your love life starts here"
-        message="Add someone you're texting to unlock AI-powered replies"
-        action={{
-          label: '+ Add Someone',
-          onPress: () => navigation.navigate('AddGirl'),
-        }}
-      />
+      <View style={styles.emptyContainer}>
+        <LinearGradient
+          colors={[accentColors.gradientStart + '30', accentColors.gradientEnd + '30']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.emptyCircle}
+        >
+          <Ionicons name="heart-half" size={52} color={accentColors.rose} />
+        </LinearGradient>
+        <Text style={styles.emptyTitle}>Add your first connection</Text>
+        <Text style={styles.emptySubtext}>Get AI-powered replies tailored just for them</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('AddGirl')}
+          activeOpacity={0.85}
+          style={styles.emptyCTAWrapper}
+        >
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.emptyCTA}
+          >
+            <Ionicons name="add" size={20} color="#fff" />
+            <Text style={styles.emptyCTAText}>New Connection</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -365,12 +384,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#fff',
     letterSpacing: -0.5,
+    fontFamily: fonts.extraBold,
   },
   subtitle: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.8)',
     marginTop: 4,
     letterSpacing: 0.3,
+    fontFamily: fonts.regular,
   },
   settingsButton: {
     width: 44,
@@ -435,6 +456,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   girlMeta: {
     alignItems: 'flex-end',
@@ -442,6 +464,54 @@ const styles = StyleSheet.create({
   messageCount: {
     color: darkColors.textSecondary,
     fontSize: 14,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  emptyCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  emptyTitle: {
+    color: darkColors.text,
+    fontSize: fontSizes.lg,
+    fontWeight: '700',
+    fontFamily: fonts.bold,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  emptySubtext: {
+    color: darkColors.textSecondary,
+    fontSize: fontSizes.md,
+    fontFamily: fonts.regular,
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+  },
+  emptyCTAWrapper: {
+    ...shadows.glow,
+    borderRadius: borderRadius.lg,
+  },
+  emptyCTA: {
+    paddingVertical: 16,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  emptyCTAText: {
+    color: '#fff',
+    fontSize: fontSizes.md,
+    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   fab: {
     position: 'absolute',

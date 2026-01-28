@@ -28,6 +28,7 @@ import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { validateName, validateAge } from '../utils/validation';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 const CULTURES: { key: Culture; label: string; emoji: string }[] = [
   { key: 'uzbek', label: 'Uzbek', emoji: '🇺🇿' },
@@ -342,7 +343,7 @@ export function AddGirlScreen({ navigation }: any) {
         <View style={styles.hintContainer}>
           <Ionicons name="bulb" size={16} color={accentColors.gold} />
           <Text style={styles.hint}>
-            You can add more details later (inside jokes, things to avoid, etc.)
+            Add more details about this connection later (inside jokes, things to avoid, etc.)
           </Text>
         </View>
 
@@ -394,6 +395,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: fontSizes.lg,
     fontWeight: 'bold',
+    fontFamily: fonts.bold,
   },
   save: {
     color: '#FFFFFF',

@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
@@ -322,6 +323,7 @@ const styles = StyleSheet.create({
   skipText: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.md,
+    fontFamily: fonts.medium,
   },
   slide: {
     flex: 1,
@@ -344,6 +346,7 @@ const styles = StyleSheet.create({
     color: darkColors.text,
     textAlign: 'center',
     marginBottom: spacing.md,
+    fontFamily: fonts.bold,
   },
   highlightBadge: {
     paddingHorizontal: spacing.md,
@@ -355,6 +358,7 @@ const styles = StyleSheet.create({
     color: accentColors.coral,
     fontSize: fontSizes.sm,
     fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
   slideDescription: {
     fontSize: fontSizes.md,
@@ -362,6 +366,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     paddingHorizontal: spacing.md,
+    fontFamily: fonts.regular,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -415,5 +420,6 @@ const styles = StyleSheet.create({
     color: darkColors.text,
     fontSize: fontSizes.lg,
     fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 });

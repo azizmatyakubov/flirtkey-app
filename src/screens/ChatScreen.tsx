@@ -29,7 +29,7 @@ import { AnalysisResult, Suggestion } from '../types';
 import { CharacterCount } from '../components/CharacterCount';
 import { QuickPhrases } from '../components/QuickPhrases';
 import { TypingIndicator } from '../components/TypingIndicator';
-import { LoadingShimmer } from '../components/ShimmerEffect';
+// LoadingShimmer replaced with custom loading state
 import { AnimatedSuggestionCard } from '../components/AnimatedSuggestionCard';
 import { InterestLevelDisplay } from '../components/InterestLevelDisplay';
 import { ProTipCard } from '../components/ProTipCard';
@@ -38,15 +38,15 @@ import { ConversationContext, LastTopicIndicator } from '../components/Conversat
 import { VoiceInput } from '../components/VoiceInput';
 import { PasteDetector, useClipboardDetection } from '../components/PasteDetector';
 import { KeyboardAccessoryWrapper } from '../components/KeyboardAccessoryView';
-import { QuickActionShortcuts } from '../components/QuickActionShortcuts';
-import { SwipeableSuggestions } from '../components/SwipeableSuggestions';
+// QuickActionShortcuts and SwipeableSuggestions removed from default view
 import { SuggestionEditor } from '../components/SuggestionEditor';
 import { SuggestionHistory } from '../components/SuggestionHistory';
 import { RegenerateButton } from '../components/SuggestionRegenerate';
-import { shareSuggestion } from '../components/ShareSuggestion';
+// shareSuggestion available via suggestion card actions
 import { InterestLevelChart } from '../components/InterestLevelChart';
 import { useOrientation } from '../hooks/useOrientation';
 import { darkColors, fontSizes, spacing, borderRadius, accentColors, shadows } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 const MAX_INPUT_LENGTH = 500;
 const INPUT_ACCESSORY_ID = 'chat-input-accessory';
@@ -89,9 +89,10 @@ export function ChatScreen({ navigation }: any) {
   // New state for Phase 6 features
   const [showHistory, setShowHistory] = useState(false);
   const [editingSuggestion, setEditingSuggestion] = useState<Suggestion | null>(null);
-  const [showQuickActions] = useState(true);
   const [showChart, setShowChart] = useState(false);
-  const [useSwipeView, setUseSwipeView] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
 
   // Paste detection (6.1.11)
   const {
@@ -114,6 +115,21 @@ export function ChatScreen({ navigation }: any) {
 
   // Get conversation history
   const conversationHistory = selectedGirl ? getConversationsForGirl(selectedGirl.id) : [];
+
+  // Loading text rotation
+  const LOADING_TEXTS = [
+    'Reading between the lines...',
+    'Crafting the perfect response...',
+    'Almost there...',
+  ];
+
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setLoadingTextIndex((prev) => (prev + 1) % LOADING_TEXTS.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   // Keyboard handling (6.1.14)
   useEffect(() => {
@@ -301,11 +317,6 @@ export function ChatScreen({ navigation }: any) {
     setEditingSuggestion(suggestion);
   };
 
-  // Handle share suggestion (6.2.15)
-  const handleShareSuggestion = (suggestion: Suggestion) => {
-    shareSuggestion(suggestion, selectedGirl.name);
-  };
-
   // Handle reuse from history (6.2.14)
   const handleReuseSuggestion = (suggestion: Suggestion) => {
     // Add to current results if we have results
@@ -390,10 +401,28 @@ export function ChatScreen({ navigation }: any) {
           </View>
           <LastTopicIndicator topic={selectedGirl.lastTopic} />
         </View>
-        <TouchableOpacity onPress={() => setShowHistory(true)} style={styles.historyButton}>
-          <Ionicons name="time-outline" size={22} color="#fff" />
+        <TouchableOpacity onPress={() => setShowContextMenu(!showContextMenu)} style={styles.menuButton}>
+          <Ionicons name="ellipsis-horizontal" size={22} color="#fff" />
         </TouchableOpacity>
       </LinearGradient>
+
+      {/* Context Menu */}
+      {showContextMenu && (
+        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)} style={styles.contextMenu}>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { setShowHistory(true); setShowContextMenu(false); }}>
+            <Ionicons name="time-outline" size={18} color={darkColors.text} />
+            <Text style={styles.contextMenuText}>History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { setShowContext(!showContext); setShowContextMenu(false); }}>
+            <Ionicons name="information-circle-outline" size={18} color={darkColors.text} />
+            <Text style={styles.contextMenuText}>{showContext ? 'Hide Context' : 'Show Context'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate('GirlProfile'); setShowContextMenu(false); }}>
+            <Ionicons name="person-outline" size={18} color={darkColors.text} />
+            <Text style={styles.contextMenuText}>Edit Profile</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      )}
 
       <ScrollView
         ref={scrollViewRef}
@@ -408,47 +437,17 @@ export function ChatScreen({ navigation }: any) {
         }
         keyboardShouldPersistTaps="handled"
       >
-        {/* Conversation Context Toggle (6.1.16) */}
-        <TouchableOpacity style={styles.contextToggle} onPress={() => setShowContext(!showContext)}>
-          <Ionicons
-            name={showContext ? 'chevron-down' : 'chevron-forward'}
-            size={14}
-            color={accentColors.rose}
-          />
-          <Text style={styles.contextToggleText}>
-            {showContext ? 'Hide context' : 'Show conversation context'}
-          </Text>
-        </TouchableOpacity>
-
+        {/* Conversation Context (toggled from menu) */}
         {showContext && (
           <Animated.View entering={FadeIn} exiting={FadeOut}>
             <ConversationContext girl={selectedGirl} />
           </Animated.View>
         )}
 
-        {/* Quick Action Shortcuts (6.1.18) */}
-        {showQuickActions && !result && !loading && (
-          <QuickActionShortcuts
-            onGenerateFlirty={() => {
-              setHerMessage((prev) => prev || 'Hey!');
-              handleGenerate();
-            }}
-            onGenerateSafe={() => {
-              setHerMessage((prev) => prev || 'Hi');
-              handleGenerate();
-            }}
-            onAnalyzeScreenshot={handleScreenshot}
-            onGetConversationStarter={() => Alert.alert('Coming soon', 'Conversation starters')}
-            onGetDateIdea={() => Alert.alert('Coming soon', 'Date ideas')}
-            onViewHistory={() => setShowHistory(true)}
-            visible={!keyboardVisible}
-          />
-        )}
-
         {/* Input Section */}
         <View style={inputSectionStyle}>
           <Text style={styles.label}>WHAT DID SHE SAY?</Text>
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, inputFocused && styles.inputContainerFocused]}>
             <TextInput
               ref={inputRef}
               style={styles.input}
@@ -456,6 +455,8 @@ export function ChatScreen({ navigation }: any) {
               placeholderTextColor={darkColors.textTertiary}
               value={herMessage}
               onChangeText={setHerMessage}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
               multiline
               maxLength={MAX_INPUT_LENGTH}
               inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_ID : undefined}
@@ -495,8 +496,7 @@ export function ChatScreen({ navigation }: any) {
                     <TypingIndicator color="#fff" />
                   ) : (
                     <>
-                      <Ionicons name="sparkles" size={18} color="#fff" />
-                      <Text style={styles.generateButtonText}>Generate Replies</Text>
+                      <Text style={styles.generateButtonText}>✨ Get Perfect Replies</Text>
                     </>
                   )}
                 </LinearGradient>
@@ -514,32 +514,27 @@ export function ChatScreen({ navigation }: any) {
           </View>
         </View>
 
-        {/* Loading State with Shimmer (6.5.3) */}
+        {/* Loading State */}
         {loading && !result && (
-          <Animated.View entering={FadeIn} exiting={FadeOut}>
-            <LoadingShimmer />
+          <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.loadingContainer}>
+            <LinearGradient
+              colors={[accentColors.gradientStart + '40', accentColors.gradientEnd + '40']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.loadingCircle}
+            >
+              <Ionicons name="heart" size={32} color={accentColors.rose} />
+            </LinearGradient>
+            <Text style={styles.loadingText}>{LOADING_TEXTS[loadingTextIndex]}</Text>
           </Animated.View>
         )}
 
         {/* Results */}
         {result && !loading && (
           <Animated.View entering={SlideInDown.springify()} style={styles.results}>
-            {/* View Toggle */}
-            <View style={styles.viewToggle}>
-              <TouchableOpacity
-                onPress={() => setUseSwipeView(false)}
-                style={[styles.viewToggleBtn, !useSwipeView && styles.viewToggleBtnActive]}
-              >
-                <Ionicons name="list-outline" size={14} color={!useSwipeView ? accentColors.rose : darkColors.textSecondary} />
-                <Text style={[styles.viewToggleText, !useSwipeView && styles.viewToggleTextActive]}>List</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setUseSwipeView(true)}
-                style={[styles.viewToggleBtn, useSwipeView && styles.viewToggleBtnActive]}
-              >
-                <Ionicons name="phone-portrait-outline" size={14} color={useSwipeView ? accentColors.rose : darkColors.textSecondary} />
-                <Text style={[styles.viewToggleText, useSwipeView && styles.viewToggleTextActive]}>Swipe</Text>
-              </TouchableOpacity>
+            {/* Regenerate */}
+            <View style={styles.resultsHeader}>
+              <Text style={styles.resultsTitle}>Suggestions</Text>
               <RegenerateButton onRegenerate={handleRegenerate} disabled={loading} compact />
             </View>
 
@@ -573,21 +568,13 @@ export function ChatScreen({ navigation }: any) {
               </>
             )}
 
-            {/* Suggestions - Swipeable or List (6.2.10) */}
-            {useSwipeView ? (
-              <SwipeableSuggestions
-                suggestions={result.suggestions}
-                onCopy={handleSuggestionUse}
-                onFavorite={handleFavorite}
-                onEdit={handleEditSuggestion}
-                onRegenerate={(type) => handleRegenerate(type)}
-                onShare={handleShareSuggestion}
-                favorites={favorites.map((f) => f.text)}
-              />
-            ) : (
-              result.suggestions.map((suggestion, index) => (
+            {/* Suggestions List with staggered entrance */}
+            {result.suggestions.map((suggestion, index) => (
+              <Animated.View
+                key={`${suggestion.type}-${index}`}
+                entering={SlideInDown.delay(index * 200).springify()}
+              >
                 <AnimatedSuggestionCard
-                  key={`${suggestion.type}-${index}`}
                   suggestion={suggestion}
                   index={index}
                   onUse={handleSuggestionUse}
@@ -596,8 +583,8 @@ export function ChatScreen({ navigation }: any) {
                   onFeedback={handleFeedback}
                   isFavorite={isFavorite(suggestion)}
                 />
-              ))
-            )}
+              </Animated.View>
+            ))}
 
             {/* Pro Tip (6.4.1-6.4.7) */}
             {result.proTip && (
@@ -697,6 +684,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: fontSizes.lg,
     fontWeight: '800',
+    fontFamily: fonts.extraBold,
   },
   headerActions: {
     flexDirection: 'row',
@@ -707,8 +695,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.75)',
     fontSize: fontSizes.xs,
     fontWeight: '500',
+    fontFamily: fonts.medium,
   },
-  historyButton: {
+  menuButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -716,20 +705,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  contextMenu: {
+    position: 'absolute',
+    top: 110,
+    right: spacing.md,
+    backgroundColor: darkColors.surface,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: darkColors.border,
+    zIndex: 100,
+    ...shadows.lg,
+    paddingVertical: spacing.xs,
+    minWidth: 180,
+  },
+  contextMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
+  contextMenuText: {
+    color: darkColors.text,
+    fontSize: fontSizes.sm,
+    fontFamily: fonts.medium,
+  },
   content: {
     flex: 1,
   },
-  contextToggle: {
-    flexDirection: 'row',
+  loadingContainer: {
     alignItems: 'center',
-    padding: spacing.md,
-    paddingBottom: 0,
-    gap: 6,
+    justifyContent: 'center',
+    paddingVertical: spacing.xxl,
   },
-  contextToggleText: {
-    color: accentColors.rose,
+  loadingCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  loadingText: {
+    color: darkColors.textSecondary,
     fontSize: fontSizes.sm,
-    fontWeight: '500',
+    fontFamily: fonts.medium,
+    textAlign: 'center',
   },
   inputSection: {
     padding: spacing.lg,
@@ -743,21 +764,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: spacing.sm,
     letterSpacing: 1.2,
+    fontFamily: fonts.semiBold,
   },
   inputContainer: {
     position: 'relative',
+    borderRadius: borderRadius.lg,
+    borderWidth: 1.5,
+    borderColor: darkColors.border,
+    backgroundColor: darkColors.surface,
+  },
+  inputContainerFocused: {
+    borderColor: accentColors.rose + '60',
+    ...shadows.glow,
   },
   input: {
-    backgroundColor: darkColors.surface,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     paddingRight: 60,
     color: darkColors.text,
     fontSize: fontSizes.md,
-    minHeight: 100,
+    fontFamily: fonts.regular,
+    minHeight: 120,
     textAlignVertical: 'top',
-    borderWidth: 1.5,
-    borderColor: darkColors.border,
   },
   voiceInputWrapper: {
     position: 'absolute',
@@ -787,6 +815,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: fontSizes.md,
     fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   screenshotButton: {
     backgroundColor: darkColors.surface,
@@ -802,34 +831,17 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     paddingTop: 0,
   },
-  viewToggle: {
+  resultsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: spacing.md,
-    gap: spacing.sm,
   },
-  viewToggleBtn: {
-    paddingVertical: spacing.xs + 2,
-    paddingHorizontal: spacing.sm + 4,
-    borderRadius: borderRadius.md,
-    backgroundColor: darkColors.surface,
-    borderWidth: 1,
-    borderColor: darkColors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  viewToggleBtnActive: {
-    borderColor: accentColors.rose + '50',
-    backgroundColor: accentColors.rose + '12',
-  },
-  viewToggleText: {
-    color: darkColors.textSecondary,
-    fontSize: fontSizes.xs,
-    fontWeight: '500',
-  },
-  viewToggleTextActive: {
-    color: accentColors.rose,
+  resultsTitle: {
+    color: darkColors.text,
+    fontSize: fontSizes.md,
+    fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
   chartToggle: {
     paddingVertical: spacing.sm,

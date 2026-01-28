@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { fonts } from '../constants/fonts';
 
 // Tab param list type
 export type BottomTabParamList = {
@@ -95,9 +96,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 4,
     color: darkColors.textTertiary,
+    fontFamily: fonts.medium,
   },
   tabLabelActive: {
     color: accentColors.coral,
     fontWeight: '600',
+    fontFamily: fonts.semiBold,
   },
 });
