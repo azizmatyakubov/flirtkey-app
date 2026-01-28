@@ -447,25 +447,19 @@ export function ChatScreen({ navigation }: any) {
         {/* Input Section */}
         <View style={inputSectionStyle}>
           <Text style={styles.label}>WHAT DID SHE SAY?</Text>
-          <View style={[styles.inputContainer, inputFocused && styles.inputContainerFocused]}>
-            <TextInput
-              ref={inputRef}
-              style={styles.input}
-              placeholder="Paste her message here..."
-              placeholderTextColor={darkColors.textTertiary}
-              value={herMessage}
-              onChangeText={setHerMessage}
-              onFocus={() => setInputFocused(true)}
-              onBlur={() => setInputFocused(false)}
-              multiline
-              maxLength={MAX_INPUT_LENGTH}
-              inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_ID : undefined}
-            />
-            {/* Voice Input Button (6.1.10) */}
-            <View style={styles.voiceInputWrapper}>
-              <VoiceInput onTranscript={handleVoiceTranscript} disabled={loading} />
-            </View>
-          </View>
+          <TextInput
+            ref={inputRef}
+            style={[styles.input, inputFocused && styles.inputFocused]}
+            placeholder="Paste her message here..."
+            placeholderTextColor={darkColors.textTertiary}
+            value={herMessage}
+            onChangeText={setHerMessage}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            multiline
+            maxLength={MAX_INPUT_LENGTH}
+            inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_ID : undefined}
+          />
 
           {/* Character Count (6.1.8) */}
           <CharacterCount current={herMessage.length} max={MAX_INPUT_LENGTH} />
@@ -766,30 +760,19 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     fontFamily: fonts.semiBold,
   },
-  inputContainer: {
-    position: 'relative',
+  input: {
+    backgroundColor: darkColors.surface,
     borderRadius: borderRadius.lg,
     borderWidth: 1.5,
     borderColor: darkColors.border,
-    backgroundColor: darkColors.surface,
-  },
-  inputContainerFocused: {
-    borderColor: accentColors.rose + '60',
-    ...shadows.glow,
-  },
-  input: {
-    borderRadius: borderRadius.lg,
     padding: spacing.md,
-    paddingRight: 60,
     color: darkColors.text,
     fontSize: fontSizes.md,
     minHeight: 120,
     textAlignVertical: 'top',
   },
-  voiceInputWrapper: {
-    position: 'absolute',
-    right: spacing.sm,
-    top: spacing.sm,
+  inputFocused: {
+    borderColor: accentColors.rose + '60',
   },
   buttons: {
     flexDirection: 'row',
