@@ -8,3 +8,8 @@ export { OnboardingScreen, isOnboardingComplete, resetOnboarding } from './Onboa
 export { ApiKeySetupScreen } from './ApiKeySetupScreen';
 export { PermissionsScreen } from './PermissionsScreen';
 export { UserProfileSetupScreen } from './UserProfileSetupScreen';
+export { ScreenshotAnalysisScreen } from './ScreenshotAnalysisScreen';
+
+// Phase 8: Settings & Customization
+export { PreferencesScreen } from './PreferencesScreen';
+export { AboutScreen } from './AboutScreen';

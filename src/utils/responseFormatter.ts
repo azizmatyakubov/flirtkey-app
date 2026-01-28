@@ -23,31 +23,32 @@ export function detectLanguage(text: string): SupportedLanguage {
     }
     return 'ru';
   }
-  
-  // Check for Latin Uzbek characters
-  const uzbekLatinPattern = /[oʻgʻ]/i;
+
+  // Check for Latin Uzbek characters (oʻ and gʻ with modifier letter apostrophe)
+  // Must match the actual digraph, not just 'o' or 'g' alone
+  const uzbekLatinPattern = /[oO]ʻ|[gG]ʻ|oʼ|gʼ/;
   if (uzbekLatinPattern.test(text)) {
     return 'uz';
   }
-  
+
   // Check for Spanish-specific patterns
   const spanishPattern = /[ñáéíóúü]|¿|¡/i;
   if (spanishPattern.test(text)) {
     return 'es';
   }
-  
+
   // Check for French-specific patterns
   const frenchPattern = /[àâçéèêëîïôûùü]|qu'|c'est/i;
   if (frenchPattern.test(text)) {
     return 'fr';
   }
-  
+
   // Check for German-specific patterns
   const germanPattern = /[äöüß]|sch|ich|und/i;
   if (germanPattern.test(text)) {
     return 'de';
   }
-  
+
   // Default to English
   return 'en';
 }
@@ -58,7 +59,10 @@ export function shouldMatchLanguage(herMessage: string): SupportedLanguage {
 }
 
 // Language-specific adjustments
-const languageAdjustments: Record<SupportedLanguage, { emojiDensity: number; formalityBias: number }> = {
+const languageAdjustments: Record<
+  SupportedLanguage,
+  { emojiDensity: number; formalityBias: number }
+> = {
   en: { emojiDensity: 0.7, formalityBias: 0 },
   ru: { emojiDensity: 0.5, formalityBias: 0.2 },
   uz: { emojiDensity: 0.4, formalityBias: 0.4 },
@@ -102,36 +106,36 @@ export function enhanceWithEmoji(
   options: { addIfMissing?: boolean; maxEmojis?: number } = {}
 ): string {
   const { addIfMissing = false, maxEmojis = 2 } = options;
-  
+
   // Check if already has emoji
   const emojiPattern = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
   const existingEmojis = text.match(emojiPattern) || [];
-  
+
   if (existingEmojis.length >= maxEmojis) {
     return text;
   }
-  
+
   if (!addIfMissing && existingEmojis.length > 0) {
     return text;
   }
-  
+
   // Add emoji based on suggestion type
   const categoryMap: Record<'safe' | 'balanced' | 'bold', EmojiCategory[]> = {
     safe: ['friendly', 'playful'],
     balanced: ['playful', 'flirty'],
     bold: ['flirty', 'romantic', 'cool'],
   };
-  
+
   const categories = categoryMap[type];
   const categoryIndex = Math.floor(Math.random() * categories.length);
   const category = categories[categoryIndex] ?? 'friendly';
   const emoji = getEmoji(category);
-  
+
   // Add at end if text doesn't end with punctuation
   if (!/[.!?]$/.test(text.trim())) {
     return `${text.trim()} ${emoji}`;
   }
-  
+
   return `${text.trim()} ${emoji}`;
 }
 
@@ -139,11 +143,11 @@ export function enhanceWithEmoji(
 export function normalizeEmojis(text: string, maxEmojis: number = 3): string {
   const emojiPattern = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu;
   const emojis = text.match(emojiPattern) || [];
-  
+
   if (emojis.length <= maxEmojis) {
     return text;
   }
-  
+
   // Keep first few emojis
   let count = 0;
   return text.replace(emojiPattern, (match) => {
@@ -163,13 +167,13 @@ export function matchMessageStyle(
   options: { lengthTolerance?: number } = {}
 ): string {
   const { lengthTolerance = 0.5 } = options;
-  
+
   const herLength = herMessage.length;
   const suggestionLength = suggestion.length;
-  
+
   // If suggestion is way longer, truncate smartly
   const maxLength = Math.ceil(herLength * (1 + lengthTolerance));
-  
+
   if (suggestionLength > maxLength && herLength > 20) {
     // Find a good breaking point
     const truncated = suggestion.slice(0, maxLength);
@@ -178,18 +182,18 @@ export function matchMessageStyle(
       truncated.lastIndexOf('!'),
       truncated.lastIndexOf('?')
     );
-    
+
     if (lastSentenceEnd > maxLength * 0.5) {
       return truncated.slice(0, lastSentenceEnd + 1);
     }
-    
+
     // Break at last space
     const lastSpace = truncated.lastIndexOf(' ');
     if (lastSpace > maxLength * 0.5) {
       return truncated.slice(0, lastSpace) + '...';
     }
   }
-  
+
   return suggestion;
 }
 
@@ -201,19 +205,19 @@ export function detectTextingStyle(text: string): TextingStyle {
   const hasPunctuation = /[.!?]/.test(text);
   const hasExcessive = /!{2,}|\.{3,}|\?{2,}/.test(text);
   const hasSlang = /\b(lol|lmao|omg|ngl|tbh|fr|rn)\b/i.test(text);
-  
+
   if (!hasCapitals && !hasPunctuation) {
     return 'lowkey';
   }
-  
+
   if (hasExcessive || /!/.test(text)) {
     return 'enthusiastic';
   }
-  
+
   if (hasSlang && !hasCapitals) {
     return 'casual';
   }
-  
+
   return hasCapitals && hasPunctuation ? 'formal' : 'casual';
 }
 
@@ -223,18 +227,18 @@ export function matchTextingStyle(text: string, style: TextingStyle): string {
     case 'lowkey':
       // Lowercase, minimal punctuation
       return text.toLowerCase().replace(/[.!?,;:]+$/, '');
-    
+
     case 'enthusiastic':
       // Add energy if missing
       if (!/[!]/.test(text)) {
         return text.replace(/[.?]$/, '!');
       }
       return text;
-    
+
     case 'casual':
       // First letter lowercase, casual punctuation
       return text.charAt(0).toLowerCase() + text.slice(1);
-    
+
     case 'formal':
     default:
       // Ensure proper capitalization
@@ -255,12 +259,9 @@ export interface FormatOptions {
   maxEmojis?: number;
 }
 
-export function formatSuggestion(
-  suggestion: Suggestion,
-  options: FormatOptions = {}
-): Suggestion {
+export function formatSuggestion(suggestion: Suggestion, options: FormatOptions = {}): Suggestion {
   let text = suggestion.text;
-  
+
   const {
     herMessage,
     addEmojis = true,
@@ -268,26 +269,26 @@ export function formatSuggestion(
     matchStyle = true,
     maxEmojis = 2,
   } = options;
-  
+
   // Match length if her message provided
   if (matchLength && herMessage) {
     text = matchMessageStyle(text, herMessage);
   }
-  
+
   // Match texting style
   if (matchStyle && herMessage) {
     const style = detectTextingStyle(herMessage);
     text = matchTextingStyle(text, style);
   }
-  
+
   // Normalize emojis
   text = normalizeEmojis(text, maxEmojis);
-  
+
   // Add emoji if enabled and missing
   if (addEmojis) {
     text = enhanceWithEmoji(text, suggestion.type, { addIfMissing: true, maxEmojis });
   }
-  
+
   return {
     ...suggestion,
     text,
@@ -300,7 +301,7 @@ export function formatResponse(
 ): AnalysisResult {
   return {
     ...response,
-    suggestions: response.suggestions.map(s => formatSuggestion(s, options)),
+    suggestions: response.suggestions.map((s) => formatSuggestion(s, options)),
   };
 }
 
@@ -313,17 +314,17 @@ export const ResponseFormatter = {
   detectLanguage,
   shouldMatchLanguage,
   getLanguageSettings,
-  
+
   // Emojis
   getEmoji,
   enhanceWithEmoji,
   normalizeEmojis,
-  
+
   // Text
   matchMessageStyle,
   detectTextingStyle,
   matchTextingStyle,
-  
+
   // Full formatting
   formatSuggestion,
   formatResponse,

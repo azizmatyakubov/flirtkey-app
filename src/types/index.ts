@@ -78,6 +78,10 @@ export type RootStackParamList = {
   ApiKeySetup: { fromSettings?: boolean };
   Permissions: { fromSettings?: boolean };
   UserProfileSetup: { fromSettings?: boolean };
+  ScreenshotAnalysis: { imageUri?: string; imageBase64?: string; girlId?: number };
+  // Phase 8: Settings screens
+  Preferences: undefined;
+  About: undefined;
 };
 
 // Navigation prop types for screens
@@ -139,6 +143,7 @@ export interface ThemeColors {
   surface: string;
   text: string;
   textSecondary: string;
+  textTertiary: string;
   border: string;
   error: string;
   success: string;

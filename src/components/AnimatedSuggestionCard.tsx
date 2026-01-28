@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+/**
+ * AnimatedSuggestionCard Component (Optimized with React.memo)
+ * Memoized suggestion card for performance optimization
+ */
+
+import React, { useState, memo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -27,7 +32,21 @@ interface AnimatedSuggestionCardProps {
   isFavorite?: boolean;
 }
 
-export function AnimatedSuggestionCard({
+// Pure comparison function for memo
+const areEqual = (
+  prevProps: AnimatedSuggestionCardProps,
+  nextProps: AnimatedSuggestionCardProps
+) => {
+  return (
+    prevProps.suggestion.type === nextProps.suggestion.type &&
+    prevProps.suggestion.text === nextProps.suggestion.text &&
+    prevProps.suggestion.reason === nextProps.suggestion.reason &&
+    prevProps.index === nextProps.index &&
+    prevProps.isFavorite === nextProps.isFavorite
+  );
+};
+
+function AnimatedSuggestionCardBase({
   suggestion,
   index,
   onUse,
@@ -49,14 +68,14 @@ export function AnimatedSuggestionCard({
     await Clipboard.setStringAsync(suggestion.text);
     setCopied(true);
     onUse?.(suggestion);
-    
+
     // Visual feedback
     scale.value = withSpring(0.95, {}, () => {
       scale.value = withSpring(1);
     });
 
     Alert.alert('Copied! 📋', 'Paste it in your chat');
-    
+
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -81,9 +100,7 @@ export function AnimatedSuggestionCard({
           <Text style={[styles.type, { color: colors.border }]}>
             {suggestion.type.toUpperCase()}
           </Text>
-          <Text style={styles.copyHint}>
-            {copied ? '✓ Copied!' : 'Tap to copy'}
-          </Text>
+          <Text style={styles.copyHint}>{copied ? '✓ Copied!' : 'Tap to copy'}</Text>
         </View>
 
         {/* Text */}
@@ -103,12 +120,10 @@ export function AnimatedSuggestionCard({
             }}
             style={styles.actionButton}
           >
-            <Text style={styles.actionText}>
-              {isFavorite ? '❤️' : '🤍'}
-            </Text>
+            <Text style={styles.actionText}>{isFavorite ? '❤️' : '🤍'}</Text>
           </TouchableOpacity>
         )}
-        
+
         {onEdit && (
           <TouchableOpacity
             onPress={() => {
@@ -123,16 +138,10 @@ export function AnimatedSuggestionCard({
 
         {onFeedback && (
           <View style={styles.feedbackContainer}>
-            <TouchableOpacity
-              onPress={() => handleFeedback(true)}
-              style={styles.actionButton}
-            >
+            <TouchableOpacity onPress={() => handleFeedback(true)} style={styles.actionButton}>
               <Text style={styles.actionText}>👍</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleFeedback(false)}
-              style={styles.actionButton}
-            >
+            <TouchableOpacity onPress={() => handleFeedback(false)} style={styles.actionButton}>
               <Text style={styles.actionText}>👎</Text>
             </TouchableOpacity>
           </View>
@@ -198,3 +207,9 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
 });
+
+// Export memoized component
+export const AnimatedSuggestionCard = memo(AnimatedSuggestionCardBase, areEqual);
+AnimatedSuggestionCard.displayName = 'AnimatedSuggestionCard';
+
+export default AnimatedSuggestionCard;

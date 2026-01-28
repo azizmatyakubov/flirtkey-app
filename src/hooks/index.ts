@@ -23,4 +23,31 @@ export { useForm } from './useForm';
 // Platform hooks
 export { useKeyboard, useKeyboardHeight } from './useKeyboard';
 export { useAppState, useOnForeground, useOnBackground } from './useAppState';
-export { useNetworkStatus, useIsOnline } from './useNetworkStatus';
+export {
+  useNetworkStatus,
+  useIsOnline,
+  useOnReconnect,
+  useOfflineFirst,
+  type NetworkStatus,
+  type UseNetworkStatusResult,
+  type UseNetworkStatusOptions,
+  type ConnectionType,
+} from './useNetworkStatus';
+
+// Orientation & Layout hooks (6.1.19, 6.1.20)
+export {
+  useOrientation,
+  useResponsiveValue,
+  useResponsiveStyles,
+  useLayoutConfig,
+  useResponsiveSpacing,
+  useResponsiveFontSizes,
+} from './useOrientation';
+
+// Haptic Feedback hook (Phase 8)
+export { useHaptics } from './useHaptics';
+export type { HapticType } from './useHaptics';
+
+// Offline AI hook
+export { useOfflineAI } from './useOfflineAI';
+export type { UseOfflineAIResult } from './useOfflineAI';

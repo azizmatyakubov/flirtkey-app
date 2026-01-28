@@ -65,3 +65,25 @@ export {
   PROMPT_TEMPLATES,
   PROMPT_STRATEGIES,
 } from './prompts';
+
+// Prompt A/B Testing (Phase 5.2.9)
+export {
+  // Manager
+  abTestManager,
+  // Default variants
+  DEFAULT_FLIRT_VARIANTS,
+  // Helper functions
+  buildPromptFromVariant,
+  createDefaultFlirtTest,
+  getOrCreateFlirtTest,
+  recordABTestFeedback,
+  // Full module
+  PromptABTesting,
+  // Types
+  type PromptVariant,
+  type PromptVariantId,
+  type ABTestConfig,
+  type ABTestAssignment,
+  type ABTestResult,
+  type ABTestAnalytics,
+} from './promptABTesting';

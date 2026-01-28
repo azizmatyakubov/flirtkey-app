@@ -16,22 +16,30 @@ import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ApiKeySetupScreen } from './src/screens/ApiKeySetupScreen';
 import { PermissionsScreen } from './src/screens/PermissionsScreen';
 import { UserProfileSetupScreen } from './src/screens/UserProfileSetupScreen';
+import { ScreenshotAnalysisScreen } from './src/screens/ScreenshotAnalysisScreen';
+import { PreferencesScreen } from './src/screens/PreferencesScreen';
+import { AboutScreen } from './src/screens/AboutScreen';
 import { RootStackParamList } from './src/types';
 import { defaultScreenOptions, screenOptions, linking } from './src/constants';
-import { darkColors } from './src/constants/theme';
 import { ToastProvider } from './src/components/Toast';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+import { useSettingsStore } from './src/stores/settingsStore';
 
 const ONBOARDING_COMPLETE_KEY = 'flirtkey_onboarding_complete';
 
 // Create typed navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function App() {
+function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstLaunch, setIsFirstLaunch] = useState(true);
+  const { theme, isDark } = useTheme();
+  const { recordAppOpen } = useSettingsStore();
 
   useEffect(() => {
     checkOnboardingStatus();
+    recordAppOpen();
   }, []);
 
   const checkOnboardingStatus = async () => {
@@ -48,58 +56,91 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <StatusBar style="light" />
-        <ActivityIndicator size="large" color={darkColors.primary} />
+      <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ToastProvider>
-        <NavigationContainer linking={linking}>
-          <StatusBar style="light" />
-          <Stack.Navigator
-            initialRouteName={isFirstLaunch ? 'Welcome' : 'Home'}
-            screenOptions={defaultScreenOptions}
-          >
-            {/* Onboarding Flow */}
-            <Stack.Screen name="Welcome" component={WelcomeScreen} options={screenOptions.Welcome} />
-            <Stack.Screen
-              name="Onboarding"
-              component={OnboardingScreen}
-              options={screenOptions.Onboarding}
-            />
-            <Stack.Screen
-              name="ApiKeySetup"
-              component={ApiKeySetupScreen}
-              options={screenOptions.ApiKeySetup}
-            />
-            <Stack.Screen
-              name="Permissions"
-              component={PermissionsScreen}
-              options={screenOptions.Permissions}
-            />
-            <Stack.Screen
-              name="UserProfileSetup"
-              component={UserProfileSetupScreen}
-              options={screenOptions.UserProfileSetup}
-            />
+    <NavigationContainer linking={linking}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Stack.Navigator
+        initialRouteName={isFirstLaunch ? 'Welcome' : 'Home'}
+        screenOptions={defaultScreenOptions}
+      >
+        {/* Onboarding Flow */}
+        <Stack.Screen name="Welcome" component={WelcomeScreen} options={screenOptions.Welcome} />
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={screenOptions.Onboarding}
+        />
+        <Stack.Screen
+          name="ApiKeySetup"
+          component={ApiKeySetupScreen}
+          options={screenOptions.ApiKeySetup}
+        />
+        <Stack.Screen
+          name="Permissions"
+          component={PermissionsScreen}
+          options={screenOptions.Permissions}
+        />
+        <Stack.Screen
+          name="UserProfileSetup"
+          component={UserProfileSetupScreen}
+          options={screenOptions.UserProfileSetup}
+        />
 
-            {/* Main App Flow */}
-            <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
-            <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
-            <Stack.Screen name="AddGirl" component={AddGirlScreen} options={screenOptions.AddGirl} />
-            <Stack.Screen
-              name="GirlProfile"
-              component={GirlProfileScreen}
-              options={screenOptions.GirlProfile}
-            />
-            <Stack.Screen name="Settings" component={SettingsScreen} options={screenOptions.Settings} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </ToastProvider>
+        {/* Main App Flow */}
+        <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
+        <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
+        <Stack.Screen name="AddGirl" component={AddGirlScreen} options={screenOptions.AddGirl} />
+        <Stack.Screen
+          name="GirlProfile"
+          component={GirlProfileScreen}
+          options={screenOptions.GirlProfile}
+        />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={screenOptions.Settings} />
+        <Stack.Screen
+          name="ScreenshotAnalysis"
+          component={ScreenshotAnalysisScreen}
+          options={screenOptions.ScreenshotAnalysis}
+        />
+
+        {/* Phase 8: Settings Screens */}
+        <Stack.Screen
+          name="Preferences"
+          component={PreferencesScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="About"
+          component={AboutScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }
@@ -107,7 +148,6 @@ export default function App() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: darkColors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

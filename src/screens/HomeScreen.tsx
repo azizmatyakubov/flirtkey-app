@@ -186,10 +186,7 @@ export function HomeScreen({ navigation }: any) {
             },
           ]}
         >
-          <SwipeableRow
-            onDelete={() => handleDeleteGirl(item)}
-            onEdit={() => handleEditGirl(item)}
-          >
+          <SwipeableRow onDelete={() => handleDeleteGirl(item)} onEdit={() => handleEditGirl(item)}>
             <TouchableOpacity
               style={styles.girlCard}
               onPress={() => handleSelectGirl(item)}
@@ -274,11 +271,7 @@ export function HomeScreen({ navigation }: any) {
             placeholder="Search by name, interests..."
             style={styles.searchBar}
           />
-          <SortMenu
-            options={SORT_OPTIONS}
-            selectedKey={sortKey}
-            onSelect={setSortKey}
-          />
+          <SortMenu options={SORT_OPTIONS} selectedKey={sortKey} onSelect={setSortKey} />
         </View>
       )}
 
@@ -287,10 +280,7 @@ export function HomeScreen({ navigation }: any) {
         data={filteredGirls}
         renderItem={renderGirl}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={[
-          styles.list,
-          filteredGirls.length === 0 && styles.listEmpty,
-        ]}
+        contentContainerStyle={[styles.list, filteredGirls.length === 0 && styles.listEmpty]}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
           <RefreshControl
@@ -306,7 +296,7 @@ export function HomeScreen({ navigation }: any) {
         maxToRenderPerBatch={10}
         windowSize={5}
         initialNumToRender={10}
-        getItemLayout={(data, index) => ({
+        getItemLayout={(_data, index) => ({
           length: 82, // Height of each card + margin
           offset: 82 * index,
           index,

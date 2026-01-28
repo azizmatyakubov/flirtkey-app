@@ -4,14 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { darkColors, fontSizes } from '../constants/theme';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -34,11 +27,19 @@ const SIZE_MAP: Record<AvatarSize, { size: number; fontSize: number }> = {
 } as const;
 
 const getInitials = (name: string): string => {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) {
-    return parts[0].charAt(0).toUpperCase();
+  const parts = name
+    .trim()
+    .split(/\s+/)
+    .filter((p) => p.length > 0);
+  if (parts.length === 0) {
+    return '?';
   }
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  if (parts.length === 1) {
+    return (parts[0]?.[0] ?? '?').toUpperCase();
+  }
+  const first = parts[0]?.[0] ?? '';
+  const last = parts[parts.length - 1]?.[0] ?? '';
+  return (first + last).toUpperCase() || '?';
 };
 
 const AVATAR_COLORS = [
@@ -70,8 +71,8 @@ export function Avatar({
   containerStyle,
 }: AvatarProps) {
   const sizeConfig = SIZE_MAP[size] ?? SIZE_MAP.md;
-  const avatarSize = sizeConfig.size;
-  const fontSize = sizeConfig.fontSize;
+  const avatarSize = sizeConfig?.size ?? SIZE_MAP.md.size;
+  const fontSize = sizeConfig?.fontSize ?? SIZE_MAP.md.fontSize;
   const initials = getInitials(name);
   const backgroundColor = getColorFromName(name);
 
@@ -115,9 +116,7 @@ export function Avatar({
             },
           ]}
         >
-          <Text style={[styles.editIcon, { fontSize: avatarSize * 0.15 }]}>
-            📷
-          </Text>
+          <Text style={[styles.editIcon, { fontSize: avatarSize * 0.15 }]}>📷</Text>
         </View>
       )}
     </View>

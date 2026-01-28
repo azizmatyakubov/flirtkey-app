@@ -15,6 +15,7 @@ export const darkColors: ThemeColors = {
   // Text colors
   text: '#ffffff',
   textSecondary: '#888888',
+  textTertiary: '#555555',
 
   // UI colors
   border: '#333333',
@@ -40,6 +41,7 @@ export const lightColors: ThemeColors = {
   // Text colors
   text: '#111827',
   textSecondary: '#6b7280',
+  textTertiary: '#9ca3af',
 
   // UI colors
   border: '#e5e7eb',

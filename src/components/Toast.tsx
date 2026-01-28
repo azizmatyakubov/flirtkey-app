@@ -4,13 +4,7 @@
  */
 
 import React, { useEffect, useRef, createContext, useContext, useState, useCallback } from 'react';
-import {
-  Text,
-  StyleSheet,
-  Animated,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { Text, StyleSheet, Animated, TouchableOpacity, Dimensions } from 'react-native';
 import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -64,7 +58,7 @@ interface ToastComponentProps {
 function ToastComponent({ toast, onHide }: ToastComponentProps) {
   const translateY = useRef(new Animated.Value(toast.position === 'bottom' ? 100 : -100)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const config = TYPE_CONFIG[toast.type || 'info'];
 
@@ -164,9 +158,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast, hideToast }}>
       {children}
-      {toast && toast.visible && (
-        <ToastComponent toast={toast} onHide={hideToast} />
-      )}
+      {toast && toast.visible && <ToastComponent toast={toast} onHide={hideToast} />}
     </ToastContext.Provider>
   );
 }

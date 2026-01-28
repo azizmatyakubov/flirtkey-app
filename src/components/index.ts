@@ -55,7 +55,12 @@ export {
   CardSkeleton,
   ListSkeleton,
 } from './LoadingSpinner';
-export type { LoadingSpinnerProps, PulsingDotsProps, SkeletonProps, ListSkeletonProps } from './LoadingSpinner';
+export type {
+  LoadingSpinnerProps,
+  PulsingDotsProps,
+  SkeletonProps,
+  ListSkeletonProps,
+} from './LoadingSpinner';
 
 // List Components
 export { SwipeableRow } from './SwipeableRow';
@@ -76,3 +81,104 @@ export { AnimatedSuggestionCard } from './AnimatedSuggestionCard';
 export { InterestLevelDisplay } from './InterestLevelDisplay';
 export { ProTipCard, TipOfTheDay, getTipOfTheDay } from './ProTipCard';
 export { ConversationContext, LastTopicIndicator } from './ConversationContext';
+
+// New Phase 6 Components
+// 6.1.10 Voice Input
+export { VoiceInput } from './VoiceInput';
+
+// 6.1.11 Paste Detection
+export { PasteDetector, useClipboardDetection } from './PasteDetector';
+
+// 6.1.12 Keyboard Accessory View
+export { KeyboardAccessoryView, KeyboardAccessoryWrapper } from './KeyboardAccessoryView';
+
+// 6.1.18 Quick Action Shortcuts
+export { QuickActionShortcuts, QuickActionToolbar } from './QuickActionShortcuts';
+
+// 6.2.10 Swipeable Suggestions
+export { SwipeableSuggestions } from './SwipeableSuggestions';
+
+// 6.2.12 Suggestion Editor
+export { SuggestionEditor } from './SuggestionEditor';
+
+// 6.2.13 Suggestion Regeneration
+export { RegenerateButton, RegeneratePanel } from './SuggestionRegenerate';
+
+// 6.2.14 Suggestion History
+export { SuggestionHistory } from './SuggestionHistory';
+
+// 6.2.15 Share Suggestion
+export { ShareButton, ShareMenu, shareSuggestion } from './ShareSuggestion';
+
+// 6.3.7 Interest Level Chart
+export { InterestLevelChart, MiniInterestChart } from './InterestLevelChart';
+
+// Phase 7: Screenshot Analysis Components
+// 7.1.7 Image Preview
+export { ImagePreview } from './ImagePreview';
+export type { ImagePreviewProps } from './ImagePreview';
+
+// 7.3.7 Image Annotation Overlay
+export { ImageAnnotationOverlay } from './ImageAnnotationOverlay';
+export type {
+  ImageAnnotationOverlayProps,
+  AnnotationPoint,
+  AnnotationRegion,
+} from './ImageAnnotationOverlay';
+
+// Phase 8: Settings & Polish Components
+// 8.5.1 Onboarding Flow
+export { OnboardingFlow } from './OnboardingFlow';
+
+// 8.5.3 Loading Skeletons
+export {
+  Skeleton as SkeletonNew,
+  SkeletonText,
+  SkeletonAvatar,
+  SkeletonButton,
+  SkeletonCard,
+  GirlListSkeleton,
+  ChatSkeleton,
+  SuggestionSkeleton,
+  ProfileSkeleton,
+  ScreenshotAnalysisSkeleton,
+  SettingsSkeleton,
+} from './LoadingSkeleton';
+
+// 8.5.4 Error Boundaries
+export { ErrorBoundary, ScreenErrorBoundary } from './ErrorBoundary';
+
+// 8.5.2 Empty States
+export {
+  EmptyState as EmptyStateBase,
+  NoGirlsEmpty,
+  NoSuggestionsEmpty,
+  NoConversationHistoryEmpty,
+  NoAnalysisEmpty,
+  NoSearchResultsEmpty,
+  NoFavoritesEmpty,
+  NoProTipsEmpty,
+  OfflineEmpty,
+  NoApiKeyEmpty,
+  RateLimitEmpty,
+  NoInsideJokesEmpty,
+  ErrorEmpty,
+  ComingSoonEmpty,
+  NoNotificationsEmpty,
+  WelcomeEmpty,
+  NoQuickRepliesEmpty,
+} from './EmptyStatePresets';
+
+// Polish Features (Phase 9)
+// Celebration Animation for Copy
+export { CelebrationAnimation } from './CelebrationAnimation';
+
+// Offline Indicator
+export { OfflineIndicator, useNetworkStatus } from './OfflineIndicator';
+
+// Optimized List Components
+export { GirlCard } from './GirlCard';
+
+// Chat Components
+export { ChatBubble } from './ChatBubble';
+export type { ChatMessage, MessageSender } from './ChatBubble';

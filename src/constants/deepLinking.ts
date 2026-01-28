@@ -8,6 +8,8 @@ import type { RootStackParamList } from '../types';
  * - flirtkey://chat
  * - flirtkey://settings
  * - flirtkey://girl/123
+ * - flirtkey://analyze (screenshot analysis)
+ * - flirtkey://screenshot (screenshot analysis)
  */
 export const linking: LinkingOptions<RootStackParamList> = {
   prefixes: ['flirtkey://', 'https://flirtkey.app', 'https://*.flirtkey.app'],
@@ -26,6 +28,13 @@ export const linking: LinkingOptions<RootStackParamList> = {
       Settings: 'settings',
       ApiKeySetup: 'setup/api-key',
       Onboarding: 'onboarding',
+      ScreenshotAnalysis: {
+        path: 'analyze',
+        parse: {
+          girlId: (girlId: string) => parseInt(girlId, 10),
+        },
+        alias: ['screenshot', 'share'],
+      },
     },
   },
 };
@@ -53,6 +62,9 @@ export function getScreenFromUrl(url: string): keyof RootStackParamList | null {
       add: 'AddGirl',
       settings: 'Settings',
       onboarding: 'Onboarding',
+      analyze: 'ScreenshotAnalysis',
+      screenshot: 'ScreenshotAnalysis',
+      share: 'ScreenshotAnalysis',
     };
 
     // Check for exact match

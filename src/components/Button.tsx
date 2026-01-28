@@ -1,9 +1,10 @@
 /**
  * Button Component (4.4.7)
  * Reusable button with multiple variants
+ * Includes haptic feedback support
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -14,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { hapticLight, hapticMedium, hapticError } from '../utils/haptics';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -30,6 +32,8 @@ export interface ButtonProps {
   fullWidth?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  /** Enable haptic feedback on press (default: true) */
+  haptic?: boolean;
 }
 
 const VARIANT_STYLES: Record<ButtonVariant, { bg: string; text: string; border?: string }> = {
@@ -92,9 +96,25 @@ export function Button({
   fullWidth = false,
   style,
   textStyle,
+  haptic = true,
 }: ButtonProps) {
   const variantStyle = VARIANT_STYLES[variant];
   const sizeStyle = SIZE_STYLES[size];
+
+  // Handle press with haptic feedback
+  const handlePress = useCallback(() => {
+    if (haptic) {
+      // Use different haptic based on variant
+      if (variant === 'danger') {
+        hapticError();
+      } else if (variant === 'primary' || variant === 'success') {
+        hapticMedium();
+      } else {
+        hapticLight();
+      }
+    }
+    onPress();
+  }, [haptic, variant, onPress]);
 
   return (
     <TouchableOpacity
@@ -111,7 +131,7 @@ export function Button({
         (disabled || loading) && styles.disabled,
         style,
       ]}
-      onPress={onPress}
+      onPress={handlePress}
       disabled={disabled || loading}
       activeOpacity={0.7}
     >

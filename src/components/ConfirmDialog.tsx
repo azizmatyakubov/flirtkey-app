@@ -13,6 +13,7 @@ export interface ConfirmDialogProps {
   visible: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  onCancel?: () => void;
   title: string;
   message: string;
   confirmText?: string;
@@ -20,12 +21,14 @@ export interface ConfirmDialogProps {
   confirmVariant?: ButtonVariant;
   isLoading?: boolean;
   icon?: string;
+  destructive?: boolean;
 }
 
 export function ConfirmDialog({
   visible,
   onClose,
   onConfirm,
+  onCancel,
   title,
   message,
   confirmText = 'Confirm',
@@ -33,6 +36,7 @@ export function ConfirmDialog({
   confirmVariant = 'primary',
   isLoading = false,
   icon,
+  destructive = false,
 }: ConfirmDialogProps) {
   const handleConfirm = () => {
     onConfirm();
@@ -41,15 +45,27 @@ export function ConfirmDialog({
     }
   };
 
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      onClose();
+    }
+  };
+
+  // Use danger variant if destructive is true
+  const actualVariant = destructive ? 'danger' : confirmVariant;
+
   return (
     <Modal
       visible={visible}
-      onClose={onClose}
+      onClose={handleCancel}
       showCloseButton={false}
       closeOnBackdrop={!isLoading}
     >
       <View style={styles.container}>
         {icon && <Text style={styles.icon}>{icon}</Text>}
+        {!icon && destructive && <Text style={styles.icon}>⚠️</Text>}
 
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.message}>{message}</Text>
@@ -57,7 +73,7 @@ export function ConfirmDialog({
         <View style={styles.actions}>
           <Button
             title={cancelText}
-            onPress={onClose}
+            onPress={handleCancel}
             variant="secondary"
             disabled={isLoading}
             style={styles.button}
@@ -65,7 +81,7 @@ export function ConfirmDialog({
           <Button
             title={confirmText}
             onPress={handleConfirm}
-            variant={confirmVariant}
+            variant={actualVariant}
             loading={isLoading}
             style={styles.button}
           />
@@ -121,17 +137,11 @@ export function UnsavedChangesDialog({
   onSave,
 }: UnsavedChangesDialogProps) {
   return (
-    <Modal
-      visible={visible}
-      onClose={onClose}
-      showCloseButton={false}
-    >
+    <Modal visible={visible} onClose={onClose} showCloseButton={false}>
       <View style={styles.container}>
         <Text style={styles.icon}>⚠️</Text>
         <Text style={styles.title}>Unsaved Changes</Text>
-        <Text style={styles.message}>
-          You have unsaved changes. What would you like to do?
-        </Text>
+        <Text style={styles.message}>You have unsaved changes. What would you like to do?</Text>
 
         <View style={styles.actionsVertical}>
           {onSave && (
@@ -154,12 +164,7 @@ export function UnsavedChangesDialog({
             variant="danger"
             fullWidth
           />
-          <Button
-            title="Keep Editing"
-            onPress={onClose}
-            variant="ghost"
-            fullWidth
-          />
+          <Button title="Keep Editing" onPress={onClose} variant="ghost" fullWidth />
         </View>
       </View>
     </Modal>

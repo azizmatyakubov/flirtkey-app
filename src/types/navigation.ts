@@ -18,6 +18,10 @@ export type UserProfileSetupScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'UserProfileSetup'
 >;
+export type ScreenshotAnalysisScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'ScreenshotAnalysis'
+>;
 
 // Navigation prop type for useNavigation hook
 export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;

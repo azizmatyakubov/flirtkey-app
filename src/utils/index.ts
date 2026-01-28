@@ -26,3 +26,42 @@ export {
   type FormatOptions,
 } from './responseFormatter';
 export { default as responseFormatter } from './responseFormatter';
+
+// Haptics (Phase 8)
+export {
+  hapticLight,
+  hapticMedium,
+  hapticHeavy,
+  hapticSuccess,
+  hapticWarning,
+  hapticError,
+  hapticSelection,
+  triggerHaptic,
+  hapticCopy,
+  hapticDelete,
+  hapticNavigate,
+  hapticToggle,
+  useHaptics,
+} from './haptics';
+export type { HapticType } from './haptics';
+
+// Accessibility (Phase 8)
+export {
+  isScreenReaderEnabled,
+  isReduceMotionEnabled,
+  getAccessibilityState,
+  announceForAccessibility,
+  setAccessibilityFocus,
+  getSuggestionAccessibilityLabel,
+  getInterestLevelAccessibilityLabel,
+  getGirlCardAccessibilityLabel,
+  formatNumberForAccessibility,
+  useAccessibilityState,
+  useShouldReduceMotion,
+  useScreenReader,
+  getAnimationDuration,
+  getAnimationConfig,
+  accessibilityLabels,
+  accessibilityHints,
+} from './accessibility';
+export type { AccessibilityState } from './accessibility';
