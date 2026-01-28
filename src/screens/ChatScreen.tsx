@@ -35,7 +35,6 @@ import { InterestLevelDisplay } from '../components/InterestLevelDisplay';
 import { ProTipCard } from '../components/ProTipCard';
 import { ConversationContext, LastTopicIndicator } from '../components/ConversationContext';
 // New Phase 6 components
-import { VoiceInput } from '../components/VoiceInput';
 import { PasteDetector, useClipboardDetection } from '../components/PasteDetector';
 import { KeyboardAccessoryWrapper } from '../components/KeyboardAccessoryView';
 // QuickActionShortcuts and SwipeableSuggestions removed from default view
