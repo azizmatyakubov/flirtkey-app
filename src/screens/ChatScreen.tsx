@@ -176,7 +176,7 @@ export function ChatScreen({ navigation }: any) {
     }
     if (!apiKey) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Set up API key in Settings first');
+      Alert.alert('No API Key', 'Please set up your OpenAI API key in Settings, or add OPENAI_API_KEY to your .env file.');
       return;
     }
 

@@ -322,6 +322,12 @@ const persistConfig: PersistOptions<AppState, PersistedState> = {
     userCulture: state.userCulture,
     apiKey: state.apiKey,
   }),
+  onRehydrateStorage: () => (state) => {
+    // If persisted apiKey is empty but env has one, use env key
+    if (state && !state.apiKey && ENV_API_KEY) {
+      state.apiKey = ENV_API_KEY;
+    }
+  },
 };
 
 export const useStore = create<AppState>()(persist(storeCreator, persistConfig));
