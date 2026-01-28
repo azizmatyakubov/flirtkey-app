@@ -364,9 +364,11 @@ Please describe your issue:
                 <Text style={[styles.faqQuestion, { color: theme.colors.text }]}>
                   {item.question}
                 </Text>
-                <Text style={[styles.faqArrow, { color: theme.colors.textSecondary }]}>
-                  {expandedFAQ === index ? '▼' : '▶'}
-                </Text>
+                <Ionicons
+                  name={expandedFAQ === index ? 'chevron-down' : 'chevron-forward'}
+                  size={14}
+                  color={theme.colors.textSecondary}
+                />
               </View>
               {expandedFAQ === index && (
                 <Text style={[styles.faqAnswer, { color: theme.colors.textSecondary }]}>

@@ -22,7 +22,7 @@ import Animated, {
   useSharedValue,
   withDelay,
 } from 'react-native-reanimated';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 import type { AnalysisResult } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -77,7 +77,7 @@ function getAnnotationColor(type: string): string {
     case 'her-message':
       return '#FF6B9D'; // Pink for her
     case 'your-message':
-      return '#6366f1'; // Purple for you
+      return accentColors.gradientPurple; // Purple for you
     case 'key-point':
       return darkColors.warning;
     default:

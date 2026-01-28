@@ -1,6 +1,7 @@
 // 6.2.15 Share suggestion
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as Clipboard from 'expo-clipboard';
@@ -57,14 +58,14 @@ export function ShareButton({ suggestion, girlName, compact = false }: ShareButt
   if (compact) {
     return (
       <TouchableOpacity onPress={handleShare} style={styles.compactButton}>
-        <Text style={styles.icon}>📤</Text>
+        <Ionicons name="share-outline" size={18} color={darkColors.text} />
       </TouchableOpacity>
     );
   }
 
   return (
     <TouchableOpacity onPress={handleShare} style={styles.button}>
-      <Text style={styles.icon}>📤</Text>
+      <Ionicons name="share-outline" size={18} color={darkColors.text} />
       <Text style={styles.buttonText}>Share</Text>
     </TouchableOpacity>
   );
@@ -108,17 +109,17 @@ export function ShareMenu({ visible, suggestion, girlName, onClose }: ShareMenuP
         <Text style={styles.menuTitle}>Share Options</Text>
 
         <TouchableOpacity onPress={handleCopyText} style={styles.menuItem}>
-          <Text style={styles.menuIcon}>📋</Text>
+          <Ionicons name="copy-outline" size={20} color={darkColors.text} style={{ marginRight: spacing.md }} />
           <Text style={styles.menuText}>Copy message only</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleCopyWithReason} style={styles.menuItem}>
-          <Text style={styles.menuIcon}>💡</Text>
+          <Ionicons name="bulb-outline" size={20} color={darkColors.text} style={{ marginRight: spacing.md }} />
           <Text style={styles.menuText}>Copy with reasoning</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleShare} style={styles.menuItem}>
-          <Text style={styles.menuIcon}>📤</Text>
+          <Ionicons name="share-outline" size={20} color={darkColors.text} style={{ marginRight: spacing.md }} />
           <Text style={styles.menuText}>Share formatted</Text>
         </TouchableOpacity>
 

@@ -9,6 +9,7 @@ import Animated, {
   cancelAnimation,
   Easing,
 } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Suggestion } from '../types';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
@@ -66,7 +67,9 @@ export function RegenerateButton({
         disabled={disabled || isRegenerating}
         style={[styles.compactButton, disabled && styles.disabled]}
       >
-        <Animated.Text style={[styles.icon, animatedStyle]}>🔄</Animated.Text>
+        <Animated.View style={animatedStyle}>
+          <Ionicons name="refresh-outline" size={18} color={darkColors.textSecondary} />
+        </Animated.View>
       </TouchableOpacity>
     );
   }
@@ -78,7 +81,9 @@ export function RegenerateButton({
       style={[styles.button, disabled && styles.disabled]}
       activeOpacity={0.7}
     >
-      <Animated.Text style={[styles.icon, animatedStyle]}>🔄</Animated.Text>
+      <Animated.View style={animatedStyle}>
+        <Ionicons name="refresh-outline" size={18} color={darkColors.textSecondary} />
+      </Animated.View>
       <Text style={styles.text}>
         {isRegenerating ? 'Generating...' : type ? `New ${type}` : 'Regenerate All'}
       </Text>
@@ -113,7 +118,7 @@ export function RegeneratePanel({
           disabled={disabled}
           style={[styles.panelButton, styles.allButton]}
         >
-          <Text style={styles.panelButtonIcon}>✨</Text>
+          <Ionicons name="sparkles" size={16} color={darkColors.primary} />
           <Text style={styles.panelButtonText}>All</Text>
         </TouchableOpacity>
 

@@ -42,7 +42,7 @@ const SLIDES: OnboardingSlide[] = [
     emoji: '💘',
     title: 'Welcome to FlirtKey',
     description: 'Your AI-powered dating message assistant. Never be stuck on what to say again!',
-    color: '#6366f1',
+    color: '#FF6B6B',
   },
   {
     id: '2',
@@ -50,7 +50,7 @@ const SLIDES: OnboardingSlide[] = [
     title: 'Create Girl Profiles',
     description:
       "Add details about each person you're talking to. Personality, interests, inside jokes - the more context, the better suggestions!",
-    color: '#8b5cf6',
+    color: '#FF8E53',
   },
   {
     id: '3',
@@ -216,7 +216,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
       {/* Button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: SLIDES[currentIndex]?.color ?? '#6366f1' }]}
+          style={[styles.button, { backgroundColor: SLIDES[currentIndex]?.color ?? '#FF6B6B' }]}
           onPress={handleNext}
         >
           <Text style={styles.buttonText}>

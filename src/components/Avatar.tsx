@@ -61,7 +61,7 @@ const getColorFromName = (name: string): string => {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
   const index = Math.abs(hash) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[index] ?? '#6366f1';
+  return AVATAR_COLORS[index] ?? accentColors.rose;
 };
 
 export function Avatar({

@@ -13,6 +13,7 @@ import Animated, {
   withSequence,
 } from 'react-native-reanimated';
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import { Ionicons } from '@expo/vector-icons';
 import { spacing, fontSizes, borderRadius } from '../constants/theme';
 
 interface OfflineIndicatorProps {
@@ -100,7 +101,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = React.memo(
     const getBannerContent = () => {
       if (showOnlineMessage) {
         return {
-          icon: '✅',
+          iconName: 'checkmark-circle' as const,
           text: 'Back online!',
           color: '#10b981',
           showRetry: false,
@@ -109,7 +110,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = React.memo(
 
       if (!isConnected) {
         return {
-          icon: '📡',
+          iconName: 'cloud-offline' as const,
           text: 'No internet connection',
           color: '#ef4444',
           showRetry: true,
@@ -118,7 +119,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = React.memo(
 
       if (isWeak) {
         return {
-          icon: '⚠️',
+          iconName: 'warning' as const,
           text: `Weak ${connectionType} connection`,
           color: '#f59e0b',
           showRetry: true,
@@ -134,7 +135,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = React.memo(
     return (
       <Animated.View style={[styles.container, { backgroundColor: content.color }, animatedStyle]}>
         <View style={styles.content}>
-          <Text style={styles.icon}>{content.icon}</Text>
+          <Ionicons name={content.iconName as any} size={16} color="#fff" style={{ marginRight: spacing.sm }} />
           <Text style={styles.text}>{content.text}</Text>
         </View>
 

@@ -27,6 +27,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
 import { darkColors, spacing, borderRadius, fontSizes } from '../constants/theme';
 import { formatFileSize } from '../utils/imageUtils';
 
@@ -226,7 +227,7 @@ export function ImagePreview({
         {/* Tap to zoom hint */}
         {!loading && !imageLoading && (
           <View style={styles.zoomHintBadge}>
-            <Text style={styles.zoomHintBadgeText}>🔍 Tap to zoom</Text>
+            <Text style={styles.zoomHintBadgeText}><Ionicons name="search" size={12} color={darkColors.text} /> Tap to zoom</Text>
           </View>
         )}
 
@@ -272,7 +273,8 @@ export function ImagePreview({
               onPress={onAnalyze}
               disabled={loading}
             >
-              <Text style={styles.primaryActionText}>✨ Analyze</Text>
+              <Ionicons name="sparkles" size={14} color="#fff" />
+              <Text style={styles.primaryActionText}> Analyze</Text>
             </TouchableOpacity>
           )}
 
@@ -294,7 +296,8 @@ export function ImagePreview({
               onPress={onRemove}
               disabled={loading}
             >
-              <Text style={styles.removeActionText}>🗑️ Remove</Text>
+              <Ionicons name="trash-outline" size={14} color={darkColors.error} />
+              <Text style={styles.removeActionText}> Remove</Text>
             </TouchableOpacity>
           )}
         </ScrollView>

@@ -183,7 +183,7 @@ export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupSc
           <Text style={styles.selectorText}>
             {selectedLanguageData?.name} ({selectedLanguageData?.nativeName})
           </Text>
-          <Text style={styles.selectorArrow}>{showLanguages ? '▲' : '▼'}</Text>
+          <Ionicons name={showLanguages ? 'chevron-up' : 'chevron-down'} size={16} color={darkColors.textSecondary} />
         </TouchableOpacity>
 
         {showLanguages && (

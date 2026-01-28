@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Suggestion } from '../types';
@@ -137,7 +138,8 @@ export function SuggestionEditor({ visible, suggestion, onClose, onSave }: Sugge
           <View style={styles.actions}>
             {hasChanges && (
               <TouchableOpacity onPress={handleReset} style={styles.resetButton}>
-                <Text style={styles.resetText}>↩️ Reset</Text>
+                <Ionicons name="arrow-undo-outline" size={16} color={darkColors.text} />
+              <Text style={styles.resetText}> Reset</Text>
               </TouchableOpacity>
             )}
 
@@ -145,7 +147,8 @@ export function SuggestionEditor({ visible, suggestion, onClose, onSave }: Sugge
               onPress={handleCopyAndClose}
               style={[styles.copyButton, { backgroundColor: colors.border }]}
             >
-              <Text style={styles.copyText}>📋 {hasChanges ? 'Copy Edited' : 'Copy'}</Text>
+              <Ionicons name="copy-outline" size={16} color="#fff" />
+              <Text style={styles.copyText}> {hasChanges ? 'Copy Edited' : 'Copy'}</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

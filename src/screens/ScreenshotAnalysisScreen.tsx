@@ -573,7 +573,8 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
               onPress={() => setShowHistory(!showHistory)}
             >
               <Text style={styles.historyTitle}>
-                {showHistory ? '▼' : '▶'} Recent Analyses ({analysisHistory.length})
+                <Ionicons name={showHistory ? 'chevron-down' : 'chevron-forward'} size={14} color={darkColors.textSecondary} />{' '}
+              Recent Analyses ({analysisHistory.length})
               </Text>
             </TouchableOpacity>
 

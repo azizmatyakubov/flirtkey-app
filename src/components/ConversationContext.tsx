@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Girl } from '../types';
+import { Ionicons } from '@expo/vector-icons';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 interface ConversationContextProps {
@@ -64,7 +65,10 @@ export function ConversationContext({ girl, onViewHistory }: ConversationContext
       {/* Last Topic */}
       {girl.lastTopic && (
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>📝 Last topic:</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Ionicons name="document-text-outline" size={12} color={darkColors.textSecondary} />
+            <Text style={styles.sectionLabel}>Last topic:</Text>
+          </View>
           <Text style={styles.sectionText} numberOfLines={2}>
             "{girl.lastTopic}"
           </Text>
@@ -103,7 +107,10 @@ export function ConversationContext({ girl, onViewHistory }: ConversationContext
       {/* View History Button */}
       {onViewHistory && girl.messageCount > 0 && (
         <TouchableOpacity onPress={onViewHistory} style={styles.historyButton}>
-          <Text style={styles.historyButtonText}>View conversation history →</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+            <Text style={styles.historyButtonText}>View conversation history</Text>
+            <Ionicons name="chevron-forward" size={14} color={darkColors.primary} />
+          </View>
         </TouchableOpacity>
       )}
     </Animated.View>

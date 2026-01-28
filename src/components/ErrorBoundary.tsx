@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 // ==========================================
 // Types
@@ -166,10 +167,10 @@ export class ScreenErrorBoundary extends Component<ScreenErrorBoundaryProps, Sta
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: darkColors.background,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: spacing.lg,
   },
   content: {
     alignItems: 'center',
@@ -180,39 +181,39 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: fontSizes.xl,
     fontWeight: 'bold',
-    color: '#fff',
+    color: darkColors.text,
     textAlign: 'center',
     marginBottom: 12,
   },
   message: {
-    fontSize: 16,
-    color: '#888',
+    fontSize: fontSizes.md,
+    color: darkColors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
   },
   errorContainer: {
     maxHeight: 200,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 8,
+    backgroundColor: darkColors.surface,
+    borderRadius: borderRadius.sm,
     padding: 12,
     marginBottom: 24,
     width: '100%',
   },
   errorTitle: {
-    color: '#ef4444',
+    color: darkColors.error,
     fontWeight: '600',
     marginBottom: 8,
   },
   errorText: {
-    color: '#ef4444',
+    color: darkColors.error,
     fontSize: 12,
     fontFamily: 'monospace',
   },
   stackText: {
-    color: '#888',
+    color: darkColors.textSecondary,
     fontSize: 10,
     fontFamily: 'monospace',
     marginTop: 8,
@@ -222,27 +223,27 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   button: {
-    backgroundColor: '#6366f1',
+    backgroundColor: darkColors.primary,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: fontSizes.md,
     fontWeight: '600',
   },
   secondaryButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: darkColors.border,
   },
   secondaryButtonText: {
-    color: '#888',
+    color: darkColors.textSecondary,
   },
   screenErrorContainer: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: darkColors.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 40,
@@ -252,27 +253,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   screenErrorTitle: {
-    fontSize: 18,
+    fontSize: fontSizes.lg,
     fontWeight: '600',
-    color: '#fff',
+    color: darkColors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   screenErrorMessage: {
-    fontSize: 14,
-    color: '#888',
+    fontSize: fontSizes.sm,
+    color: darkColors.textSecondary,
     textAlign: 'center',
     marginBottom: 20,
   },
   retryButton: {
-    backgroundColor: '#6366f1',
+    backgroundColor: darkColors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: borderRadius.sm,
   },
   retryButtonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: fontSizes.sm,
     fontWeight: '500',
   },
 });

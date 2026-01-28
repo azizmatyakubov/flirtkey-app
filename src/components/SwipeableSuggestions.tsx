@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Suggestion } from '../types';
@@ -90,7 +91,8 @@ export function SwipeableSuggestions({
               onPress={() => handleCopy(item)}
               style={[styles.actionButton, styles.copyButton]}
             >
-              <Text style={styles.copyText}>📋 Copy</Text>
+              <Ionicons name="copy-outline" size={14} color={darkColors.text} />
+              <Text style={styles.copyText}> Copy</Text>
             </TouchableOpacity>
 
             {onFavorite && (
@@ -101,7 +103,7 @@ export function SwipeableSuggestions({
                 }}
                 style={styles.iconButton}
               >
-                <Text style={styles.iconText}>{isFavorite ? '❤️' : '🤍'}</Text>
+                <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={18} color={isFavorite ? '#FF6B6B' : darkColors.textSecondary} />
               </TouchableOpacity>
             )}
 
@@ -113,7 +115,7 @@ export function SwipeableSuggestions({
                 }}
                 style={styles.iconButton}
               >
-                <Text style={styles.iconText}>✏️</Text>
+                <Ionicons name="create-outline" size={18} color={darkColors.textSecondary} />
               </TouchableOpacity>
             )}
 
@@ -125,7 +127,7 @@ export function SwipeableSuggestions({
                 }}
                 style={styles.iconButton}
               >
-                <Text style={styles.iconText}>📤</Text>
+                <Ionicons name="share-outline" size={18} color={darkColors.textSecondary} />
               </TouchableOpacity>
             )}
 
@@ -137,7 +139,7 @@ export function SwipeableSuggestions({
                 }}
                 style={styles.iconButton}
               >
-                <Text style={styles.iconText}>🔄</Text>
+                <Ionicons name="refresh-outline" size={18} color={darkColors.textSecondary} />
               </TouchableOpacity>
             )}
           </View>
@@ -179,7 +181,11 @@ export function SwipeableSuggestions({
       </View>
 
       {/* Swipe hint */}
-      <Text style={styles.swipeHint}>← Swipe to see more →</Text>
+      <View style={styles.swipeHintRow}>
+        <Ionicons name="chevron-back" size={12} color={darkColors.textSecondary} />
+        <Text style={styles.swipeHint}> Swipe to see more </Text>
+        <Ionicons name="chevron-forward" size={12} color={darkColors.textSecondary} />
+      </View>
     </View>
   );
 }
@@ -275,10 +281,15 @@ const styles = StyleSheet.create({
     backgroundColor: darkColors.primary,
     width: 24,
   },
+  swipeHintRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: spacing.sm,
+  },
   swipeHint: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
     textAlign: 'center',
-    marginTop: spacing.sm,
   },
 });

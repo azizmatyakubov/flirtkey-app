@@ -86,7 +86,7 @@ export const PendingQueueBadge: React.FC<PendingQueueBadgeProps> = React.memo(
     const getBadgeColor = () => {
       if (isProcessing) return '#3b82f6'; // Blue when processing
       if (!isOnline) return '#f59e0b'; // Orange when offline
-      return '#8b5cf6'; // Purple when ready
+      return '#A855F7'; // Purple when ready
     };
 
     const getStatusText = () => {
@@ -164,7 +164,7 @@ export const PendingQueueBadgeCompact: React.FC<{
         style={[
           styles.compactBadge,
           {
-            backgroundColor: isProcessing ? '#3b82f6' : !isOnline ? '#f59e0b' : '#8b5cf6',
+            backgroundColor: isProcessing ? '#3b82f6' : !isOnline ? '#f59e0b' : '#A855F7',
           },
           animatedStyle,
         ]}

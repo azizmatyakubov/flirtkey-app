@@ -38,7 +38,7 @@ export function SortMenu({ options, selectedKey, onSelect }: SortMenuProps) {
         style={styles.trigger}
         onPress={() => setIsOpen(true)}
       >
-        <Text style={styles.triggerIcon}>↕️</Text>
+        <Ionicons name="swap-vertical" size={14} color={darkColors.textSecondary} />
         <Text style={styles.triggerText}>
           {selectedOption?.label || 'Sort'}
         </Text>
@@ -67,7 +67,7 @@ export function SortMenu({ options, selectedKey, onSelect }: SortMenuProps) {
                   }}
                 >
                   {option.icon && (
-                    <Text style={styles.optionIcon}>{option.icon}</Text>
+                    <Ionicons name={option.icon as any} size={16} color={selectedKey === option.key ? darkColors.primary : darkColors.textSecondary} />
                   )}
                   <Text
                     style={[
@@ -78,7 +78,7 @@ export function SortMenu({ options, selectedKey, onSelect }: SortMenuProps) {
                     {option.label}
                   </Text>
                   {selectedKey === option.key && (
-                    <Text style={styles.checkmark}>✓</Text>
+                    <Ionicons name="checkmark" size={16} color={darkColors.primary} />
                   )}
                 </TouchableOpacity>
               ))}

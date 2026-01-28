@@ -38,11 +38,11 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 const SORT_OPTIONS = [
-  { key: 'name', label: 'Name (A-Z)', icon: '📝' },
-  { key: 'name_desc', label: 'Name (Z-A)', icon: '📝' },
-  { key: 'recent', label: 'Most Recent', icon: '🕐' },
-  { key: 'stage', label: 'Relationship Stage', icon: '💕' },
-  { key: 'messages', label: 'Message Count', icon: '💬' },
+  { key: 'name', label: 'Name (A-Z)', icon: 'text-outline' },
+  { key: 'name_desc', label: 'Name (Z-A)', icon: 'text-outline' },
+  { key: 'recent', label: 'Most Recent', icon: 'time-outline' },
+  { key: 'stage', label: 'Relationship Stage', icon: 'heart-outline' },
+  { key: 'messages', label: 'Message Count', icon: 'chatbubble-outline' },
 ];
 
 const STAGE_ORDER: Record<Girl['relationshipStage'], number> = {
@@ -201,7 +201,10 @@ export function HomeScreen({ navigation }: any) {
                 <StageBadge stage={item.relationshipStage} size="sm" />
               </View>
               <View style={styles.girlMeta}>
-                <Text style={styles.messageCount}>{item.messageCount} 💬</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Text style={styles.messageCount}>{item.messageCount}</Text>
+                  <Ionicons name="chatbubble-outline" size={14} color={darkColors.textSecondary} />
+                </View>
               </View>
             </TouchableOpacity>
           </SwipeableRow>

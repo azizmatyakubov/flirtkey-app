@@ -163,7 +163,10 @@ export function TipOfTheDay({
   
   return (
     <View style={styles.tipOfDayContainer}>
-      <Text style={styles.tipOfDayHeader}>✨ Tip of the Day</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <Ionicons name="sparkles" size={14} color={darkColors.text} />
+        <Text style={styles.tipOfDayHeader}>Tip of the Day</Text>
+      </View>
       <ProTipCard
         tip={tip}
         category={category}

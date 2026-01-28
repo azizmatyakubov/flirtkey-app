@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Alert } from 'react-native';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
@@ -112,7 +113,8 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
                       onPress={() => handleCopy(suggestion.text)}
                       style={styles.actionBtn}
                     >
-                      <Text style={styles.actionText}>📋 Copy</Text>
+                      <Ionicons name="copy-outline" size={12} color={darkColors.textSecondary} />
+                      <Text style={styles.actionText}> Copy</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
@@ -122,7 +124,8 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
                       }}
                       style={[styles.actionBtn, styles.reuseBtn]}
                     >
-                      <Text style={styles.reuseText}>🔄 Reuse</Text>
+                      <Ionicons name="refresh-outline" size={12} color={darkColors.primary} />
+                      <Text style={styles.reuseText}> Reuse</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -132,7 +135,7 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
             {/* Pro tip */}
             {item.proTip && (
               <View style={styles.proTipItem}>
-                <Text style={styles.proTipLabel}>💡 Pro Tip</Text>
+                <Text style={styles.proTipLabel}><Ionicons name="bulb-outline" size={12} color={darkColors.primary} /> Pro Tip</Text>
                 <Text style={styles.proTipText}>{item.proTip}</Text>
               </View>
             )}
@@ -140,7 +143,10 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
         )}
 
         {/* Expand indicator */}
-        <Text style={styles.expandIndicator}>{isExpanded ? '▲ Collapse' : '▼ Tap to expand'}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: spacing.sm }}>
+          <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={12} color={darkColors.textSecondary} />
+          <Text style={styles.expandIndicator}>{isExpanded ? ' Collapse' : ' Tap to expand'}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -153,7 +159,10 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
         <Animated.View entering={SlideInUp.springify()} style={styles.container}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>📜 Suggestion History</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+              <Ionicons name="time-outline" size={20} color={darkColors.text} />
+              <Text style={styles.title}>Suggestion History</Text>
+            </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
@@ -339,7 +348,6 @@ const styles = StyleSheet.create({
     color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
     textAlign: 'center',
-    marginTop: spacing.sm,
   },
   emptyState: {
     alignItems: 'center',

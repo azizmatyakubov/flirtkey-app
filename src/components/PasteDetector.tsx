@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeOut, SlideInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
@@ -34,7 +35,10 @@ export function PasteDetector({
   return (
     <Animated.View entering={SlideInUp.springify()} exiting={FadeOut} style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>📋 Paste detected</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Ionicons name="clipboard-outline" size={16} color={darkColors.text} />
+          <Text style={styles.title}>Paste detected</Text>
+        </View>
         <Text style={styles.preview}>"{truncatedContent}"</Text>
         <View style={styles.actions}>
           <TouchableOpacity onPress={onDismiss} style={styles.dismissButton}>

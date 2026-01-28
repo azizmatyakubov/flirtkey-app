@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, { FadeIn, SlideInLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 interface InterestLevelDisplayProps {
   level: number;
@@ -21,7 +21,7 @@ const getColorForLevel = (level: number): [string, string] => {
   } else if (level <= 7) {
     return ['#22c55e', '#4ade80']; // Green
   } else {
-    return ['#6366f1', '#818cf8']; // Purple/Blue (very high)
+    return [accentColors.gradientPurple, '#c084fc']; // Purple (very high)
   }
 };
 
@@ -29,14 +29,14 @@ const getTrendIndicator = (current: number, previous?: number) => {
   if (previous === undefined) return null;
   if (current > previous) return { icon: '↑', color: '#22c55e', text: 'Rising' };
   if (current < previous) return { icon: '↓', color: '#ef4444', text: 'Dropping' };
-  return { icon: '→', color: '#888', text: 'Stable' };
+  return { icon: '→', color: darkColors.textSecondary, text: 'Stable' };
 };
 
 const getVibeCheck = (level: number): { emoji: string; text: string; color: string } => {
   if (level <= 2) return { emoji: '😬', text: "She's not feeling it", color: '#ef4444' };
   if (level <= 4) return { emoji: '😐', text: 'Lukewarm - step it up', color: '#f59e0b' };
   if (level <= 6) return { emoji: '😊', text: "She's engaged", color: '#22c55e' };
-  if (level <= 8) return { emoji: '😍', text: 'Really into you!', color: '#6366f1' };
+  if (level <= 8) return { emoji: '😍', text: 'Really into you!', color: accentColors.gradientPurple };
   return { emoji: '🔥', text: 'On fire! Keep it going!', color: '#ec4899' };
 };
 

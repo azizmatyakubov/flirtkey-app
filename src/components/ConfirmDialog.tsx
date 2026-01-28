@@ -67,7 +67,9 @@ export function ConfirmDialog({
     >
       <View style={styles.container}>
         {icon && <Text style={styles.icon}>{icon}</Text>}
-        {!icon && destructive && <Text style={styles.icon}>⚠️</Text>}
+        {!icon && destructive && (
+          <Ionicons name="warning" size={48} color={darkColors.error} style={{ marginBottom: spacing.md }} />
+        )}
 
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.message}>{message}</Text>
@@ -120,7 +122,7 @@ export function DeleteDialog({
       cancelText="Cancel"
       confirmVariant="danger"
       isLoading={isLoading}
-      icon="🗑️"
+      icon="⚠️"
     />
   );
 }

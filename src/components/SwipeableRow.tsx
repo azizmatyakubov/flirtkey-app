@@ -11,6 +11,7 @@ import {
   Animated,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Swipeable } from 'react-native-gesture-handler';
 import { darkColors, fontSizes } from '../constants/theme';
 
@@ -55,7 +56,7 @@ export function SwipeableRow({
               onEdit();
             }}
           >
-            <Text style={styles.actionIcon}>✏️</Text>
+            <Ionicons name="create-outline" size={20} color="#ffffff" />
             <Text style={styles.actionText}>Edit</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -80,7 +81,7 @@ export function SwipeableRow({
               onDelete();
             }}
           >
-            <Text style={styles.actionIcon}>🗑️</Text>
+            <Ionicons name="trash-outline" size={20} color="#ffffff" />
             <Text style={styles.actionText}>Delete</Text>
           </TouchableOpacity>
         </Animated.View>

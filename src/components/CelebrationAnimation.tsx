@@ -20,7 +20,7 @@ import * as Haptics from 'expo-haptics';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Particle colors matching app theme
-const PARTICLE_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+const PARTICLE_COLORS = ['#FF6B6B', '#FF8E53', '#ec4899', '#f59e0b', '#10b981', '#A855F7'];
 const EMOJI_OPTIONS = ['✨', '🎉', '💖', '🔥', '⭐', '💫'];
 
 interface ParticleProps {
