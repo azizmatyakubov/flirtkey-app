@@ -11,6 +11,8 @@ import {
   Switch,
   Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '../stores/useStore';
@@ -18,6 +20,7 @@ import { useSettingsStore } from '../stores/settingsStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { Culture } from '../types';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 // ==========================================
 // Constants
@@ -54,6 +57,17 @@ const AUTO_LOCK_OPTIONS = [
   { key: '30min', label: '30 minutes' },
   { key: 'never', label: 'Never' },
 ] as const;
+
+// Section icon mapping
+const SECTION_ICONS: Record<string, keyof typeof Ionicons.glyphName> = {
+  account: 'person-circle',
+  preferences: 'settings',
+  notifications: 'notifications',
+  privacy: 'lock-closed',
+  data: 'server',
+  accessibility: 'accessibility',
+  about: 'information-circle',
+};
 
 // ==========================================
 // Component
@@ -113,7 +127,6 @@ export function SettingsScreen({ navigation }: any) {
       const data = {
         exportDate: new Date().toISOString(),
         appVersion,
-        // In a real app, we'd export actual user data
         message: 'Data export feature - implement with actual data',
       };
       await Share.share({
@@ -179,7 +192,7 @@ export function SettingsScreen({ navigation }: any) {
     try {
       await Share.share({
         message:
-          'Check out FlirtKey - AI-powered dating message assistant! 💘\nhttps://flirtkey.app',
+          'Check out FlirtKey - AI-powered dating message assistant!\nhttps://flirtkey.app',
         title: 'Share FlirtKey',
       });
     } catch (error) {
@@ -205,7 +218,6 @@ export function SettingsScreen({ navigation }: any) {
   const handleBiometricToggle = async (enabled: boolean) => {
     triggerHaptic();
     if (enabled) {
-      // In production, use expo-local-authentication for biometric auth
       Alert.alert(
         'Biometric Lock',
         'Biometric authentication will be enabled. This feature requires expo-local-authentication.',
@@ -223,17 +235,22 @@ export function SettingsScreen({ navigation }: any) {
   // Render Helpers
   // ==========================================
 
-  const renderSectionHeader = (title: string, emoji: string, section: string) => (
+  const renderSectionHeader = (title: string, iconName: keyof typeof Ionicons.glyphName, section: string) => (
     <TouchableOpacity
-      style={[styles.sectionHeader, { backgroundColor: theme.colors.surface }]}
+      style={[styles.sectionHeader, { backgroundColor: expandedSection === section ? accentColors.surfaceHighlight : theme.colors.surface }]}
       onPress={() => toggleSection(section)}
     >
-      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-        {emoji} {title}
-      </Text>
-      <Text style={[styles.expandIcon, { color: theme.colors.textSecondary }]}>
-        {expandedSection === section ? '▼' : '▶'}
-      </Text>
+      <View style={styles.sectionHeaderLeft}>
+        <View style={styles.sectionIconContainer}>
+          <Ionicons name={iconName as any} size={20} color={accentColors.coral} />
+        </View>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{title}</Text>
+      </View>
+      <Ionicons
+        name={expandedSection === section ? 'chevron-down' : 'chevron-forward'}
+        size={18}
+        color={theme.colors.textSecondary}
+      />
     </TouchableOpacity>
   );
 
@@ -241,18 +258,25 @@ export function SettingsScreen({ navigation }: any) {
     label: string,
     value?: string,
     onPress?: () => void,
-    rightElement?: React.ReactNode
+    rightElement?: React.ReactNode,
+    iconName?: keyof typeof Ionicons.glyphName
   ) => (
     <TouchableOpacity
       style={[styles.settingRow, { borderBottomColor: theme.colors.border }]}
       onPress={onPress}
       disabled={!onPress && !rightElement}
     >
-      <Text style={[styles.settingLabel, { color: theme.colors.text }]}>{label}</Text>
+      <View style={styles.settingRowLeft}>
+        {iconName && (
+          <Ionicons name={iconName as any} size={18} color={theme.colors.textSecondary} style={{ marginRight: spacing.sm }} />
+        )}
+        <Text style={[styles.settingLabel, { color: theme.colors.text }]}>{label}</Text>
+      </View>
       {rightElement || (
-        <Text style={[styles.settingValue, { color: theme.colors.textSecondary }]}>
-          {value} {onPress && '›'}
-        </Text>
+        <View style={styles.settingRowRight}>
+          {value && <Text style={[styles.settingValue, { color: theme.colors.textSecondary }]}>{value}</Text>}
+          {onPress && <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />}
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -266,7 +290,7 @@ export function SettingsScreen({ navigation }: any) {
           triggerHaptic();
           onToggle(val);
         }}
-        trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+        trackColor={{ false: theme.colors.border, true: accentColors.coral }}
         thumbColor="#fff"
       />
     </View>
@@ -285,8 +309,8 @@ export function SettingsScreen({ navigation }: any) {
             styles.option,
             { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
             selected === opt.key && {
-              backgroundColor: theme.colors.primary + '20',
-              borderColor: theme.colors.primary,
+              backgroundColor: `${accentColors.coral}15`,
+              borderColor: accentColors.coral,
             },
           ]}
           onPress={() => {
@@ -298,7 +322,7 @@ export function SettingsScreen({ navigation }: any) {
           <Text
             style={[
               styles.optionText,
-              { color: selected === opt.key ? theme.colors.primary : theme.colors.textSecondary },
+              { color: selected === opt.key ? accentColors.coral : theme.colors.textSecondary },
             ]}
           >
             {opt.label}
@@ -314,24 +338,31 @@ export function SettingsScreen({ navigation }: any) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.back, { color: theme.colors.primary }]}>← Back</Text>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: theme.colors.text }]}>Settings</Text>
-        <View style={{ width: 50 }} />
-      </View>
+        <Text style={styles.headerTitle}>Settings</Text>
+        <View style={{ width: 40 }} />
+      </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Account Section */}
-        {renderSectionHeader('Account', '👤', 'account')}
+        {renderSectionHeader('Account', 'person-circle' as any, 'account')}
         {expandedSection === 'account' && (
           <View style={styles.sectionContent}>
             {renderSettingRow(
               'API Key',
               apiKey ? '••••••' + apiKey.slice(-4) : 'Not set',
-              handleApiKeyPress
+              handleApiKeyPress,
+              undefined,
+              'key' as any
             )}
 
             <Text style={[styles.subsectionTitle, { color: theme.colors.textSecondary }]}>
@@ -342,13 +373,13 @@ export function SettingsScreen({ navigation }: any) {
         )}
 
         {/* Preferences Section */}
-        {renderSectionHeader('Preferences', '⚙️', 'preferences')}
+        {renderSectionHeader('Preferences', 'settings' as any, 'preferences')}
         {expandedSection === 'preferences' && (
           <View style={styles.sectionContent}>
             {renderSettingRow('Response Preferences', 'Tone, length, emoji...', () => {
               triggerHaptic();
               navigation.navigate('Preferences');
-            })}
+            }, undefined, 'options' as any)}
 
             <Text style={[styles.subsectionTitle, { color: theme.colors.textSecondary }]}>
               Theme
@@ -364,7 +395,7 @@ export function SettingsScreen({ navigation }: any) {
         )}
 
         {/* Notifications Section */}
-        {renderSectionHeader('Notifications', '🔔', 'notifications')}
+        {renderSectionHeader('Notifications', 'notifications' as any, 'notifications')}
         {expandedSection === 'notifications' && (
           <View style={styles.sectionContent}>
             {renderToggle('Enable Notifications', notifications.enabled, (val) =>
@@ -390,7 +421,7 @@ export function SettingsScreen({ navigation }: any) {
         )}
 
         {/* Privacy & Security Section */}
-        {renderSectionHeader('Privacy & Security', '🔒', 'privacy')}
+        {renderSectionHeader('Privacy & Security', 'lock-closed' as any, 'privacy')}
         {expandedSection === 'privacy' && (
           <View style={styles.sectionContent}>
             {renderToggle(
@@ -400,7 +431,6 @@ export function SettingsScreen({ navigation }: any) {
             )}
             {renderToggle('PIN Lock', privacy.pinEnabled, (val) => {
               if (val) {
-                // Navigate to PIN setup
                 Alert.alert('Set PIN', 'PIN setup feature coming soon');
               } else {
                 setPrivacy({ pinEnabled: false, pinCode: null });
@@ -417,22 +447,23 @@ export function SettingsScreen({ navigation }: any) {
             </ScrollView>
 
             <View style={{ height: 16 }} />
-            {renderSettingRow('Privacy Policy', undefined, handlePrivacyPolicy)}
-            {renderSettingRow('Terms of Service', undefined, handleTermsOfService)}
+            {renderSettingRow('Privacy Policy', undefined, handlePrivacyPolicy, undefined, 'shield-checkmark' as any)}
+            {renderSettingRow('Terms of Service', undefined, handleTermsOfService, undefined, 'document-text' as any)}
           </View>
         )}
 
         {/* Data Management Section */}
-        {renderSectionHeader('Data Management', '💾', 'data')}
+        {renderSectionHeader('Data Management', 'server' as any, 'data')}
         {expandedSection === 'data' && (
           <View style={styles.sectionContent}>
-            {renderSettingRow('Export Data', undefined, handleExportData)}
-            {renderSettingRow('Clear Cache', undefined, handleClearCache)}
-            {renderSettingRow('Clear All Data', undefined, handleClearAllData)}
+            {renderSettingRow('Export Data', undefined, handleExportData, undefined, 'download' as any)}
+            {renderSettingRow('Clear Cache', undefined, handleClearCache, undefined, 'trash-bin' as any)}
+            {renderSettingRow('Clear All Data', undefined, handleClearAllData, undefined, 'warning' as any)}
             <TouchableOpacity
               style={[styles.dangerButton, { borderColor: theme.colors.error }]}
               onPress={handleDeleteAccount}
             >
+              <Ionicons name="skull" size={18} color={theme.colors.error} />
               <Text style={[styles.dangerButtonText, { color: theme.colors.error }]}>
                 Delete Account
               </Text>
@@ -441,7 +472,7 @@ export function SettingsScreen({ navigation }: any) {
         )}
 
         {/* Accessibility Section */}
-        {renderSectionHeader('Accessibility', '♿', 'accessibility')}
+        {renderSectionHeader('Accessibility', 'accessibility' as any, 'accessibility')}
         {expandedSection === 'accessibility' && (
           <View style={styles.sectionContent}>
             {renderToggle('Reduce Motion', accessibility.reduceMotion, (val) =>
@@ -463,26 +494,26 @@ export function SettingsScreen({ navigation }: any) {
         )}
 
         {/* About Section */}
-        {renderSectionHeader('About', 'ℹ️', 'about')}
+        {renderSectionHeader('About', 'information-circle' as any, 'about')}
         {expandedSection === 'about' && (
           <View style={styles.sectionContent}>
-            {renderSettingRow('Version', `${appVersion} (${buildNumber})`)}
+            {renderSettingRow('Version', `${appVersion} (${buildNumber})`, undefined, undefined, 'code-slash' as any)}
             {renderSettingRow('More Info & FAQ', undefined, () => {
               triggerHaptic();
               navigation.navigate('About');
-            })}
-            {renderSettingRow('Rate FlirtKey', hasRatedApp ? '⭐ Rated' : undefined, handleRateApp)}
-            {renderSettingRow('Share with Friends', undefined, handleShareApp)}
-            {renderSettingRow('Contact Support', undefined, handleContactSupport)}
+            }, undefined, 'help-circle' as any)}
+            {renderSettingRow('Rate FlirtKey', hasRatedApp ? 'Rated' : undefined, handleRateApp, undefined, 'star' as any)}
+            {renderSettingRow('Share with Friends', undefined, handleShareApp, undefined, 'share-social' as any)}
+            {renderSettingRow('Contact Support', undefined, handleContactSupport, undefined, 'chatbubble-ellipses' as any)}
             {renderSettingRow('FAQ & Help', undefined, () =>
-              Linking.openURL('https://flirtkey.app/faq')
+              Linking.openURL('https://flirtkey.app/faq'), undefined, 'book' as any
             )}
 
             <View style={styles.statsContainer}>
               <Text style={[styles.statsTitle, { color: theme.colors.text }]}>Your Stats</Text>
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: theme.colors.primary }]}>
+                  <Text style={[styles.statValue, { color: accentColors.coral }]}>
                     {stats.totalSuggestions}
                   </Text>
                   <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
@@ -490,7 +521,7 @@ export function SettingsScreen({ navigation }: any) {
                   </Text>
                 </View>
                 <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: theme.colors.primary }]}>
+                  <Text style={[styles.statValue, { color: accentColors.coral }]}>
                     {stats.totalCopied}
                   </Text>
                   <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
@@ -498,7 +529,7 @@ export function SettingsScreen({ navigation }: any) {
                   </Text>
                 </View>
                 <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: theme.colors.primary }]}>
+                  <Text style={[styles.statValue, { color: accentColors.coral }]}>
                     {stats.totalAnalyses}
                   </Text>
                   <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
@@ -513,20 +544,20 @@ export function SettingsScreen({ navigation }: any) {
                 style={[styles.socialButton, { backgroundColor: theme.colors.surface }]}
                 onPress={() => Linking.openURL('https://twitter.com/flirtkey')}
               >
-                <Text style={styles.socialEmoji}>🐦</Text>
+                <Ionicons name="logo-twitter" size={18} color={accentColors.coral} />
                 <Text style={[styles.socialText, { color: theme.colors.text }]}>Twitter</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.socialButton, { backgroundColor: theme.colors.surface }]}
                 onPress={() => Linking.openURL('https://instagram.com/flirtkey')}
               >
-                <Text style={styles.socialEmoji}>📸</Text>
+                <Ionicons name="logo-instagram" size={18} color={accentColors.coral} />
                 <Text style={[styles.socialText, { color: theme.colors.text }]}>Instagram</Text>
               </TouchableOpacity>
             </View>
 
             <Text style={[styles.credits, { color: theme.colors.textSecondary }]}>
-              Made with 💘 by FlirtKey Team{'\n'}© 2024 FlirtKey. All rights reserved.
+              Made with ❤️ by FlirtKey Team{'\n'}© 2024 FlirtKey. All rights reserved.
             </Text>
           </View>
         )}
@@ -579,15 +610,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: spacing.lg,
     paddingTop: 60,
+    paddingBottom: spacing.md,
   },
-  back: {
-    fontSize: 16,
+  headerButton: {
+    padding: spacing.xs,
   },
-  title: {
-    fontSize: 18,
+  headerTitle: {
+    fontSize: fontSizes.lg,
     fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   content: {
     flex: 1,
@@ -596,27 +629,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    marginHorizontal: 16,
-    marginTop: 8,
-    borderRadius: 12,
+    padding: spacing.md,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  sectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  sectionIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.sm,
+    backgroundColor: `${accentColors.coral}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: fontSizes.md,
     fontWeight: '600',
   },
-  expandIcon: {
-    fontSize: 12,
-  },
   sectionContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
   },
   subsectionTitle: {
-    fontSize: 13,
-    marginTop: 16,
-    marginBottom: 8,
-    marginLeft: 4,
+    fontSize: fontSizes.sm,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    marginLeft: spacing.xs,
   },
   settingRow: {
     flexDirection: 'row',
@@ -624,6 +667,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     borderBottomWidth: 1,
+  },
+  settingRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingRowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   settingLabel: {
     fontSize: 15,
@@ -634,16 +686,16 @@ const styles = StyleSheet.create({
   optionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing.sm,
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
-    gap: 6,
+    gap: spacing.xs,
   },
   optionEmoji: {
     fontSize: 16,
@@ -652,25 +704,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   dangerButton: {
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: spacing.sm,
   },
   dangerButtonText: {
     fontSize: 15,
     fontWeight: '600',
   },
   statsContainer: {
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
+    marginTop: spacing.lg,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: accentColors.surfaceHighlight,
   },
   statsTitle: {
     fontSize: 15,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: spacing.md,
     textAlign: 'center',
   },
   statsRow: {
@@ -691,19 +747,16 @@ const styles = StyleSheet.create({
   socialLinks: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 16,
-    marginTop: 20,
+    gap: spacing.md,
+    marginTop: spacing.lg,
   },
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    gap: 6,
-  },
-  socialEmoji: {
-    fontSize: 16,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    gap: spacing.xs,
   },
   socialText: {
     fontSize: 14,
@@ -711,7 +764,7 @@ const styles = StyleSheet.create({
   credits: {
     textAlign: 'center',
     fontSize: 12,
-    marginTop: 24,
+    marginTop: spacing.xl,
     lineHeight: 18,
   },
 });

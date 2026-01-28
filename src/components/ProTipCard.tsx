@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Share, Alert } from 'react-native';
 import Animated, { SlideInUp } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 type TipCategory = 'general' | 'timing' | 'conversation' | 'psychology' | 'humor';
 
@@ -15,12 +16,12 @@ interface ProTipCardProps {
   showActions?: boolean;
 }
 
-const CATEGORY_CONFIG: Record<TipCategory, { emoji: string; label: string; color: string }> = {
-  general: { emoji: '💡', label: 'General', color: '#6366f1' },
-  timing: { emoji: '⏰', label: 'Timing', color: '#f59e0b' },
-  conversation: { emoji: '💬', label: 'Conversation', color: '#22c55e' },
-  psychology: { emoji: '🧠', label: 'Psychology', color: '#8b5cf6' },
-  humor: { emoji: '😄', label: 'Humor', color: '#ec4899' },
+const CATEGORY_CONFIG: Record<TipCategory, { icon: keyof typeof Ionicons.glyphName; label: string; color: string }> = {
+  general: { icon: 'bulb' as any, label: 'General', color: accentColors.coral },
+  timing: { icon: 'time' as any, label: 'Timing', color: '#f59e0b' },
+  conversation: { icon: 'chatbubble' as any, label: 'Conversation', color: '#22c55e' },
+  psychology: { icon: 'brain' as any, label: 'Psychology', color: accentColors.gradientPurple },
+  humor: { icon: 'happy' as any, label: 'Humor', color: '#ec4899' },
 };
 
 // Tip of the day database
@@ -109,7 +110,7 @@ export function ProTipCard({
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.emoji}>{config.emoji}</Text>
+          <Ionicons name={config.icon as any} size={16} color={config.color} />
           <Text style={[styles.label, { color: config.color }]}>PRO TIP</Text>
           <View style={[styles.categoryBadge, { backgroundColor: `${config.color}30` }]}>
             <Text style={[styles.categoryText, { color: config.color }]}>
@@ -119,7 +120,7 @@ export function ProTipCard({
         </View>
         {onDismiss && (
           <TouchableOpacity onPress={handleDismiss} style={styles.dismissButton}>
-            <Text style={styles.dismissText}>✕</Text>
+            <Ionicons name="close" size={18} color={darkColors.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
@@ -134,14 +135,14 @@ export function ProTipCard({
             onPress={handleSave}
             style={[styles.actionButton, saved && styles.actionButtonActive]}
           >
-            <Text style={styles.actionIcon}>{saved ? '❤️' : '🤍'}</Text>
+            <Ionicons name={saved ? 'heart' : 'heart-outline'} size={16} color={saved ? accentColors.rose : darkColors.textSecondary} />
             <Text style={styles.actionLabel}>
               {saved ? 'Saved' : 'Save'}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={handleShare} style={styles.actionButton}>
-            <Text style={styles.actionIcon}>📤</Text>
+            <Ionicons name="share-outline" size={16} color={darkColors.textSecondary} />
             <Text style={styles.actionLabel}>Share</Text>
           </TouchableOpacity>
         </View>
@@ -175,10 +176,11 @@ export function TipOfTheDay({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: `${darkColors.primary}15`,
+    backgroundColor: `${accentColors.coral}10`,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     borderWidth: 1,
+    borderLeftWidth: 3,
   },
   header: {
     flexDirection: 'row',
@@ -190,10 +192,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  emoji: {
-    fontSize: 16,
-    marginRight: spacing.xs,
-  },
+  // emoji replaced by Ionicons
   label: {
     fontSize: fontSizes.xs,
     fontWeight: 'bold',
@@ -211,10 +210,7 @@ const styles = StyleSheet.create({
   dismissButton: {
     padding: spacing.xs,
   },
-  dismissText: {
-    color: darkColors.textSecondary,
-    fontSize: fontSizes.md,
-  },
+  // dismissText removed - using Ionicons
   tipText: {
     color: darkColors.text,
     fontSize: fontSizes.sm,
@@ -236,10 +232,7 @@ const styles = StyleSheet.create({
   actionButtonActive: {
     opacity: 1,
   },
-  actionIcon: {
-    fontSize: 16,
-    marginRight: 4,
-  },
+  // actionIcon removed - using Ionicons
   actionLabel: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.xs,

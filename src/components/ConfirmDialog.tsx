@@ -5,9 +5,11 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Modal } from './Modal';
 import { Button, ButtonVariant } from './Button';
-import { darkColors, spacing, fontSizes } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 export interface ConfirmDialogProps {
   visible: boolean;

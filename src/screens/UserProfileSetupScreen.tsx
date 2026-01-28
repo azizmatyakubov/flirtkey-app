@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Localization from 'expo-localization';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 import { useStore } from '../stores/useStore';
 import { Culture } from '../types';
 
@@ -139,14 +141,19 @@ export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupSc
       <View style={styles.header}>
         {fromSettings && (
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>← Back</Text>
+            <Ionicons name="arrow-back" size={24} color={accentColors.coral} />
           </TouchableOpacity>
         )}
       </View>
 
       {/* Title */}
       <View style={styles.titleContainer}>
-        <Text style={styles.icon}>👤</Text>
+        <LinearGradient
+          colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+          style={styles.iconCircle}
+        >
+          <Ionicons name="person" size={32} color="#FFFFFF" />
+        </LinearGradient>
         <Text style={styles.title}>Your Profile</Text>
         <Text style={styles.subtitle}>Help FlirtKey personalize your experience</Text>
       </View>
@@ -249,8 +256,16 @@ export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupSc
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>{fromSettings ? 'Save Changes' : 'Continue'}</Text>
+        <TouchableOpacity onPress={handleSave} activeOpacity={0.8}>
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.saveButton}
+          >
+            <Text style={styles.saveButtonText}>{fromSettings ? 'Save Changes' : 'Continue'}</Text>
+            <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+          </LinearGradient>
         </TouchableOpacity>
 
         {!fromSettings && (
@@ -285,9 +300,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.xl,
   },
-  icon: {
-    fontSize: 56,
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: spacing.md,
+    ...shadows.glow,
   },
   title: {
     fontSize: fontSizes.xxl,
@@ -437,10 +457,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
   },
   saveButton: {
-    backgroundColor: darkColors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
+    ...shadows.glow,
   },
   saveButtonText: {
     color: '#fff',

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Text, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 // Tab param list type
 export type BottomTabParamList = {
@@ -15,14 +17,19 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 // Tab bar icon component
 interface TabIconProps {
   focused: boolean;
-  emoji: string;
+  iconName: keyof typeof Ionicons.glyphName;
+  iconNameOutline: keyof typeof Ionicons.glyphName;
   label: string;
 }
 
-function TabIcon({ focused, emoji, label }: TabIconProps) {
+function TabIcon({ focused, iconName, iconNameOutline, label }: TabIconProps) {
   return (
     <View style={styles.tabIconContainer}>
-      <Text style={[styles.tabEmoji, focused && styles.tabEmojiActive]}>{emoji}</Text>
+      <Ionicons
+        name={(focused ? iconName : iconNameOutline) as any}
+        size={24}
+        color={focused ? accentColors.coral : darkColors.textTertiary}
+      />
       <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
     </View>
   );
@@ -34,8 +41,8 @@ export function BottomTabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#6366f1',
-        tabBarInactiveTintColor: '#666',
+        tabBarActiveTintColor: accentColors.coral,
+        tabBarInactiveTintColor: darkColors.textTertiary,
         tabBarShowLabel: false,
       }}
     >
@@ -43,14 +50,28 @@ export function BottomTabNavigator() {
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon focused={focused} emoji="💬" label="Chats" />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              iconName={'chatbubbles' as any}
+              iconNameOutline={'chatbubbles-outline' as any}
+              label="Chats"
+            />
+          ),
         }}
       />
       <Tab.Screen
         name="SettingsTab"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon focused={focused} emoji="⚙️" label="Settings" />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              iconName={'settings' as any}
+              iconNameOutline={'settings-outline' as any}
+              label="Settings"
+            />
+          ),
         }}
       />
     </Tab.Navigator>
@@ -59,8 +80,8 @@ export function BottomTabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#1a1a2e',
-    borderTopColor: '#333',
+    backgroundColor: darkColors.surface,
+    borderTopColor: darkColors.border,
     borderTopWidth: 1,
     height: 70,
     paddingTop: 8,
@@ -70,20 +91,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabEmoji: {
-    fontSize: 22,
-    opacity: 0.6,
-  },
-  tabEmojiActive: {
-    opacity: 1,
-  },
   tabLabel: {
     fontSize: 11,
     marginTop: 4,
-    color: '#666',
+    color: darkColors.textTertiary,
   },
   tabLabelActive: {
-    color: '#6366f1',
+    color: accentColors.coral,
     fontWeight: '600',
   },
 });

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Linking, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 type PermissionStatus = 'undetermined' | 'granted' | 'denied' | 'limited';
 
@@ -32,7 +34,7 @@ export function PermissionsScreen({ navigation, route }: PermissionsScreenProps)
       id: 'photos',
       title: 'Photo Library',
       description: 'Access your photos to analyze chat screenshots',
-      icon: '📷',
+      icon: 'images',
       status: 'undetermined',
       required: true,
     },
@@ -40,7 +42,7 @@ export function PermissionsScreen({ navigation, route }: PermissionsScreenProps)
       id: 'camera',
       title: 'Camera',
       description: 'Take photos of chat screens directly',
-      icon: '📸',
+      icon: 'camera',
       status: 'undetermined',
       required: false,
     },
@@ -48,7 +50,7 @@ export function PermissionsScreen({ navigation, route }: PermissionsScreenProps)
       id: 'notifications',
       title: 'Notifications',
       description: 'Get tips and reminders (optional)',
-      icon: '🔔',
+      icon: 'notifications',
       status: 'undetermined',
       required: false,
     },
@@ -261,15 +263,21 @@ export function PermissionsScreen({ navigation, route }: PermissionsScreenProps)
       <View style={styles.header}>
         {fromSettings && (
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backText}>← Back</Text>
+            <Ionicons name="arrow-back" size={24} color={accentColors.coral} />
           </TouchableOpacity>
         )}
       </View>
 
       {/* Title */}
       <View style={styles.titleContainer}>
+        <LinearGradient
+          colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+          style={styles.titleIconCircle}
+        >
+          <Ionicons name="shield-checkmark" size={32} color="#FFFFFF" />
+        </LinearGradient>
         <Text style={styles.title}>Permissions</Text>
-        <Text style={styles.subtitle}>FlirtKey needs a few permissions to work its magic ✨</Text>
+        <Text style={styles.subtitle}>FlirtKey needs a few permissions to work its magic</Text>
       </View>
 
       {/* Permission Cards */}
@@ -283,7 +291,9 @@ export function PermissionsScreen({ navigation, route }: PermissionsScreenProps)
             ]}
           >
             <View style={styles.permissionHeader}>
-              <Text style={styles.permissionIcon}>{permission.icon}</Text>
+              <View style={styles.permissionIconCircle}>
+                <Ionicons name={permission.icon as any} size={24} color={accentColors.coral} />
+              </View>
               <View style={styles.permissionInfo}>
                 <View style={styles.permissionTitleRow}>
                   <Text style={styles.permissionTitle}>{permission.title}</Text>
@@ -327,20 +337,30 @@ export function PermissionsScreen({ navigation, route }: PermissionsScreenProps)
 
       {/* Platform-specific note */}
       <View style={styles.noteContainer}>
+        <Ionicons name="bulb" size={16} color={accentColors.gold} />
         <Text style={styles.noteText}>
           {Platform.OS === 'ios'
-            ? '💡 You can change these anytime in Settings → FlirtKey'
-            : '💡 You can change these anytime in Settings → Apps → FlirtKey'}
+            ? 'You can change these anytime in Settings → FlirtKey'
+            : 'You can change these anytime in Settings → Apps → FlirtKey'}
         </Text>
       </View>
 
       {/* Bottom Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.continueButton, !allRequiredGranted && styles.continueButtonDisabled]}
           onPress={handleContinue}
+          activeOpacity={0.8}
+          style={!allRequiredGranted ? styles.continueButtonDisabled : undefined}
         >
-          <Text style={styles.continueButtonText}>Continue</Text>
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.continueButton}
+          >
+            <Text style={styles.continueButtonText}>Continue</Text>
+            <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+          </LinearGradient>
         </TouchableOpacity>
 
         {!fromSettings && (
@@ -370,6 +390,16 @@ const styles = StyleSheet.create({
   titleContainer: {
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.xl,
+    alignItems: 'center',
+  },
+  titleIconCircle: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+    ...shadows.glow,
   },
   title: {
     fontSize: fontSizes.xxl,
@@ -400,8 +430,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: spacing.md,
   },
-  permissionIcon: {
-    fontSize: 32,
+  permissionIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    backgroundColor: `${accentColors.coral}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: spacing.md,
   },
   permissionInfo: {
@@ -462,13 +497,16 @@ const styles = StyleSheet.create({
     color: darkColors.text,
   },
   noteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
     paddingHorizontal: spacing.lg,
     marginTop: spacing.xl,
   },
   noteText: {
     fontSize: fontSizes.sm,
     color: darkColors.textSecondary,
-    textAlign: 'center',
   },
   buttonContainer: {
     flex: 1,
@@ -477,10 +515,13 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   continueButton: {
-    backgroundColor: darkColors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
+    ...shadows.glow,
   },
   continueButtonDisabled: {
     opacity: 0.6,

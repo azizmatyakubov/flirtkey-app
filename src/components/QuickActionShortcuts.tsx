@@ -2,15 +2,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 interface QuickAction {
   id: string;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphName;
   label: string;
   action: () => void;
   color?: string;
+  gradientColors?: [string, string];
 }
 
 interface QuickActionShortcutsProps {
@@ -35,41 +38,45 @@ export function QuickActionShortcuts({
   const actions: QuickAction[] = [
     {
       id: 'flirty',
-      icon: '🔥',
+      icon: 'flame' as any,
       label: 'Bold reply',
       action: onGenerateFlirty,
-      color: darkColors.bold,
+      gradientColors: [darkColors.bold, '#FF8888'],
     },
     {
       id: 'safe',
-      icon: '💚',
+      icon: 'shield-checkmark' as any,
       label: 'Safe reply',
       action: onGenerateSafe,
-      color: darkColors.safe,
+      gradientColors: [darkColors.safe, '#5DE0A0'],
     },
     {
       id: 'screenshot',
-      icon: '📸',
+      icon: 'camera' as any,
       label: 'Analyze',
       action: onAnalyzeScreenshot,
+      gradientColors: [accentColors.coral, accentColors.gradientEnd],
     },
     {
       id: 'starter',
-      icon: '💬',
+      icon: 'chatbubble' as any,
       label: 'Starter',
       action: onGetConversationStarter,
+      gradientColors: [accentColors.gradientPurple, '#C084FC'],
     },
     {
       id: 'date',
-      icon: '📅',
+      icon: 'calendar' as any,
       label: 'Date idea',
       action: onGetDateIdea,
+      gradientColors: [accentColors.gold, '#FFE566'],
     },
     {
       id: 'history',
-      icon: '📜',
+      icon: 'time' as any,
       label: 'History',
       action: onViewHistory,
+      gradientColors: ['#3B82F6', '#60A5FA'],
     },
   ];
 
@@ -99,11 +106,14 @@ export function QuickActionShortcuts({
             style={styles.actionButton}
             activeOpacity={0.7}
           >
-            <View
-              style={[styles.iconContainer, action.color ? { borderColor: action.color } : null]}
+            <LinearGradient
+              colors={action.gradientColors || [accentColors.gradientStart, accentColors.gradientEnd]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.iconContainer}
             >
-              <Text style={styles.icon}>{action.icon}</Text>
-            </View>
+              <Ionicons name={action.icon as any} size={22} color="#FFFFFF" />
+            </LinearGradient>
             <Text style={styles.label}>{action.label}</Text>
           </TouchableOpacity>
         ))}
@@ -130,13 +140,13 @@ export function QuickActionToolbar({
   return (
     <View style={styles.toolbar}>
       <TouchableOpacity onPress={() => handlePress(onGenerate)} style={styles.toolbarButton}>
-        <Text style={styles.toolbarIcon}>✨</Text>
+        <Ionicons name="sparkles" size={18} color={accentColors.coral} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handlePress(onScreenshot)} style={styles.toolbarButton}>
-        <Text style={styles.toolbarIcon}>📸</Text>
+        <Ionicons name="camera" size={18} color={accentColors.coral} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handlePress(onHistory)} style={styles.toolbarButton}>
-        <Text style={styles.toolbarIcon}>📜</Text>
+        <Ionicons name="time" size={18} color={accentColors.coral} />
       </TouchableOpacity>
     </View>
   );
@@ -166,15 +176,9 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: borderRadius.lg,
-    backgroundColor: darkColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: darkColors.border,
     marginBottom: spacing.xs,
-  },
-  icon: {
-    fontSize: 22,
   },
   label: {
     color: darkColors.textSecondary,
@@ -196,7 +200,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: darkColors.background,
   },
-  toolbarIcon: {
-    fontSize: 18,
-  },
+  // toolbarIcon removed - using Ionicons
 });

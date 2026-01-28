@@ -10,7 +10,9 @@ import Animated, {
   cancelAnimation,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 // Note: expo-speech-to-text or expo-av would be used in production
 // This is a mock implementation for UI purposes
@@ -108,7 +110,16 @@ export function VoiceInput({ onTranscript: _onTranscript, disabled = false }: Vo
         style={[styles.button, disabled && styles.buttonDisabled]}
       >
         {isListening && <Animated.View style={[styles.pulse, pulseStyle]} />}
-        <Text style={styles.icon}>{isListening ? '🔴' : '🎤'}</Text>
+        {isListening ? (
+          <Ionicons name="radio-button-on" size={22} color={darkColors.error} />
+        ) : (
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            style={styles.micGradient}
+          >
+            <Ionicons name="mic" size={22} color="#FFFFFF" />
+          </LinearGradient>
+        )}
       </TouchableOpacity>
       {isListening && <Text style={styles.listeningText}>Listening...</Text>}
     </View>
@@ -142,8 +153,12 @@ const styles = StyleSheet.create({
     backgroundColor: darkColors.error,
     zIndex: -1,
   },
-  icon: {
-    fontSize: 20,
+  micGradient: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listeningText: {
     color: darkColors.error,

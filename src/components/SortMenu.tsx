@@ -12,7 +12,8 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 export type SortOption = {
   key: string;

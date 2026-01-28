@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 interface QuickPhrasesProps {
   onSelect: (phrase: string) => void;
@@ -96,15 +96,15 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   chip: {
-    backgroundColor: darkColors.surface,
+    backgroundColor: `${accentColors.coral}12`,
     borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: darkColors.border,
+    borderColor: `${accentColors.coral}30`,
   },
   chipText: {
-    color: darkColors.text,
+    color: accentColors.coral,
     fontSize: fontSizes.sm,
   },
 });

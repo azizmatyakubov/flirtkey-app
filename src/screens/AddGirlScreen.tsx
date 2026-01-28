@@ -15,6 +15,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useStore } from '../stores/useStore';
 import { Culture, RelationshipStage } from '../types';
 import { TextInput } from '../components/TextInput';
@@ -25,7 +27,7 @@ import { ConfirmDialog, UnsavedChangesDialog } from '../components/ConfirmDialog
 import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { validateName, validateAge } from '../utils/validation';
-import { spacing } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 const CULTURES: { key: Culture; label: string; emoji: string }[] = [
   { key: 'uzbek', label: 'Uzbek', emoji: '🇺🇿' },
@@ -87,7 +89,7 @@ export function AddGirlScreen({ navigation }: any) {
     }
   }, [selectedImage]);
 
-  // Dismiss keyboard on tap outside
+  // Dismiss keyboard on tap
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -97,14 +99,12 @@ export function AddGirlScreen({ navigation }: any) {
     const newErrors: FormErrors = {};
     let isValid = true;
 
-    // Validate name
     const nameResult = validateName(name);
     if (!nameResult.valid) {
       newErrors.name = nameResult.error;
       isValid = false;
     }
 
-    // Validate age (optional but must be valid if provided)
     if (age) {
       const ageResult = validateAge(parseInt(age, 10));
       if (!ageResult.valid) {
@@ -115,7 +115,6 @@ export function AddGirlScreen({ navigation }: any) {
 
     setErrors(newErrors);
 
-    // Scroll to first error
     if (!isValid) {
       scrollViewRef.current?.scrollTo({ y: 0, animated: true });
     }
@@ -123,7 +122,6 @@ export function AddGirlScreen({ navigation }: any) {
     return isValid;
   }, [name, age]);
 
-  // Handle photo selection
   const handleSelectPhoto = async () => {
     const result = await pickFromLibrary();
     if (result?.uri) {
@@ -131,13 +129,11 @@ export function AddGirlScreen({ navigation }: any) {
     }
   };
 
-  // Handle remove photo
   const handleRemovePhoto = () => {
     setAvatar(undefined);
     clearImage();
   };
 
-  // Handle save with confirmation
   const handleSavePress = () => {
     dismissKeyboard();
     if (!validateForm()) {
@@ -150,7 +146,6 @@ export function AddGirlScreen({ navigation }: any) {
     setShowSaveConfirm(true);
   };
 
-  // Perform save
   const handleConfirmSave = async () => {
     setIsSaving(true);
     try {
@@ -166,7 +161,7 @@ export function AddGirlScreen({ navigation }: any) {
       });
 
       showToast({
-        message: `${name.trim()} added successfully! 🎉`,
+        message: `${name.trim()} added successfully!`,
         type: 'success',
       });
 
@@ -182,7 +177,6 @@ export function AddGirlScreen({ navigation }: any) {
     }
   };
 
-  // Handle cancel with confirmation if dirty
   const handleCancel = () => {
     dismissKeyboard();
     if (isDirty) {
@@ -192,13 +186,11 @@ export function AddGirlScreen({ navigation }: any) {
     }
   };
 
-  // Handle discard
   const handleDiscard = () => {
     setShowDiscardConfirm(false);
     navigation.goBack();
   };
 
-  // Clear field error on change
   const handleNameChange = (value: string) => {
     setName(value);
     if (errors.name) {
@@ -207,7 +199,6 @@ export function AddGirlScreen({ navigation }: any) {
   };
 
   const handleAgeChange = (value: string) => {
-    // Only allow digits
     const numericValue = value.replace(/[^0-9]/g, '');
     setAge(numericValue);
     if (errors.age) {
@@ -220,18 +211,27 @@ export function AddGirlScreen({ navigation }: any) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleCancel}>
-          <Text style={styles.cancel}>Cancel</Text>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <TouchableOpacity onPress={handleCancel} style={styles.headerButton}>
+          <Ionicons name="close" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.title}>Add Someone</Text>
-        <TouchableOpacity onPress={handleSavePress} disabled={!name.trim() || isSaving}>
+        <TouchableOpacity
+          onPress={handleSavePress}
+          disabled={!name.trim() || isSaving}
+          style={styles.headerButton}
+        >
           <Text style={[styles.save, (!name.trim() || isSaving) && styles.saveDisabled]}>
             {isSaving ? 'Saving...' : 'Save'}
           </Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         ref={scrollViewRef}
@@ -239,7 +239,7 @@ export function AddGirlScreen({ navigation }: any) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Profile Photo (4.1.9) */}
+        {/* Profile Photo */}
         <View style={styles.photoSection}>
           <Avatar
             name={name || 'New'}
@@ -266,7 +266,7 @@ export function AddGirlScreen({ navigation }: any) {
           </View>
         </View>
 
-        {/* Name (4.1.10) */}
+        {/* Name */}
         <TextInput
           ref={nameInputRef}
           label="Name"
@@ -279,7 +279,7 @@ export function AddGirlScreen({ navigation }: any) {
           returnKeyType="next"
         />
 
-        {/* Age (4.1.10) */}
+        {/* Age */}
         <TextInput
           label="Age"
           value={age}
@@ -339,15 +339,18 @@ export function AddGirlScreen({ navigation }: any) {
           maxLength={200}
         />
 
-        <Text style={styles.hint}>
-          💡 You can add more details later (inside jokes, things to avoid, etc.)
-        </Text>
+        <View style={styles.hintContainer}>
+          <Ionicons name="bulb" size={16} color={accentColors.gold} />
+          <Text style={styles.hint}>
+            You can add more details later (inside jokes, things to avoid, etc.)
+          </Text>
+        </View>
 
         {/* Extra padding for keyboard */}
         <View style={styles.bottomPadding} />
       </ScrollView>
 
-      {/* Save Confirmation Dialog (4.1.11) */}
+      {/* Save Confirmation Dialog */}
       <ConfirmDialog
         visible={showSaveConfirm}
         onClose={() => setShowSaveConfirm(false)}
@@ -361,7 +364,7 @@ export function AddGirlScreen({ navigation }: any) {
         icon="👩"
       />
 
-      {/* Discard Confirmation Dialog (4.1.12) */}
+      {/* Discard Confirmation Dialog */}
       <UnsavedChangesDialog
         visible={showDiscardConfirm}
         onClose={() => setShowDiscardConfirm(false)}
@@ -374,35 +377,34 @@ export function AddGirlScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: darkColors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: spacing.lg,
     paddingTop: 60,
-    backgroundColor: '#1a1a2e',
+    paddingBottom: spacing.md,
   },
-  cancel: {
-    color: '#888',
-    fontSize: 16,
+  headerButton: {
+    padding: spacing.xs,
   },
   title: {
-    color: '#fff',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: fontSizes.lg,
     fontWeight: 'bold',
   },
   save: {
-    color: '#6366f1',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: fontSizes.md,
     fontWeight: '600',
   },
   saveDisabled: {
     opacity: 0.5,
   },
   form: {
-    padding: 20,
+    padding: spacing.lg,
   },
   photoSection: {
     alignItems: 'center',
@@ -414,10 +416,16 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginTop: spacing.md,
   },
+  hintContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.lg,
+  },
   hint: {
-    color: '#666',
-    fontSize: 13,
-    marginTop: 20,
+    color: darkColors.textSecondary,
+    fontSize: fontSizes.sm,
     textAlign: 'center',
   },
   bottomPadding: {

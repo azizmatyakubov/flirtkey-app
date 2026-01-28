@@ -5,8 +5,9 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Button, ButtonProps } from './Button';
-import { darkColors, spacing, fontSizes } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 export interface EmptyStateProps {
   icon?: string;
@@ -29,7 +30,11 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <View style={[styles.container, style]}>
-      {icon && <Text style={styles.icon}>{icon}</Text>}
+      {icon && (
+        <View style={styles.iconContainer}>
+          <Text style={styles.icon}>{icon}</Text>
+        </View>
+      )}
       <Text style={styles.title}>{title}</Text>
       {message && <Text style={styles.message}>{message}</Text>}
       {action && (
@@ -51,9 +56,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.xl,
   },
-  icon: {
-    fontSize: 60,
+  iconContainer: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: `${accentColors.coral}12`,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: spacing.md,
+  },
+  icon: {
+    fontSize: 42,
   },
   title: {
     color: darkColors.text,

@@ -11,15 +11,16 @@ import Animated, {
   withSpring,
   SlideInRight,
 } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Suggestion } from '../types';
-import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, fontSizes, spacing, borderRadius, shadows } from '../constants/theme';
 
 const SUGGESTION_COLORS = {
-  safe: { bg: '#22c55e20', border: '#22c55e', emoji: '🟢' },
-  balanced: { bg: '#f59e0b20', border: '#f59e0b', emoji: '🟡' },
-  bold: { bg: '#ef444420', border: '#ef4444', emoji: '🔴' },
+  safe: { bg: `${darkColors.safe}15`, border: darkColors.safe, label: 'SAFE' },
+  balanced: { bg: `${darkColors.balanced}15`, border: darkColors.balanced, label: 'BALANCED' },
+  bold: { bg: `${darkColors.bold}15`, border: darkColors.bold, label: 'BOLD' },
 };
 
 interface AnimatedSuggestionCardProps {
@@ -32,7 +33,6 @@ interface AnimatedSuggestionCardProps {
   isFavorite?: boolean;
 }
 
-// Pure comparison function for memo
 const areEqual = (
   prevProps: AnimatedSuggestionCardProps,
   nextProps: AnimatedSuggestionCardProps
@@ -69,12 +69,11 @@ function AnimatedSuggestionCardBase({
     setCopied(true);
     onUse?.(suggestion);
 
-    // Visual feedback
     scale.value = withSpring(0.95, {}, () => {
       scale.value = withSpring(1);
     });
 
-    Alert.alert('Copied! 📋', 'Paste it in your chat');
+    Alert.alert('Copied!', 'Paste it in your chat');
 
     setTimeout(() => setCopied(false), 2000);
   };
@@ -89,18 +88,32 @@ function AnimatedSuggestionCardBase({
       entering={SlideInRight.delay(index * 100).springify()}
       style={[
         styles.container,
-        { backgroundColor: colors.bg, borderColor: colors.border },
+        {
+          backgroundColor: colors.bg,
+          borderLeftColor: colors.border,
+        },
         animatedStyle,
       ]}
     >
       <TouchableOpacity onPress={handleCopy} activeOpacity={0.8}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.emoji}>{colors.emoji}</Text>
-          <Text style={[styles.type, { color: colors.border }]}>
-            {suggestion.type.toUpperCase()}
-          </Text>
-          <Text style={styles.copyHint}>{copied ? '✓ Copied!' : 'Tap to copy'}</Text>
+          <View style={[styles.typeBadge, { backgroundColor: `${colors.border}25` }]}>
+            <View style={[styles.typeDot, { backgroundColor: colors.border }]} />
+            <Text style={[styles.type, { color: colors.border }]}>
+              {colors.label}
+            </Text>
+          </View>
+          <View style={styles.copyHintContainer}>
+            <Ionicons
+              name={copied ? 'checkmark-circle' : 'copy-outline'}
+              size={14}
+              color={copied ? darkColors.success : darkColors.textSecondary}
+            />
+            <Text style={[styles.copyHint, copied && { color: darkColors.success }]}>
+              {copied ? 'Copied!' : 'Tap to copy'}
+            </Text>
+          </View>
         </View>
 
         {/* Text */}
@@ -120,7 +133,11 @@ function AnimatedSuggestionCardBase({
             }}
             style={styles.actionButton}
           >
-            <Text style={styles.actionText}>{isFavorite ? '❤️' : '🤍'}</Text>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={18}
+              color={isFavorite ? accentColors.rose : darkColors.textSecondary}
+            />
           </TouchableOpacity>
         )}
 
@@ -132,17 +149,17 @@ function AnimatedSuggestionCardBase({
             }}
             style={styles.actionButton}
           >
-            <Text style={styles.actionText}>✏️</Text>
+            <Ionicons name="pencil" size={18} color={darkColors.textSecondary} />
           </TouchableOpacity>
         )}
 
         {onFeedback && (
           <View style={styles.feedbackContainer}>
             <TouchableOpacity onPress={() => handleFeedback(true)} style={styles.actionButton}>
-              <Text style={styles.actionText}>👍</Text>
+              <Ionicons name="thumbs-up-outline" size={18} color={darkColors.textSecondary} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleFeedback(false)} style={styles.actionButton}>
-              <Text style={styles.actionText}>👎</Text>
+              <Ionicons name="thumbs-down-outline" size={18} color={darkColors.textSecondary} />
             </TouchableOpacity>
           </View>
         )}
@@ -156,25 +173,43 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
+    borderLeftWidth: 3,
     borderWidth: 1,
+    borderColor: darkColors.border,
+    ...shadows.sm,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: spacing.sm,
   },
-  emoji: {
-    fontSize: fontSizes.md,
-    marginRight: spacing.sm,
+  typeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: borderRadius.full,
+    gap: 6,
+  },
+  typeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   type: {
     fontSize: fontSizes.xs,
     fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  copyHintContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   copyHint: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
-    marginLeft: 'auto',
   },
   text: {
     color: darkColors.text,
@@ -193,14 +228,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopColor: `${darkColors.border}80`,
   },
   actionButton: {
     padding: spacing.xs,
     marginLeft: spacing.sm,
-  },
-  actionText: {
-    fontSize: 18,
   },
   feedbackContainer: {
     flexDirection: 'row',
@@ -208,7 +240,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// Export memoized component
 export const AnimatedSuggestionCard = memo(AnimatedSuggestionCardBase, areEqual);
 AnimatedSuggestionCard.displayName = 'AnimatedSuggestionCard';
 

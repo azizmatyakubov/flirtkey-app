@@ -9,21 +9,24 @@ import {
   Alert,
   Switch,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useSettingsStore, ResponseTone, ResponseLength } from '../stores/settingsStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { Modal } from '../components/Modal';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 // ==========================================
 // Constants
 // ==========================================
 
-const RESPONSE_TONES: { key: ResponseTone; label: string; emoji: string; description: string }[] = [
-  { key: 'flirty', label: 'Flirty', emoji: '😏', description: 'Teasing and playful' },
-  { key: 'casual', label: 'Casual', emoji: '😊', description: 'Relaxed and friendly' },
-  { key: 'confident', label: 'Confident', emoji: '😎', description: 'Bold and assertive' },
-  { key: 'romantic', label: 'Romantic', emoji: '💕', description: 'Sweet and sincere' },
-  { key: 'playful', label: 'Playful', emoji: '😜', description: 'Fun and witty' },
+const RESPONSE_TONES: { key: ResponseTone; label: string; icon: keyof typeof Ionicons.glyphName; description: string }[] = [
+  { key: 'flirty', label: 'Flirty', icon: 'flame' as any, description: 'Teasing and playful' },
+  { key: 'casual', label: 'Casual', icon: 'happy' as any, description: 'Relaxed and friendly' },
+  { key: 'confident', label: 'Confident', icon: 'shield-checkmark' as any, description: 'Bold and assertive' },
+  { key: 'romantic', label: 'Romantic', icon: 'heart' as any, description: 'Sweet and sincere' },
+  { key: 'playful', label: 'Playful', icon: 'game-controller' as any, description: 'Fun and witty' },
 ];
 
 const RESPONSE_LENGTHS: { key: ResponseLength; label: string; description: string }[] = [
@@ -35,12 +38,12 @@ const RESPONSE_LENGTHS: { key: ResponseLength; label: string; description: strin
 const BOLDNESS_OPTIONS: {
   key: 'safe' | 'balanced' | 'bold';
   label: string;
-  emoji: string;
+  color: string;
   description: string;
 }[] = [
-  { key: 'safe', label: 'Safe', emoji: '🟢', description: 'Conservative suggestions' },
-  { key: 'balanced', label: 'Balanced', emoji: '🟡', description: 'Mix of safe and bold' },
-  { key: 'bold', label: 'Bold', emoji: '🔴', description: 'More daring suggestions' },
+  { key: 'safe', label: 'Safe', color: darkColors.safe, description: 'Conservative suggestions' },
+  { key: 'balanced', label: 'Balanced', color: darkColors.balanced, description: 'Mix of safe and bold' },
+  { key: 'bold', label: 'Bold', color: darkColors.bold, description: 'More daring suggestions' },
 ];
 
 // ==========================================
@@ -123,8 +126,8 @@ export function PreferencesScreen({ navigation }: any) {
         styles.toneOption,
         { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
         preferences.defaultTone === tone.key && {
-          backgroundColor: theme.colors.primary + '20',
-          borderColor: theme.colors.primary,
+          backgroundColor: `${accentColors.coral}15`,
+          borderColor: accentColors.coral,
         },
       ]}
       onPress={() => {
@@ -132,14 +135,20 @@ export function PreferencesScreen({ navigation }: any) {
         setPreferences({ defaultTone: tone.key });
       }}
     >
-      <Text style={styles.toneEmoji}>{tone.emoji}</Text>
+      <View style={[styles.toneIconContainer, preferences.defaultTone === tone.key && { backgroundColor: `${accentColors.coral}20` }]}>
+        <Ionicons
+          name={tone.icon as any}
+          size={22}
+          color={preferences.defaultTone === tone.key ? accentColors.coral : theme.colors.textSecondary}
+        />
+      </View>
       <View style={styles.toneInfo}>
         <Text
           style={[
             styles.toneLabel,
             {
               color:
-                preferences.defaultTone === tone.key ? theme.colors.primary : theme.colors.text,
+                preferences.defaultTone === tone.key ? accentColors.coral : theme.colors.text,
             },
           ]}
         >
@@ -150,7 +159,7 @@ export function PreferencesScreen({ navigation }: any) {
         </Text>
       </View>
       {preferences.defaultTone === tone.key && (
-        <Text style={[styles.checkmark, { color: theme.colors.primary }]}>✓</Text>
+        <Ionicons name="checkmark-circle" size={22} color={accentColors.coral} />
       )}
     </TouchableOpacity>
   );
@@ -162,8 +171,8 @@ export function PreferencesScreen({ navigation }: any) {
         styles.lengthOption,
         { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
         preferences.responseLength === length.key && {
-          backgroundColor: theme.colors.primary + '20',
-          borderColor: theme.colors.primary,
+          backgroundColor: `${accentColors.coral}15`,
+          borderColor: accentColors.coral,
         },
       ]}
       onPress={() => {
@@ -176,7 +185,7 @@ export function PreferencesScreen({ navigation }: any) {
           styles.lengthLabel,
           {
             color:
-              preferences.responseLength === length.key ? theme.colors.primary : theme.colors.text,
+              preferences.responseLength === length.key ? accentColors.coral : theme.colors.text,
           },
         ]}
       >
@@ -188,20 +197,15 @@ export function PreferencesScreen({ navigation }: any) {
     </TouchableOpacity>
   );
 
-  const renderBoldnessOption = (option: {
-    key: 'safe' | 'balanced' | 'bold';
-    label: string;
-    emoji: string;
-    description: string;
-  }) => (
+  const renderBoldnessOption = (option: (typeof BOLDNESS_OPTIONS)[0]) => (
     <TouchableOpacity
       key={option.key}
       style={[
         styles.boldnessOption,
         { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
         preferences.boldnessDefault === option.key && {
-          backgroundColor: theme.colors.primary + '20',
-          borderColor: theme.colors.primary,
+          backgroundColor: `${option.color}15`,
+          borderColor: option.color,
         },
       ]}
       onPress={() => {
@@ -209,13 +213,13 @@ export function PreferencesScreen({ navigation }: any) {
         setPreferences({ boldnessDefault: option.key });
       }}
     >
-      <Text style={styles.boldnessEmoji}>{option.emoji}</Text>
+      <View style={[styles.boldnessDot, { backgroundColor: option.color }]} />
       <Text
         style={[
           styles.boldnessLabel,
           {
             color:
-              preferences.boldnessDefault === option.key ? theme.colors.primary : theme.colors.text,
+              preferences.boldnessDefault === option.key ? option.color : theme.colors.text,
           },
         ]}
       >
@@ -226,6 +230,7 @@ export function PreferencesScreen({ navigation }: any) {
 
   const renderPhraseList = (
     title: string,
+    iconName: keyof typeof Ionicons.glyphName,
     phrases: string[],
     onRemove: (phrase: string) => void,
     onAdd: () => void,
@@ -233,12 +238,23 @@ export function PreferencesScreen({ navigation }: any) {
   ) => (
     <View style={styles.phraseSection}>
       <View style={styles.phraseSectionHeader}>
-        <Text style={[styles.phraseTitle, { color: theme.colors.text }]}>{title}</Text>
+        <View style={styles.phraseTitleRow}>
+          <Ionicons name={iconName as any} size={18} color={accentColors.coral} />
+          <Text style={[styles.phraseTitle, { color: theme.colors.text }]}>{title}</Text>
+        </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: theme.colors.primary }]}
+          style={styles.addButton}
           onPress={onAdd}
         >
-          <Text style={styles.addButtonText}>+ Add</Text>
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.addButtonGradient}
+          >
+            <Ionicons name="add" size={14} color="#FFFFFF" />
+            <Text style={styles.addButtonText}>Add</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
       {phrases.length === 0 ? (
@@ -262,7 +278,7 @@ export function PreferencesScreen({ navigation }: any) {
                   onRemove(phrase);
                 }}
               >
-                <Text style={[styles.removeButton, { color: theme.colors.error }]}>✕</Text>
+                <Ionicons name="close-circle" size={20} color={theme.colors.error} />
               </TouchableOpacity>
             </View>
           ))}
@@ -301,11 +317,15 @@ export function PreferencesScreen({ navigation }: any) {
         >
           <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>Cancel</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
-          onPress={onAdd}
-        >
-          <Text style={styles.modalButtonText}>Add</Text>
+        <TouchableOpacity onPress={onAdd}>
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.modalButton}
+          >
+            <Text style={styles.modalButtonText}>Add</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -317,35 +337,50 @@ export function PreferencesScreen({ navigation }: any) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.back, { color: theme.colors.primary }]}>← Back</Text>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: theme.colors.text }]}>Response Preferences</Text>
-        <View style={{ width: 50 }} />
-      </View>
+        <Text style={styles.headerTitle}>Response Preferences</Text>
+        <View style={{ width: 40 }} />
+      </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Response Tone */}
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          🎭 Default Response Tone
-        </Text>
+        <View style={styles.sectionHeaderRow}>
+          <Ionicons name="color-palette" size={20} color={accentColors.coral} />
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Default Response Tone</Text>
+        </View>
         <Text style={[styles.sectionHint, { color: theme.colors.textSecondary }]}>
           Choose the default personality for AI suggestions
         </Text>
         <View style={styles.toneList}>{RESPONSE_TONES.map(renderToneOption)}</View>
 
         {/* Response Length */}
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>📏 Response Length</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Ionicons name="resize" size={20} color={accentColors.coral} />
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Response Length</Text>
+        </View>
         <View style={styles.lengthRow}>{RESPONSE_LENGTHS.map(renderLengthOption)}</View>
 
         {/* Boldness Default */}
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>🎯 Default Boldness</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Ionicons name="speedometer" size={20} color={accentColors.coral} />
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Default Boldness</Text>
+        </View>
         <View style={styles.boldnessRow}>{BOLDNESS_OPTIONS.map(renderBoldnessOption)}</View>
 
         {/* Toggles */}
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>✨ Enhancements</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Ionicons name="sparkles" size={20} color={accentColors.coral} />
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Enhancements</Text>
+        </View>
         <View style={[styles.toggleRow, { borderBottomColor: theme.colors.border }]}>
           <View>
             <Text style={[styles.toggleLabel, { color: theme.colors.text }]}>Emoji Usage</Text>
@@ -359,7 +394,7 @@ export function PreferencesScreen({ navigation }: any) {
               triggerHaptic();
               setPreferences({ emojiUsage: val });
             }}
-            trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+            trackColor={{ false: theme.colors.border, true: accentColors.coral }}
             thumbColor="#fff"
           />
         </View>
@@ -377,15 +412,16 @@ export function PreferencesScreen({ navigation }: any) {
               triggerHaptic();
               setPreferences({ gifSuggestions: val });
             }}
-            trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+            trackColor={{ false: theme.colors.border, true: accentColors.coral }}
             thumbColor="#fff"
           />
         </View>
 
         {/* Custom Prompt */}
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          📝 Custom Prompt Additions
-        </Text>
+        <View style={styles.sectionHeaderRow}>
+          <Ionicons name="create" size={20} color={accentColors.coral} />
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Custom Prompt Additions</Text>
+        </View>
         <TouchableOpacity
           style={[
             styles.customPromptButton,
@@ -406,12 +442,13 @@ export function PreferencesScreen({ navigation }: any) {
           >
             {preferences.customPromptAdditions || 'Add custom instructions for AI...'}
           </Text>
-          <Text style={[styles.editIcon, { color: theme.colors.primary }]}>✏️</Text>
+          <Ionicons name="pencil" size={18} color={accentColors.coral} />
         </TouchableOpacity>
 
         {/* Blocked Phrases */}
         {renderPhraseList(
-          '🚫 Blocked Phrases',
+          'Blocked Phrases',
+          'ban' as any,
           preferences.blockedPhrases,
           removeBlockedPhrase,
           () => setShowAddBlockedModal(true),
@@ -420,7 +457,8 @@ export function PreferencesScreen({ navigation }: any) {
 
         {/* Favorite Phrases */}
         {renderPhraseList(
-          '⭐ Favorite Phrases',
+          'Favorite Phrases',
+          'star' as any,
           preferences.favoritePhrases,
           removeFavoritePhrase,
           () => setShowAddFavoriteModal(true),
@@ -429,7 +467,8 @@ export function PreferencesScreen({ navigation }: any) {
 
         {/* Quick Reply Templates */}
         {renderPhraseList(
-          '⚡ Quick Reply Templates',
+          'Quick Reply Templates',
+          'flash' as any,
           preferences.quickReplyTemplates,
           removeQuickReply,
           () => setShowAddQuickReplyModal(true),
@@ -501,11 +540,15 @@ export function PreferencesScreen({ navigation }: any) {
           >
             <Text style={[styles.modalButtonText, { color: theme.colors.text }]}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
-            onPress={handleSaveCustomPrompt}
-          >
-            <Text style={styles.modalButtonText}>Save</Text>
+          <TouchableOpacity onPress={handleSaveCustomPrompt}>
+            <LinearGradient
+              colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Save</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -525,43 +568,55 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: spacing.lg,
     paddingTop: 60,
+    paddingBottom: spacing.md,
   },
-  back: {
-    fontSize: 16,
+  headerButton: {
+    padding: spacing.xs,
   },
-  title: {
-    fontSize: 18,
+  headerTitle: {
+    fontSize: fontSizes.lg,
     fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: spacing.md,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: fontSizes.md,
     fontWeight: '600',
-    marginTop: 24,
-    marginBottom: 8,
   },
   sectionHint: {
-    fontSize: 13,
-    marginBottom: 12,
+    fontSize: fontSizes.sm,
+    marginBottom: spacing.md,
   },
   toneList: {
-    gap: 10,
+    gap: spacing.sm,
   },
   toneOption: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
   },
-  toneEmoji: {
-    fontSize: 24,
-    marginRight: 12,
+  toneIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.md,
+    backgroundColor: `${darkColors.textTertiary}20`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
   },
   toneInfo: {
     flex: 1,
@@ -574,18 +629,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 2,
   },
-  checkmark: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   lengthRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: spacing.sm,
   },
   lengthOption: {
     flex: 1,
     padding: 14,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
     alignItems: 'center',
   },
@@ -600,7 +651,7 @@ const styles = StyleSheet.create({
   },
   boldnessRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: spacing.sm,
   },
   boldnessOption: {
     flex: 1,
@@ -608,12 +659,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
-    gap: 8,
+    gap: spacing.sm,
   },
-  boldnessEmoji: {
-    fontSize: 16,
+  boldnessDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
   boldnessLabel: {
     fontSize: 14,
@@ -637,88 +690,92 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
   },
   customPromptText: {
     flex: 1,
     fontSize: 14,
   },
-  editIcon: {
-    fontSize: 16,
-  },
   phraseSection: {
-    marginTop: 24,
+    marginTop: spacing.lg,
   },
   phraseSectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.md,
+  },
+  phraseTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   phraseTitle: {
-    fontSize: 16,
+    fontSize: fontSizes.md,
     fontWeight: '600',
   },
   addButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+  },
+  addButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    gap: 4,
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: fontSizes.sm,
     fontWeight: '500',
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: fontSizes.sm,
     fontStyle: 'italic',
   },
   phraseList: {
-    gap: 8,
+    gap: spacing.sm,
   },
   phraseItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 10,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
   },
   phraseText: {
     flex: 1,
     fontSize: 14,
   },
-  removeButton: {
-    fontSize: 16,
-    padding: 4,
-  },
   modalInput: {
     padding: 14,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
     fontSize: 15,
   },
   modalHint: {
-    fontSize: 13,
-    marginBottom: 12,
+    fontSize: fontSizes.sm,
+    marginBottom: spacing.md,
     lineHeight: 18,
   },
   customPromptInput: {
     padding: 14,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
     fontSize: 15,
     minHeight: 120,
   },
   modalButtons: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
+    gap: spacing.md,
+    marginTop: spacing.md,
   },
   modalButton: {
     flex: 1,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   modalButtonText: {

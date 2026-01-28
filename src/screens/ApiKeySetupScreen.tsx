@@ -10,7 +10,9 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 import { useStore } from '../stores/useStore';
 import * as SecureStore from 'expo-secure-store';
 
@@ -37,7 +39,6 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
 
   const fromSettings = route?.params?.fromSettings;
 
-  // Load existing key on mount
   useEffect(() => {
     loadSecureKey();
   }, []);
@@ -73,7 +74,6 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
     }
   };
 
-  // Validate API key by making a test call
   const validateKey = async (key: string): Promise<{ valid: boolean; error?: string }> => {
     try {
       const response = await fetch('https://api.openai.com/v1/models', {
@@ -92,16 +92,11 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
       if (response.status === 401) {
         return { valid: false, error: 'Invalid API key. Please check and try again.' };
       }
-
       if (response.status === 429) {
         return { valid: false, error: 'Rate limited. Please wait a moment and try again.' };
       }
-
       if (response.status === 403) {
-        return {
-          valid: false,
-          error: 'Access denied. Your key may not have the required permissions.',
-        };
+        return { valid: false, error: 'Access denied. Your key may not have the required permissions.' };
       }
 
       return { valid: false, error: errorData.error?.message || 'Unknown error occurred' };
@@ -133,9 +128,8 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
         await saveSecureKey(trimmedKey);
         setApiKey(trimmedKey);
         setKeyStatus('valid');
-        setStatusMessage('✓ API key is valid and saved securely');
+        setStatusMessage('API key is valid and saved securely');
 
-        // Navigate away after a short delay
         setTimeout(() => {
           if (fromSettings) {
             navigation.goBack();
@@ -210,19 +204,17 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
     }
   };
 
-  const getStatusIcon = () => {
+  const getStatusIcon = (): keyof typeof Ionicons.glyphName => {
     switch (keyStatus) {
       case 'valid':
-        return '✓';
+        return 'checkmark-circle' as any;
       case 'invalid':
       case 'error':
-        return '✗';
+        return 'close-circle' as any;
       case 'rate_limited':
-        return '⏳';
-      case 'validating':
-        return '...';
+        return 'time' as any;
       default:
-        return '';
+        return 'ellipsis-horizontal' as any;
     }
   };
 
@@ -232,14 +224,19 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
       <View style={styles.header}>
         {fromSettings && (
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backText}>← Back</Text>
+            <Ionicons name="arrow-back" size={24} color={accentColors.coral} />
           </TouchableOpacity>
         )}
       </View>
 
-      {/* Title */}
+      {/* Title with gradient icon */}
       <View style={styles.titleContainer}>
-        <Text style={styles.icon}>🔑</Text>
+        <LinearGradient
+          colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+          style={styles.iconCircle}
+        >
+          <Ionicons name="key" size={36} color="#FFFFFF" />
+        </LinearGradient>
         <Text style={styles.title}>API Key Setup</Text>
         <Text style={styles.subtitle}>
           FlirtKey uses OpenAI's GPT to generate suggestions.{'\n'}
@@ -251,10 +248,11 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
       <View style={styles.inputSection}>
         <Text style={styles.label}>Your OpenAI API Key</Text>
         <View style={styles.inputContainer}>
+          <Ionicons name="lock-closed" size={20} color={darkColors.textSecondary} style={{ marginLeft: spacing.md }} />
           <TextInput
             style={styles.input}
             placeholder="sk-..."
-            placeholderTextColor="#666"
+            placeholderTextColor={darkColors.textTertiary}
             value={inputKey}
             onChangeText={setInputKey}
             secureTextEntry={!showKey}
@@ -262,34 +260,47 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
             autoCorrect={false}
           />
           <TouchableOpacity onPress={() => setShowKey(!showKey)} style={styles.toggleButton}>
-            <Text style={styles.toggleText}>{showKey ? '🙈' : '👁️'}</Text>
+            <Ionicons name={showKey ? 'eye-off' : 'eye'} size={22} color={darkColors.textSecondary} />
           </TouchableOpacity>
         </View>
 
         {/* Status */}
         {statusMessage && (
           <View style={styles.statusContainer}>
+            <Ionicons name={getStatusIcon() as any} size={16} color={getStatusColor()} />
             <Text style={[styles.statusText, { color: getStatusColor() }]}>
-              {getStatusIcon()} {statusMessage}
+              {statusMessage}
             </Text>
           </View>
         )}
 
         {/* Action Buttons */}
         <TouchableOpacity
-          style={[styles.saveButton, keyStatus === 'validating' && styles.disabledButton]}
+          style={[keyStatus === 'validating' && styles.disabledButton]}
           onPress={handleValidateAndSave}
           disabled={keyStatus === 'validating'}
+          activeOpacity={0.8}
         >
-          {keyStatus === 'validating' ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.saveButtonText}>Validate & Save Key</Text>
-          )}
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.saveButton}
+          >
+            {keyStatus === 'validating' ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Ionicons name="checkmark-shield" size={20} color="#FFFFFF" />
+                <Text style={styles.saveButtonText}>Validate & Save Key</Text>
+              </>
+            )}
+          </LinearGradient>
         </TouchableOpacity>
 
         {keyStatus === 'valid' && inputKey && (
           <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteKey}>
+            <Ionicons name="trash" size={18} color={darkColors.error} />
             <Text style={styles.deleteButtonText}>Delete Key</Text>
           </TouchableOpacity>
         )}
@@ -297,43 +308,51 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
 
       {/* How to Get Key Guide */}
       <TouchableOpacity style={styles.guideToggle} onPress={() => setShowGuide(!showGuide)}>
-        <Text style={styles.guideToggleText}>{showGuide ? '▼' : '▶'} How to get an API key</Text>
+        <Ionicons name={showGuide ? 'chevron-down' : 'chevron-forward'} size={18} color={accentColors.coral} />
+        <Text style={styles.guideToggleText}>How to get an API key</Text>
       </TouchableOpacity>
 
       {showGuide && (
         <View style={styles.guideContainer}>
-          <View style={styles.guideStep}>
-            <Text style={styles.stepNumber}>1</Text>
-            <Text style={styles.stepText}>
-              Go to{' '}
-              <Text style={styles.link} onPress={openOpenAIPlatform}>
-                platform.openai.com
+          {[
+            { step: '1', text: 'Go to platform.openai.com', link: true },
+            { step: '2', text: 'Sign in or create an account' },
+            { step: '3', text: 'Go to "API Keys" in the sidebar' },
+            { step: '4', text: 'Click "Create new secret key"' },
+            { step: '5', text: 'Copy the key and paste it above' },
+          ].map((item, index) => (
+            <View key={index} style={styles.guideStep}>
+              <LinearGradient
+                colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+                style={styles.stepNumberCircle}
+              >
+                <Text style={styles.stepNumber}>{item.step}</Text>
+              </LinearGradient>
+              <Text style={styles.stepText}>
+                {item.link ? (
+                  <>
+                    Go to{' '}
+                    <Text style={styles.link} onPress={openOpenAIPlatform}>
+                      platform.openai.com
+                    </Text>
+                  </>
+                ) : (
+                  item.text
+                )}
               </Text>
-            </Text>
-          </View>
-          <View style={styles.guideStep}>
-            <Text style={styles.stepNumber}>2</Text>
-            <Text style={styles.stepText}>Sign in or create an account</Text>
-          </View>
-          <View style={styles.guideStep}>
-            <Text style={styles.stepNumber}>3</Text>
-            <Text style={styles.stepText}>Go to "API Keys" in the sidebar</Text>
-          </View>
-          <View style={styles.guideStep}>
-            <Text style={styles.stepNumber}>4</Text>
-            <Text style={styles.stepText}>Click "Create new secret key"</Text>
-          </View>
-          <View style={styles.guideStep}>
-            <Text style={styles.stepNumber}>5</Text>
-            <Text style={styles.stepText}>Copy the key and paste it above</Text>
-          </View>
+            </View>
+          ))}
 
           <TouchableOpacity style={styles.openAIButton} onPress={openOpenAIPlatform}>
-            <Text style={styles.openAIButtonText}>Open OpenAI Platform →</Text>
+            <Ionicons name="open" size={18} color={accentColors.coral} />
+            <Text style={styles.openAIButtonText}>Open OpenAI Platform</Text>
           </TouchableOpacity>
 
           <View style={styles.costNotice}>
-            <Text style={styles.costTitle}>💰 Cost Info</Text>
+            <View style={styles.costTitleRow}>
+              <Ionicons name="cash" size={16} color={accentColors.gold} />
+              <Text style={styles.costTitle}>Cost Info</Text>
+            </View>
             <Text style={styles.costText}>
               OpenAI charges per usage. GPT-4o-mini costs ~$0.15 per million tokens. A typical
               FlirtKey response costs less than $0.001.
@@ -370,18 +389,19 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     marginLeft: -spacing.sm,
   },
-  backText: {
-    color: darkColors.primary,
-    fontSize: fontSizes.md,
-  },
   titleContainer: {
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.xl,
   },
-  icon: {
-    fontSize: 64,
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: spacing.md,
+    ...shadows.glow,
   },
   title: {
     fontSize: fontSizes.xxl,
@@ -403,6 +423,8 @@ const styles = StyleSheet.create({
     color: darkColors.textSecondary,
     fontSize: fontSizes.sm,
     marginBottom: spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -421,10 +443,10 @@ const styles = StyleSheet.create({
   toggleButton: {
     padding: spacing.md,
   },
-  toggleText: {
-    fontSize: 20,
-  },
   statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xs,
   },
@@ -432,11 +454,14 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
   },
   saveButton: {
-    backgroundColor: darkColors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
     marginTop: spacing.lg,
+    ...shadows.glow,
   },
   disabledButton: {
     opacity: 0.7,
@@ -447,10 +472,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
     backgroundColor: 'transparent',
     padding: spacing.md,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
     marginTop: spacing.sm,
     borderWidth: 1,
     borderColor: darkColors.error,
@@ -461,11 +489,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   guideToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   guideToggleText: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     fontSize: fontSizes.md,
     fontWeight: '500',
   },
@@ -482,37 +513,41 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
+  stepNumberCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
   stepNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: darkColors.primary,
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: fontSizes.sm,
     fontWeight: 'bold',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginRight: spacing.sm,
   },
   stepText: {
     flex: 1,
     color: darkColors.text,
     fontSize: fontSizes.md,
-    lineHeight: 24,
+    lineHeight: 28,
   },
   link: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     textDecorationLine: 'underline',
   },
   openAIButton: {
-    backgroundColor: darkColors.primary + '20',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: `${accentColors.coral}15`,
     padding: spacing.md,
     borderRadius: borderRadius.md,
-    alignItems: 'center',
     marginTop: spacing.md,
   },
   openAIButtonText: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     fontSize: fontSizes.md,
     fontWeight: '600',
   },
@@ -522,11 +557,16 @@ const styles = StyleSheet.create({
     backgroundColor: darkColors.background,
     borderRadius: borderRadius.md,
   },
+  costTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
   costTitle: {
     color: darkColors.text,
     fontSize: fontSizes.sm,
     fontWeight: '600',
-    marginBottom: spacing.xs,
   },
   costText: {
     color: darkColors.textSecondary,

@@ -10,11 +10,14 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettingsStore } from '../stores/settingsStore';
 import { Modal } from '../components/Modal';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 // ==========================================
 // Constants
@@ -147,19 +150,29 @@ Please describe your issue:
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.back, { color: theme.colors.primary }]}>← Back</Text>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: theme.colors.text }]}>About</Text>
-        <View style={{ width: 50 }} />
-      </View>
+        <Text style={styles.title}>About</Text>
+        <View style={{ width: 40 }} />
+      </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appIcon}>💘</Text>
+          <LinearGradient
+            colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+            style={styles.appIconCircle}
+          >
+            <Ionicons name="heart" size={36} color="#FFFFFF" />
+          </LinearGradient>
           <Text style={[styles.appName, { color: theme.colors.text }]}>FlirtKey</Text>
           <Text style={[styles.appTagline, { color: theme.colors.textSecondary }]}>
             AI-Powered Dating Assistant
@@ -216,51 +229,61 @@ Please describe your issue:
             onPress={handleCheckUpdate}
             disabled={checkingUpdate}
           >
-            <Text style={styles.actionEmoji}>🔄</Text>
+            <View style={styles.actionIconCircle}>
+              <Ionicons name="refresh" size={18} color={accentColors.coral} />
+            </View>
             <Text style={[styles.actionText, { color: theme.colors.text }]}>
               {checkingUpdate ? 'Checking...' : 'Check for Updates'}
             </Text>
-            <Text style={[styles.actionArrow, { color: theme.colors.textSecondary }]}>›</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.colors.textSecondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.actionRow, { borderBottomColor: theme.colors.border }]}
             onPress={handleRateApp}
           >
-            <Text style={styles.actionEmoji}>{hasRatedApp ? '⭐' : '☆'}</Text>
+            <View style={styles.actionIconCircle}>
+              <Ionicons name={hasRatedApp ? 'star' : 'star-outline'} size={18} color={accentColors.gold} />
+            </View>
             <Text style={[styles.actionText, { color: theme.colors.text }]}>
               {hasRatedApp ? 'Rated - Thank You!' : 'Rate FlirtKey'}
             </Text>
-            <Text style={[styles.actionArrow, { color: theme.colors.textSecondary }]}>›</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.colors.textSecondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.actionRow, { borderBottomColor: theme.colors.border }]}
             onPress={handleShareApp}
           >
-            <Text style={styles.actionEmoji}>📤</Text>
+            <View style={styles.actionIconCircle}>
+              <Ionicons name="share-social" size={18} color={accentColors.coral} />
+            </View>
             <Text style={[styles.actionText, { color: theme.colors.text }]}>
               Share with Friends
             </Text>
-            <Text style={[styles.actionArrow, { color: theme.colors.textSecondary }]}>›</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.colors.textSecondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.actionRow, { borderBottomColor: theme.colors.border }]}
             onPress={handleContactSupport}
           >
-            <Text style={styles.actionEmoji}>💬</Text>
+            <View style={styles.actionIconCircle}>
+              <Ionicons name="chatbubble-ellipses" size={18} color={accentColors.coral} />
+            </View>
             <Text style={[styles.actionText, { color: theme.colors.text }]}>Contact Support</Text>
-            <Text style={[styles.actionArrow, { color: theme.colors.textSecondary }]}>›</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.colors.textSecondary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.actionRow, { borderBottomColor: theme.colors.border }]}
             onPress={() => setShowFAQ(true)}
           >
-            <Text style={styles.actionEmoji}>❓</Text>
+            <View style={styles.actionIconCircle}>
+              <Ionicons name="help-circle" size={18} color={accentColors.coral} />
+            </View>
             <Text style={[styles.actionText, { color: theme.colors.text }]}>FAQ & Help</Text>
-            <Text style={[styles.actionArrow, { color: theme.colors.textSecondary }]}>›</Text>
+            <Ionicons name="chevron-forward" size={18} color={theme.colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -272,21 +295,21 @@ Please describe your issue:
               style={[styles.socialButton, { backgroundColor: theme.colors.surface }]}
               onPress={() => Linking.openURL('https://twitter.com/flirtkey')}
             >
-              <Text style={styles.socialEmoji}>🐦</Text>
+              <Ionicons name="logo-twitter" size={18} color={accentColors.coral} />
               <Text style={[styles.socialText, { color: theme.colors.text }]}>Twitter</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.socialButton, { backgroundColor: theme.colors.surface }]}
               onPress={() => Linking.openURL('https://instagram.com/flirtkey')}
             >
-              <Text style={styles.socialEmoji}>📸</Text>
+              <Ionicons name="logo-instagram" size={18} color={accentColors.coral} />
               <Text style={[styles.socialText, { color: theme.colors.text }]}>Instagram</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.socialButton, { backgroundColor: theme.colors.surface }]}
               onPress={() => Linking.openURL('https://tiktok.com/@flirtkey')}
             >
-              <Text style={styles.socialEmoji}>🎵</Text>
+              <Ionicons name="logo-tiktok" size={18} color={accentColors.coral} />
               <Text style={[styles.socialText, { color: theme.colors.text }]}>TikTok</Text>
             </TouchableOpacity>
           </View>
@@ -395,15 +418,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: spacing.lg,
     paddingTop: 60,
-  },
-  back: {
-    fontSize: 16,
+    paddingBottom: spacing.md,
   },
   title: {
-    fontSize: 18,
+    fontSize: fontSizes.lg,
     fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   content: {
     flex: 1,
@@ -412,9 +434,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 30,
   },
-  appIcon: {
-    fontSize: 64,
+  appIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 12,
+    ...shadows.glow,
   },
   appName: {
     fontSize: 28,
@@ -464,17 +491,20 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
   },
-  actionEmoji: {
-    fontSize: 20,
-    marginRight: 12,
+  actionIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.sm,
+    backgroundColor: `${accentColors.coral}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
   },
   actionText: {
     flex: 1,
     fontSize: 16,
   },
-  actionArrow: {
-    fontSize: 18,
-  },
+  // actionArrow removed - using Ionicons
   socialSection: {
     marginTop: 24,
     paddingHorizontal: 16,
@@ -498,9 +528,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     gap: 6,
   },
-  socialEmoji: {
-    fontSize: 16,
-  },
+  // socialEmoji removed - using Ionicons
   socialText: {
     fontSize: 14,
   },

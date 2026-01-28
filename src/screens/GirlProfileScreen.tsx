@@ -14,6 +14,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useStore } from '../stores/useStore';
 import { RelationshipStage } from '../types';
 import { TextInput } from '../components/TextInput';
@@ -26,7 +28,7 @@ import { Modal } from '../components/Modal';
 import { DeleteDialog, UnsavedChangesDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
   { key: 'just_met', label: 'Just Met', emoji: '🆕' },
@@ -36,7 +38,6 @@ const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
   { key: 'serious', label: 'Serious', emoji: '💑' },
 ];
 
-// Field suggestions for empty fields (4.3.13)
 const FIELD_SUGGESTIONS: Record<string, string[]> = {
   personality: ['Shy', 'Outgoing', 'Funny', 'Sarcastic', 'Intellectual', 'Adventurous'],
   interests: ['Travel', 'Music', 'Movies', 'Fitness', 'Reading', 'Art', 'Food', 'Gaming'],
@@ -62,7 +63,6 @@ export function GirlProfileScreen({ navigation }: any) {
     aspect: [1, 1],
   });
 
-  // Original values for change detection (4.3.10)
   const originalValues = useMemo(
     () => ({
       personality: selectedGirl?.personality || '',
@@ -76,20 +76,17 @@ export function GirlProfileScreen({ navigation }: any) {
     [selectedGirl]
   );
 
-  // Form state
   const [form, setForm] = useState<FormState>(originalValues);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Get conversation history (4.3.14)
   const conversations = useMemo(() => {
     if (!selectedGirl) return [];
     return getConversationsForGirl(selectedGirl.id);
   }, [selectedGirl, getConversationsForGirl]);
 
-  // Change detection (4.3.10)
   const hasChanges = useMemo(() => {
     return (
       form.personality !== originalValues.personality ||
@@ -102,7 +99,6 @@ export function GirlProfileScreen({ navigation }: any) {
     );
   }, [form, originalValues]);
 
-  // Profile completeness indicator (4.3.12)
   const completeness = useMemo(() => {
     if (!selectedGirl) return { score: 0, fields: [] };
 
@@ -124,7 +120,6 @@ export function GirlProfileScreen({ navigation }: any) {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Handle photo selection
   const handleSelectPhoto = async () => {
     const result = await pickFromLibrary();
     if (result?.uri) {
@@ -132,7 +127,6 @@ export function GirlProfileScreen({ navigation }: any) {
     }
   };
 
-  // Handle save
   const handleSave = async () => {
     if (!selectedGirl) return;
 
@@ -149,7 +143,7 @@ export function GirlProfileScreen({ navigation }: any) {
       });
 
       showToast({
-        message: 'Profile updated! ✨',
+        message: 'Profile updated!',
         type: 'success',
       });
 
@@ -164,7 +158,6 @@ export function GirlProfileScreen({ navigation }: any) {
     }
   };
 
-  // Handle cancel with confirmation (4.3.11)
   const handleCancel = () => {
     if (hasChanges) {
       setShowDiscardConfirm(true);
@@ -173,7 +166,6 @@ export function GirlProfileScreen({ navigation }: any) {
     }
   };
 
-  // Handle delete
   const handleDelete = () => {
     if (!selectedGirl) return;
     deleteGirl(selectedGirl.id);
@@ -184,7 +176,6 @@ export function GirlProfileScreen({ navigation }: any) {
     navigation.navigate('Home');
   };
 
-  // Add suggestion to field
   const addSuggestion = (field: keyof typeof FIELD_SUGGESTIONS, suggestion: string) => {
     const currentValue = form[field as keyof FormState] as string;
     const newValue = currentValue ? `${currentValue}, ${suggestion}` : suggestion;
@@ -204,18 +195,23 @@ export function GirlProfileScreen({ navigation }: any) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleCancel}>
-          <Text style={styles.cancel}>Cancel</Text>
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <TouchableOpacity onPress={handleCancel} style={styles.headerButton}>
+          <Ionicons name="close" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.title}>{selectedGirl.name}</Text>
-        <TouchableOpacity onPress={handleSave} disabled={!hasChanges || isSaving}>
+        <TouchableOpacity onPress={handleSave} disabled={!hasChanges || isSaving} style={styles.headerButton}>
           <Text style={[styles.save, (!hasChanges || isSaving) && styles.saveDisabled]}>
             {isSaving ? 'Saving...' : 'Save'}
           </Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         style={styles.form}
@@ -232,17 +228,23 @@ export function GirlProfileScreen({ navigation }: any) {
             showEditBadge
           />
 
-          {/* Completeness Indicator (4.3.12) */}
+          {/* Completeness Indicator */}
           <View style={styles.completenessContainer}>
             <View style={styles.completenessHeader}>
-              <Text style={styles.completenessLabel}>Profile Completeness</Text>
+              <View style={styles.completenessLabelRow}>
+                <Ionicons name="analytics" size={16} color={accentColors.coral} />
+                <Text style={styles.completenessLabel}>Profile Completeness</Text>
+              </View>
               <Text style={styles.completenessScore}>{completeness.score}%</Text>
             </View>
             <View style={styles.completenessBar}>
-              <View
+              <LinearGradient
+                colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
                 style={[
                   styles.completenessProgress,
-                  { width: `${completeness.score}%` },
+                  { width: `${completeness.score}%` as any },
                   completeness.score === 100 && styles.completenessComplete,
                 ]}
               />
@@ -255,15 +257,15 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Stage */}
         <Select
-          label="📈 Relationship Stage"
+          label="Relationship Stage"
           value={form.stage}
           options={STAGES}
           onChange={(value) => updateField('stage', value)}
         />
 
-        {/* Personality with suggestions (4.3.13) */}
+        {/* Personality with suggestions */}
         <TextInput
-          label="🎭 Her Personality"
+          label="Her Personality"
           value={form.personality}
           onChangeText={(value) => updateField('personality', value)}
           placeholder="shy, outgoing, funny, sarcastic..."
@@ -279,7 +281,8 @@ export function GirlProfileScreen({ navigation }: any) {
                 style={styles.suggestionChip}
                 onPress={() => addSuggestion('personality', s)}
               >
-                <Text style={styles.suggestionText}>+ {s}</Text>
+                <Ionicons name="add" size={12} color={accentColors.coral} />
+                <Text style={styles.suggestionText}>{s}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -287,7 +290,7 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Interests with suggestions */}
         <TextInput
-          label="💡 Her Interests"
+          label="Her Interests"
           value={form.interests}
           onChangeText={(value) => updateField('interests', value)}
           placeholder="What does she like? Hobbies?"
@@ -303,7 +306,8 @@ export function GirlProfileScreen({ navigation }: any) {
                 style={styles.suggestionChip}
                 onPress={() => addSuggestion('interests', s)}
               >
-                <Text style={styles.suggestionText}>+ {s}</Text>
+                <Ionicons name="add" size={12} color={accentColors.coral} />
+                <Text style={styles.suggestionText}>{s}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -311,7 +315,7 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Green Lights with suggestions */}
         <TextInput
-          label="💚 Things She Loves"
+          label="Things She Loves"
           value={form.greenLights}
           onChangeText={(value) => updateField('greenLights', value)}
           placeholder="Topics that make her happy, things she responds well to..."
@@ -327,7 +331,8 @@ export function GirlProfileScreen({ navigation }: any) {
                 style={styles.suggestionChip}
                 onPress={() => addSuggestion('greenLights', s)}
               >
-                <Text style={styles.suggestionText}>+ {s}</Text>
+                <Ionicons name="add" size={12} color={accentColors.coral} />
+                <Text style={styles.suggestionText}>{s}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -335,7 +340,7 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Red Flags with suggestions */}
         <TextInput
-          label="🚫 Things to Avoid"
+          label="Things to Avoid"
           value={form.redFlags}
           onChangeText={(value) => updateField('redFlags', value)}
           placeholder="Sensitive topics, things she doesn't like..."
@@ -351,7 +356,8 @@ export function GirlProfileScreen({ navigation }: any) {
                 style={styles.suggestionChip}
                 onPress={() => addSuggestion('redFlags', s)}
               >
-                <Text style={styles.suggestionText}>+ {s}</Text>
+                <Ionicons name="add" size={12} color={accentColors.coral} />
+                <Text style={styles.suggestionText}>{s}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -359,7 +365,7 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Inside Jokes */}
         <TextInput
-          label="😂 Inside Jokes"
+          label="Inside Jokes"
           value={form.insideJokes}
           onChangeText={(value) => updateField('insideJokes', value)}
           placeholder="References only you two understand..."
@@ -370,7 +376,10 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Stats */}
         <Card style={styles.statsCard}>
-          <Text style={styles.statsTitle}>📊 Stats</Text>
+          <View style={styles.statsTitleRow}>
+            <Ionicons name="bar-chart" size={18} color={accentColors.coral} />
+            <Text style={styles.statsTitle}>Stats</Text>
+          </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Messages</Text>
             <Text style={styles.statValue}>{selectedGirl.messageCount}</Text>
@@ -392,11 +401,12 @@ export function GirlProfileScreen({ navigation }: any) {
 
         {/* Delete Button */}
         <Button
-          title={`🗑️ Delete ${selectedGirl.name}`}
+          title={`Delete ${selectedGirl.name}`}
           onPress={() => setShowDeleteConfirm(true)}
           variant="danger"
           fullWidth
           style={styles.deleteButton}
+          leftIcon={<Ionicons name="trash" size={18} color={darkColors.error} />}
         />
 
         <View style={styles.bottomPadding} />
@@ -410,7 +420,7 @@ export function GirlProfileScreen({ navigation }: any) {
         itemName={selectedGirl.name}
       />
 
-      {/* Discard Changes Confirmation (4.3.11) */}
+      {/* Discard Changes Confirmation */}
       <UnsavedChangesDialog
         visible={showDiscardConfirm}
         onClose={() => setShowDiscardConfirm(false)}
@@ -421,7 +431,7 @@ export function GirlProfileScreen({ navigation }: any) {
         onSave={handleSave}
       />
 
-      {/* Conversation History Modal (4.3.14) */}
+      {/* Conversation History Modal */}
       <Modal
         visible={showHistoryModal}
         onClose={() => setShowHistoryModal(false)}
@@ -466,40 +476,40 @@ export function GirlProfileScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: darkColors.background,
   },
   noGirl: {
-    color: '#fff',
+    color: darkColors.textSecondary,
     textAlign: 'center',
     marginTop: 100,
+    fontSize: fontSizes.md,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: spacing.lg,
     paddingTop: 60,
-    backgroundColor: '#1a1a2e',
+    paddingBottom: spacing.md,
   },
-  cancel: {
-    color: '#888',
-    fontSize: 16,
+  headerButton: {
+    padding: spacing.xs,
   },
   title: {
-    color: '#fff',
-    fontSize: 18,
+    color: '#FFFFFF',
+    fontSize: fontSizes.lg,
     fontWeight: 'bold',
   },
   save: {
-    color: '#6366f1',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: fontSizes.md,
     fontWeight: '600',
   },
   saveDisabled: {
     opacity: 0.5,
   },
   form: {
-    padding: 20,
+    padding: spacing.lg,
   },
   profileSection: {
     alignItems: 'center',
@@ -520,13 +530,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.sm,
   },
+  completenessLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
   completenessLabel: {
     color: darkColors.text,
     fontSize: fontSizes.sm,
     fontWeight: '500',
   },
   completenessScore: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     fontSize: fontSizes.md,
     fontWeight: '600',
   },
@@ -538,11 +553,10 @@ const styles = StyleSheet.create({
   },
   completenessProgress: {
     height: '100%',
-    backgroundColor: darkColors.primary,
     borderRadius: 4,
   },
   completenessComplete: {
-    backgroundColor: darkColors.success,
+    // Override gradient to success green when complete
   },
   completenessHint: {
     color: darkColors.textSecondary,
@@ -558,25 +572,33 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   suggestionChip: {
-    backgroundColor: `${darkColors.primary}20`,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: `${accentColors.coral}15`,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: darkColors.primary,
+    borderColor: `${accentColors.coral}40`,
   },
   suggestionText: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     fontSize: fontSizes.xs,
   },
   statsCard: {
     marginTop: spacing.lg,
   },
+  statsTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
   statsTitle: {
     color: darkColors.text,
     fontSize: fontSizes.md,
     fontWeight: '600',
-    marginBottom: spacing.md,
   },
   statRow: {
     flexDirection: 'row',

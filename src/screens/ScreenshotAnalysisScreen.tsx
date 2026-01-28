@@ -36,6 +36,8 @@ import Animated, {
   SlideInRight,
   Layout,
 } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { useStore } from '../stores/useStore';
@@ -49,7 +51,7 @@ import { ProTipCard } from '../components/ProTipCard';
 import { LoadingShimmer } from '../components/ShimmerEffect';
 import { TypingIndicator } from '../components/TypingIndicator';
 import type { AnalysisResult, Suggestion, Girl } from '../types';
-import { darkColors, spacing, borderRadius, fontSizes } from '../constants/theme';
+import { darkColors, accentColors, spacing, borderRadius, fontSizes, shadows } from '../constants/theme';
 
 // ==========================================
 // Types
@@ -253,27 +255,32 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.backButton}>← Back</Text>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Screenshot Analysis</Text>
         <View style={styles.headerRight}>
           {result && (
             <>
               <TouchableOpacity onPress={handleExport} style={styles.headerAction}>
-                <Text style={styles.headerActionText}>📋</Text>
+                <Ionicons name="clipboard" size={20} color="#FFFFFF" />
               </TouchableOpacity>
               <TouchableOpacity onPress={handleShare} style={styles.headerAction}>
-                <Text style={styles.headerActionText}>📤</Text>
+                <Ionicons name="share" size={20} color="#FFFFFF" />
               </TouchableOpacity>
             </>
           )}
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         style={styles.content}
@@ -295,13 +302,19 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
               style={[styles.girlChip, !selectedGirlForAnalysis && styles.girlChipSelected]}
               onPress={() => setSelectedGirlForAnalysis(null)}
             >
+              <Ionicons
+                name="person"
+                size={14}
+                color={!selectedGirlForAnalysis ? '#fff' : darkColors.text}
+                style={{ marginRight: 4 }}
+              />
               <Text
                 style={[
                   styles.girlChipText,
                   !selectedGirlForAnalysis && styles.girlChipTextSelected,
                 ]}
               >
-                Anyone 👤
+                Anyone
               </Text>
             </TouchableOpacity>
             {girls.map((girl) => (
@@ -342,10 +355,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
                 disabled={imagePicker.isLoading}
               >
                 {imagePicker.isLoading ? (
-                  <ActivityIndicator color={darkColors.primary} />
+                  <ActivityIndicator color={accentColors.coral} />
                 ) : (
                   <>
-                    <Text style={styles.pickerButtonIcon}>🖼️</Text>
+                    <Ionicons name="images" size={32} color={accentColors.coral} />
                     <Text style={styles.pickerButtonText}>Choose Photo</Text>
                   </>
                 )}
@@ -356,7 +369,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
                 onPress={handleTakePhoto}
                 disabled={imagePicker.isLoading}
               >
-                <Text style={styles.pickerButtonIcon}>📸</Text>
+                <Ionicons name="camera" size={32} color={accentColors.coral} />
                 <Text style={styles.pickerButtonText}>Take Photo</Text>
               </TouchableOpacity>
             </View>
@@ -387,11 +400,18 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
             {!result && !isAnalyzing && (
               <Animated.View entering={FadeIn} style={styles.analyzeSection}>
                 <TouchableOpacity
-                  style={styles.analyzeButton}
                   onPress={handleAnalyze}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.analyzeButtonText}>✨ Analyze Screenshot</Text>
+                  <LinearGradient
+                    colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.analyzeButton}
+                  >
+                    <Ionicons name="sparkles" size={20} color="#FFFFFF" />
+                    <Text style={styles.analyzeButtonText}>Analyze Screenshot</Text>
+                  </LinearGradient>
                 </TouchableOpacity>
               </Animated.View>
             )}
@@ -418,7 +438,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
             {imagePicker.image && showAnnotations && (
               <Animated.View entering={FadeIn} style={styles.annotatedImageSection}>
                 <View style={styles.annotationHeader}>
-                  <Text style={styles.annotationTitle}>📍 Analysis Highlights</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Ionicons name="pin" size={18} color={accentColors.coral} />
+                    <Text style={styles.annotationTitle}>Analysis Highlights</Text>
+                  </View>
                   <TouchableOpacity
                     onPress={() => setShowAnnotations(!showAnnotations)}
                     style={styles.annotationToggle}
@@ -443,7 +466,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 
             {/* 7.3.8: Key Points Summary */}
             <View style={styles.summaryCard}>
-              <Text style={styles.summaryTitle}>📊 Quick Summary</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: spacing.sm }}>
+                <Ionicons name="analytics" size={20} color={accentColors.coral} />
+                <Text style={styles.summaryTitle}>Quick Summary</Text>
+              </View>
               <View style={styles.summaryContent}>
                 {result.interestLevel && (
                   <InterestLevelDisplay
@@ -460,7 +486,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
             {result.proTip && (
               <Animated.View entering={SlideInRight.delay(100)}>
                 <View style={styles.noticeCard}>
-                  <Text style={styles.noticeTitle}>👀 What to Notice</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: spacing.xs }}>
+                    <Ionicons name="eye" size={16} color={darkColors.warning} />
+                    <Text style={styles.noticeTitle}>What to Notice</Text>
+                  </View>
                   <Text style={styles.noticeText}>{result.proTip}</Text>
                 </View>
               </Animated.View>
@@ -468,7 +497,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 
             {/* 7.3.6: Potential Responses */}
             <View style={styles.suggestionsSection}>
-              <Text style={styles.sectionTitle}>💬 Suggested Responses</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: spacing.md }}>
+                <Ionicons name="chatbubbles" size={18} color={accentColors.coral} />
+                <Text style={styles.sectionTitle}>Suggested Responses</Text>
+              </View>
               {result.suggestions.map((suggestion, index) => (
                 <Animated.View
                   key={`${suggestion.type}-${index}`}
@@ -488,7 +520,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 
             {/* 7.3.10: Follow-up Questions */}
             <View style={styles.followUpSection}>
-              <Text style={styles.sectionTitle}>❓ Follow-up Questions</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: spacing.md }}>
+                <Ionicons name="help-circle" size={18} color={accentColors.coral} />
+                <Text style={styles.sectionTitle}>Follow-up Questions</Text>
+              </View>
               <View style={styles.followUpList}>
                 {getFollowUpQuestions(result).map((question, index) => (
                   <TouchableOpacity
@@ -519,10 +554,12 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
             {/* Action Buttons */}
             <View style={styles.actionButtons}>
               <TouchableOpacity style={styles.secondaryButton} onPress={handleRetake}>
-                <Text style={styles.secondaryButtonText}>📷 New Screenshot</Text>
+                <Ionicons name="camera" size={16} color={darkColors.text} />
+                <Text style={styles.secondaryButtonText}>New Screenshot</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.secondaryButton} onPress={handleRefresh}>
-                <Text style={styles.secondaryButtonText}>🔄 Re-analyze</Text>
+                <Ionicons name="refresh" size={16} color={darkColors.text} />
+                <Text style={styles.secondaryButtonText}>Re-analyze</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -659,16 +696,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: 60,
     paddingBottom: spacing.md,
-    backgroundColor: darkColors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: darkColors.border,
-  },
-  backButton: {
-    color: darkColors.primary,
-    fontSize: fontSizes.md,
   },
   headerTitle: {
-    color: darkColors.text,
+    color: '#FFFFFF',
     fontSize: fontSizes.lg,
     fontWeight: '600',
   },
@@ -679,9 +709,7 @@ const styles = StyleSheet.create({
   headerAction: {
     padding: spacing.xs,
   },
-  headerActionText: {
-    fontSize: 20,
-  },
+  // headerActionText removed - using Ionicons
   content: {
     flex: 1,
   },
@@ -711,8 +739,8 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   girlChipSelected: {
-    backgroundColor: darkColors.primary,
-    borderColor: darkColors.primary,
+    backgroundColor: accentColors.coral,
+    borderColor: accentColors.coral,
   },
   girlChipText: {
     color: darkColors.text,
@@ -756,10 +784,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  pickerButtonIcon: {
-    fontSize: 32,
-    marginBottom: spacing.sm,
-  },
+  // pickerButtonIcon removed - using Ionicons
   pickerButtonText: {
     color: darkColors.text,
     fontSize: fontSizes.sm,
@@ -781,10 +806,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   analyzeButton: {
-    backgroundColor: darkColors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
+    ...shadows.glow,
   },
   analyzeButtonText: {
     color: '#fff',
@@ -856,7 +884,6 @@ const styles = StyleSheet.create({
     color: darkColors.text,
     fontSize: fontSizes.md,
     fontWeight: '600',
-    marginBottom: spacing.sm,
   },
   summaryContent: {
     // Additional styling
@@ -873,7 +900,6 @@ const styles = StyleSheet.create({
     color: darkColors.warning,
     fontSize: fontSizes.sm,
     fontWeight: '600',
-    marginBottom: spacing.xs,
   },
   noticeText: {
     color: darkColors.text,
@@ -887,7 +913,6 @@ const styles = StyleSheet.create({
     color: darkColors.text,
     fontSize: fontSizes.md,
     fontWeight: '600',
-    marginBottom: spacing.md,
   },
   followUpSection: {
     marginBottom: spacing.lg,
@@ -916,10 +941,13 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
+    flexDirection: 'row',
     backgroundColor: darkColors.surface,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
     borderWidth: 1,
     borderColor: darkColors.border,
   },

@@ -11,7 +11,9 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
@@ -19,7 +21,7 @@ const ONBOARDING_COMPLETE_KEY = 'flirtkey_onboarding_complete';
 
 interface OnboardingSlide {
   id: string;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphMap;
   title: string;
   description: string;
   highlight?: string;
@@ -28,15 +30,15 @@ interface OnboardingSlide {
 const SLIDES: OnboardingSlide[] = [
   {
     id: 'how-it-works',
-    icon: '🎯',
+    icon: 'navigate-circle',
     title: 'How It Works',
     description:
-      'FlirtKey helps you craft the perfect response. Paste her message, and get three suggestion styles: Safe, Balanced, and Bold.',
+      'FlirtKey helps you craft the perfect response. Paste her message, and get three suggestion levels: Safe, Balanced, and Bold.',
     highlight: 'Your personal AI wingman',
   },
   {
     id: 'profiles',
-    icon: '👩',
+    icon: 'person-circle',
     title: 'Create Profiles',
     description:
       'Add details about each girl - her interests, personality, your inside jokes. The more context, the better the suggestions!',
@@ -44,7 +46,7 @@ const SLIDES: OnboardingSlide[] = [
   },
   {
     id: 'screenshots',
-    icon: '📸',
+    icon: 'camera',
     title: 'Screenshot Analysis',
     description:
       "Upload screenshots of your conversations. Our AI reads between the lines and helps you understand what she's really saying.",
@@ -52,7 +54,7 @@ const SLIDES: OnboardingSlide[] = [
   },
   {
     id: 'culture',
-    icon: '🌍',
+    icon: 'globe',
     title: 'Culture Aware',
     description:
       'Dating styles differ across cultures. FlirtKey adapts its suggestions to match - from Uzbek to Western to Asian dating norms.',
@@ -60,7 +62,7 @@ const SLIDES: OnboardingSlide[] = [
   },
   {
     id: 'privacy',
-    icon: '🔒',
+    icon: 'lock-closed',
     title: 'Your Privacy Matters',
     description:
       'Your conversations and data stay on YOUR device. We only send messages to OpenAI for processing - nothing is stored on our servers.',
@@ -130,7 +132,6 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
   };
 
   const renderSlide = ({ item, index }: { item: OnboardingSlide; index: number }) => {
-    // Calculate animation values for this slide
     const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 
     const scale = scrollX.interpolate({
@@ -156,14 +157,22 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
           },
         ]}
       >
-        <View style={styles.iconContainer}>
-          <Text style={styles.icon}>{item.icon}</Text>
-        </View>
+        <LinearGradient
+          colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+          style={styles.iconContainer}
+        >
+          <Ionicons name={item.icon} size={48} color="#FFFFFF" />
+        </LinearGradient>
         <Text style={styles.slideTitle}>{item.title}</Text>
         {item.highlight && (
-          <View style={styles.highlightBadge}>
+          <LinearGradient
+            colors={[`${accentColors.gradientStart}20`, `${accentColors.gradientEnd}20`]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.highlightBadge}
+          >
             <Text style={styles.highlightText}>{item.highlight}</Text>
-          </View>
+          </LinearGradient>
         )}
         <Text style={styles.slideDescription}>{item.description}</Text>
       </Animated.View>
@@ -176,7 +185,7 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
         {SLIDES.map((_, index) => {
           const dotWidth = scrollX.interpolate({
             inputRange: [(index - 1) * width, index * width, (index + 1) * width],
-            outputRange: [8, 24, 8],
+            outputRange: [8, 28, 8],
             extrapolate: 'clamp',
           });
 
@@ -250,13 +259,28 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
 
       {/* Bottom Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.nextButton, isLastSlide && styles.completeButton]}
-          onPress={handleNext}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.nextButtonText}>{isLastSlide ? "Let's Go! 🚀" : 'Next'}</Text>
-        </TouchableOpacity>
+        {isLastSlide ? (
+          <TouchableOpacity onPress={handleNext} activeOpacity={0.8}>
+            <LinearGradient
+              colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.nextButtonText}>Let's Go!</Text>
+              <Ionicons name="rocket" size={20} color="#FFFFFF" style={{ marginLeft: 8 }} />
+            </LinearGradient>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.nextButton}
+            onPress={handleNext}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.nextButtonText}>Next</Text>
+            <Ionicons name="arrow-forward" size={20} color={darkColors.text} style={{ marginLeft: 8 }} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -306,18 +330,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: darkColors.surface,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xl,
-    borderWidth: 2,
-    borderColor: darkColors.border,
-  },
-  icon: {
-    fontSize: 56,
+    ...shadows.glow,
   },
   slideTitle: {
     fontSize: fontSizes.xxl,
@@ -327,14 +346,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   highlightBadge: {
-    backgroundColor: darkColors.primary + '20',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.full,
     marginBottom: spacing.md,
   },
   highlightText: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     fontSize: fontSizes.sm,
     fontWeight: '600',
   },
@@ -354,8 +372,8 @@ const styles = StyleSheet.create({
   dot: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: darkColors.primary,
     marginHorizontal: 4,
+    backgroundColor: accentColors.coral,
   },
   legalContainer: {
     paddingHorizontal: spacing.xl,
@@ -368,7 +386,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   legalLink: {
-    color: darkColors.primary,
+    color: accentColors.coral,
     textDecorationLine: 'underline',
   },
   buttonContainer: {
@@ -380,12 +398,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
     borderWidth: 1,
     borderColor: darkColors.border,
   },
-  completeButton: {
-    backgroundColor: darkColors.primary,
-    borderColor: darkColors.primary,
+  gradientButton: {
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    ...shadows.glow,
   },
   nextButtonText: {
     color: darkColors.text,

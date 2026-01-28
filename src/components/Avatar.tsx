@@ -5,7 +5,9 @@
 
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { darkColors, fontSizes } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { darkColors, accentColors, fontSizes } from '../constants/theme';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -43,10 +45,10 @@ const getInitials = (name: string): string => {
 };
 
 const AVATAR_COLORS = [
-  '#6366f1', // indigo
-  '#8b5cf6', // violet
+  accentColors.rose, // rose
+  accentColors.coral, // coral
+  accentColors.gradientPurple, // purple
   '#ec4899', // pink
-  '#f43f5e', // rose
   '#f97316', // orange
   '#22c55e', // green
   '#14b8a6', // teal
@@ -77,33 +79,41 @@ export function Avatar({
   const backgroundColor = getColorFromName(name);
 
   const content = (
-    <View
-      style={[
-        styles.container,
-        {
-          width: avatarSize,
-          height: avatarSize,
-          borderRadius: avatarSize / 2,
-          backgroundColor: imageUri ? undefined : backgroundColor,
-        },
-        containerStyle,
-      ]}
-    >
-      {imageUri ? (
-        <Image
-          source={{ uri: imageUri }}
+    <View style={[styles.outerRing, { width: avatarSize + 4, height: avatarSize + 4, borderRadius: (avatarSize + 4) / 2 }, containerStyle]}>
+      <LinearGradient
+        colors={[accentColors.gradientStart, accentColors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.gradientRing, { width: avatarSize + 4, height: avatarSize + 4, borderRadius: (avatarSize + 4) / 2 }]}
+      >
+        <View
           style={[
-            styles.image,
+            styles.container,
             {
               width: avatarSize,
               height: avatarSize,
               borderRadius: avatarSize / 2,
+              backgroundColor: imageUri ? darkColors.background : backgroundColor,
             },
           ]}
-        />
-      ) : (
-        <Text style={[styles.initials, { fontSize }]}>{initials}</Text>
-      )}
+        >
+          {imageUri ? (
+            <Image
+              source={{ uri: imageUri }}
+              style={[
+                styles.image,
+                {
+                  width: avatarSize,
+                  height: avatarSize,
+                  borderRadius: avatarSize / 2,
+                },
+              ]}
+            />
+          ) : (
+            <Text style={[styles.initials, { fontSize }]}>{initials}</Text>
+          )}
+        </View>
+      </LinearGradient>
 
       {showEditBadge && (
         <View
@@ -116,7 +126,7 @@ export function Avatar({
             },
           ]}
         >
-          <Text style={[styles.editIcon, { fontSize: avatarSize * 0.15 }]}>📷</Text>
+          <Ionicons name="camera" size={avatarSize * 0.15} color="#FFFFFF" />
         </View>
       )}
     </View>
@@ -134,6 +144,13 @@ export function Avatar({
 }
 
 const styles = StyleSheet.create({
+  outerRing: {
+    position: 'relative',
+  },
+  gradientRing: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -150,14 +167,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: darkColors.primary,
+    backgroundColor: accentColors.coral,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: darkColors.background,
-  },
-  editIcon: {
-    textAlign: 'center',
   },
 });
 

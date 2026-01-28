@@ -12,7 +12,8 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
-import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 export interface SearchBarProps {
   value: string;
@@ -39,7 +40,7 @@ export function SearchBar({
         style,
       ]}
     >
-      <Text style={styles.icon}>🔍</Text>
+      <Ionicons name="search" size={18} color={isFocused ? accentColors.coral : darkColors.textSecondary} />
       <TextInput
         style={styles.input}
         value={value}
@@ -59,7 +60,7 @@ export function SearchBar({
           style={styles.clearButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.clearIcon}>✕</Text>
+          <Ionicons name="close-circle" size={18} color={darkColors.textSecondary} />
         </TouchableOpacity>
       )}
     </View>
@@ -71,17 +72,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: darkColors.surface,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
     borderWidth: 1,
     borderColor: darkColors.border,
+    gap: spacing.sm,
   },
   containerFocused: {
-    borderColor: darkColors.primary,
-  },
-  icon: {
-    fontSize: fontSizes.md,
-    marginRight: spacing.sm,
+    borderColor: accentColors.coral,
   },
   input: {
     flex: 1,
@@ -92,10 +90,7 @@ const styles = StyleSheet.create({
   clearButton: {
     padding: spacing.xs,
   },
-  clearIcon: {
-    color: darkColors.textSecondary,
-    fontSize: fontSizes.sm,
-  },
+  // clearIcon removed - using Ionicons
 });
 
 export default SearchBar;
