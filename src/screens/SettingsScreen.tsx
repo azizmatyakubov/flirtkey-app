@@ -20,7 +20,7 @@ import { useSettingsStore } from '../stores/settingsStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { Culture } from '../types';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 
 // ==========================================
@@ -60,7 +60,7 @@ const AUTO_LOCK_OPTIONS = [
 ] as const;
 
 // Section icon mapping
-const SECTION_ICONS: Record<string, keyof typeof Ionicons.glyphName> = {
+const _SECTION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   account: 'person-circle',
   preferences: 'settings',
   notifications: 'notifications',
@@ -158,8 +158,7 @@ export function SettingsScreen({ navigation }: any) {
   const confirmClearAllData = () => {
     clearAllData();
     resetSettings();
-    setShowClearDataDialog(false);
-    Alert.alert('Success', 'All data has been cleared');
+    // Note: ConfirmDialog handles closing itself via onClose after onConfirm
     navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] });
   };
 
@@ -171,8 +170,7 @@ export function SettingsScreen({ navigation }: any) {
   const confirmDeleteAccount = () => {
     clearAllData();
     resetSettings();
-    setShowDeleteAccountDialog(false);
-    Alert.alert('Account Deleted', 'Your account and all data have been deleted');
+    // Note: ConfirmDialog handles closing itself via onClose after onConfirm
     navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] });
   };
 
@@ -236,7 +234,7 @@ export function SettingsScreen({ navigation }: any) {
   // Render Helpers
   // ==========================================
 
-  const renderSectionHeader = (title: string, iconName: keyof typeof Ionicons.glyphName, section: string) => (
+  const renderSectionHeader = (title: string, iconName: keyof typeof Ionicons.glyphMap, section: string) => (
     <TouchableOpacity
       style={[styles.sectionHeader, { backgroundColor: expandedSection === section ? accentColors.surfaceHighlight : theme.colors.surface }]}
       onPress={() => toggleSection(section)}
@@ -260,7 +258,7 @@ export function SettingsScreen({ navigation }: any) {
     value?: string,
     onPress?: () => void,
     rightElement?: React.ReactNode,
-    iconName?: keyof typeof Ionicons.glyphName
+    iconName?: keyof typeof Ionicons.glyphMap
   ) => (
     <TouchableOpacity
       style={[styles.settingRow, { borderBottomColor: theme.colors.border }]}
@@ -432,7 +430,14 @@ export function SettingsScreen({ navigation }: any) {
             )}
             {renderToggle('PIN Lock', privacy.pinEnabled, (val) => {
               if (val) {
-                Alert.alert('Set PIN', 'PIN setup feature coming soon');
+                Alert.alert(
+                  'Enable PIN Lock',
+                  'PIN lock will be enabled. Full PIN entry setup requires a native build.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Enable', onPress: () => setPrivacy({ pinEnabled: true }) },
+                  ]
+                );
               } else {
                 setPrivacy({ pinEnabled: false, pinCode: null });
               }

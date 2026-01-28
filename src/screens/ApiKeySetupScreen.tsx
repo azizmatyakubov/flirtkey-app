@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 import { useStore } from '../stores/useStore';
+import { useTheme } from '../contexts/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
 
 const SECURE_API_KEY = 'flirtkey_openai_key';
@@ -31,6 +32,7 @@ interface ApiKeySetupScreenProps {
 
 export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps) {
   const { setApiKey } = useStore();
+  const { theme } = useTheme();
   const [inputKey, setInputKey] = useState('');
   const [keyStatus, setKeyStatus] = useState<KeyStatus>('missing');
   const [statusMessage, setStatusMessage] = useState('');
@@ -193,18 +195,18 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
   const getStatusColor = () => {
     switch (keyStatus) {
       case 'valid':
-        return darkColors.success;
+        return theme.colors.success;
       case 'invalid':
       case 'error':
-        return darkColors.error;
+        return theme.colors.error;
       case 'rate_limited':
-        return darkColors.warning;
+        return theme.colors.warning;
       default:
-        return darkColors.textSecondary;
+        return theme.colors.textSecondary;
     }
   };
 
-  const getStatusIcon = (): keyof typeof Ionicons.glyphName => {
+  const getStatusIcon = (): keyof typeof Ionicons.glyphMap => {
     switch (keyStatus) {
       case 'valid':
         return 'checkmark-circle' as any;
@@ -219,7 +221,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={styles.content}>
       {/* Header */}
       <View style={styles.header}>
         {fromSettings && (
@@ -237,8 +239,8 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
         >
           <Ionicons name="key" size={36} color="#FFFFFF" />
         </LinearGradient>
-        <Text style={styles.title}>API Key Setup</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: theme.colors.text }]}>API Key Setup</Text>
+        <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
           FlirtKey uses OpenAI's GPT to generate suggestions.{'\n'}
           You'll need your own API key.
         </Text>
@@ -246,13 +248,13 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
 
       {/* Key Input */}
       <View style={styles.inputSection}>
-        <Text style={styles.label}>Your OpenAI API Key</Text>
-        <View style={styles.inputContainer}>
-          <Ionicons name="lock-closed" size={20} color={darkColors.textSecondary} style={{ marginLeft: spacing.md }} />
+        <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Your OpenAI API Key</Text>
+        <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+          <Ionicons name="lock-closed" size={20} color={theme.colors.textSecondary} style={{ marginLeft: spacing.md }} />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: theme.colors.text }]}
             placeholder="sk-..."
-            placeholderTextColor={darkColors.textTertiary}
+            placeholderTextColor={theme.colors.textTertiary}
             value={inputKey}
             onChangeText={setInputKey}
             secureTextEntry={!showKey}
@@ -260,7 +262,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
             autoCorrect={false}
           />
           <TouchableOpacity onPress={() => setShowKey(!showKey)} style={styles.toggleButton}>
-            <Ionicons name={showKey ? 'eye-off' : 'eye'} size={22} color={darkColors.textSecondary} />
+            <Ionicons name={showKey ? 'eye-off' : 'eye'} size={22} color={theme.colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -299,9 +301,9 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
         </TouchableOpacity>
 
         {keyStatus === 'valid' && inputKey && (
-          <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteKey}>
-            <Ionicons name="trash" size={18} color={darkColors.error} />
-            <Text style={styles.deleteButtonText}>Delete Key</Text>
+          <TouchableOpacity style={[styles.deleteButton, { borderColor: theme.colors.error }]} onPress={handleDeleteKey}>
+            <Ionicons name="trash" size={18} color={theme.colors.error} />
+            <Text style={[styles.deleteButtonText, { color: theme.colors.error }]}>Delete Key</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -313,7 +315,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
       </TouchableOpacity>
 
       {showGuide && (
-        <View style={styles.guideContainer}>
+        <View style={[styles.guideContainer, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
           {[
             { step: '1', text: 'Go to platform.openai.com', link: true },
             { step: '2', text: 'Sign in or create an account' },
@@ -328,7 +330,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
               >
                 <Text style={styles.stepNumber}>{item.step}</Text>
               </LinearGradient>
-              <Text style={styles.stepText}>
+              <Text style={[styles.stepText, { color: theme.colors.text }]}>
                 {item.link ? (
                   <>
                     Go to{' '}
@@ -348,12 +350,12 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
             <Text style={styles.openAIButtonText}>Open OpenAI Platform</Text>
           </TouchableOpacity>
 
-          <View style={styles.costNotice}>
+          <View style={[styles.costNotice, { backgroundColor: theme.colors.background }]}>
             <View style={styles.costTitleRow}>
               <Ionicons name="cash" size={16} color={accentColors.gold} />
-              <Text style={styles.costTitle}>Cost Info</Text>
+              <Text style={[styles.costTitle, { color: theme.colors.text }]}>Cost Info</Text>
             </View>
-            <Text style={styles.costText}>
+            <Text style={[styles.costText, { color: theme.colors.textSecondary }]}>
               OpenAI charges per usage. GPT-4o-mini costs ~$0.15 per million tokens. A typical
               FlirtKey response costs less than $0.001.
             </Text>
@@ -364,8 +366,8 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
       {/* Skip option */}
       {!fromSettings && (
         <TouchableOpacity style={styles.skipContainer} onPress={handleSkip}>
-          <Text style={styles.skipText}>Skip for now</Text>
-          <Text style={styles.skipHint}>(You can add it later in Settings)</Text>
+          <Text style={[styles.skipText, { color: theme.colors.textSecondary }]}>Skip for now</Text>
+          <Text style={[styles.skipHint, { color: theme.colors.textSecondary }]}>(You can add it later in Settings)</Text>
         </TouchableOpacity>
       )}
     </ScrollView>
@@ -375,7 +377,6 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: darkColors.background,
   },
   content: {
     paddingBottom: 40,
@@ -406,12 +407,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSizes.xxl,
     fontWeight: 'bold',
-    color: darkColors.text,
     marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: fontSizes.md,
-    color: darkColors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -420,7 +419,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   label: {
-    color: darkColors.textSecondary,
     fontSize: fontSizes.sm,
     marginBottom: spacing.sm,
     textTransform: 'uppercase',
@@ -429,15 +427,12 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: darkColors.surface,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: darkColors.border,
   },
   input: {
     flex: 1,
     padding: spacing.md,
-    color: darkColors.text,
     fontSize: fontSizes.md,
   },
   toggleButton: {
@@ -481,10 +476,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     marginTop: spacing.sm,
     borderWidth: 1,
-    borderColor: darkColors.error,
   },
   deleteButtonText: {
-    color: darkColors.error,
     fontSize: fontSizes.md,
     fontWeight: '600',
   },
@@ -502,11 +495,9 @@ const styles = StyleSheet.create({
   },
   guideContainer: {
     marginHorizontal: spacing.lg,
-    backgroundColor: darkColors.surface,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: darkColors.border,
   },
   guideStep: {
     flexDirection: 'row',
@@ -528,7 +519,6 @@ const styles = StyleSheet.create({
   },
   stepText: {
     flex: 1,
-    color: darkColors.text,
     fontSize: fontSizes.md,
     lineHeight: 28,
   },
@@ -554,7 +544,6 @@ const styles = StyleSheet.create({
   costNotice: {
     marginTop: spacing.lg,
     padding: spacing.md,
-    backgroundColor: darkColors.background,
     borderRadius: borderRadius.md,
   },
   costTitleRow: {
@@ -564,12 +553,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   costTitle: {
-    color: darkColors.text,
     fontSize: fontSizes.sm,
     fontWeight: '600',
   },
   costText: {
-    color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
     lineHeight: 18,
   },
@@ -578,11 +565,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl,
   },
   skipText: {
-    color: darkColors.textSecondary,
     fontSize: fontSizes.md,
   },
   skipHint: {
-    color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
     marginTop: spacing.xs,
   },
