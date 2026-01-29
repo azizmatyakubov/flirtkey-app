@@ -1,0 +1,19 @@
+{
+  "name": "flirtkey-backend",
+  "version": "1.0.0",
+  "description": "FlirtKey API proxy server — proxies OpenAI API calls so users don't need their own key",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "helmet": "^8.1.0",
+    "uuid": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
