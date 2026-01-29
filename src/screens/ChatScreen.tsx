@@ -24,6 +24,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '../stores/useStore';
+import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { generateResponse } from '../services/ai';
 import { AnalysisResult, Suggestion } from '../types';
 import { CharacterCount } from '../components/CharacterCount';
@@ -206,6 +207,13 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
       return;
     }
 
+    // Check subscription limit
+    const { canUseSuggestion } = useSubscriptionStore.getState();
+    if (!canUseSuggestion()) {
+      navigation.navigate('Paywall');
+      return;
+    }
+
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     buttonScale.value = withSpring(0.95, {}, () => {
       buttonScale.value = withSpring(1);
@@ -244,6 +252,9 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         proTip: response.proTip,
         interestLevel: response.interestLevel,
       });
+
+      // Record subscription usage
+      useSubscriptionStore.getState().recordSuggestionUse();
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 
