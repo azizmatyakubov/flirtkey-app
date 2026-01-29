@@ -1,4 +1,4 @@
-# 💘 FlirtKey - AI Dating Assistant
+# 💘 FlirtKey — AI Dating Assistant
 
 > Your AI wingman for better conversations. Smart, witty message suggestions tailored to each connection.
 
@@ -11,21 +11,120 @@
 
 ## ✨ Features
 
-| Feature                    | Description                                                       |
-| -------------------------- | ----------------------------------------------------------------- |
-| 👩 **Girl Profiles**       | Store everything about her - interests, personality, inside jokes |
-| 🎯 **Smart Suggestions**   | 3 options for every message: Safe / Balanced / Bold               |
-| 📸 **Screenshot Analysis** | Upload chat screenshots for deep AI analysis                      |
-| 🌍 **Culture-Aware**       | Uzbek, Russian, Western, Asian, and more communication styles     |
-| 📈 **Stage Tracking**      | From "Just Met" to "Serious" - track relationship progress        |
-| 💡 **Pro Tips**            | Learn the psychology behind great flirting                        |
-| 🔒 **Privacy First**       | All data stays on YOUR device                                     |
+### Core AI Features
+
+- 🎯 **Smart Suggestions** — 3 response options per message: Safe / Balanced / Bold
+- 📸 **Screenshot Analysis** — Upload chat screenshots for deep AI context analysis
+- 🧠 **Sound Like Me** — AI learns your texting style and generates replies that match your voice
+- 🌍 **Culture-Aware Prompts** — Uzbek, Russian, Western, Asian, and Universal communication styles
+
+### Dual API Mode
+
+- 🔒 **Server Proxy (Default)** — Backend proxy handles OpenAI calls; users don't need their own API key
+- 🔑 **BYOK Fallback** — Bring Your Own Key mode for users who prefer direct OpenAI access
+
+### Contacts & Profiles
+
+- 👤 **Contact Profiles** — Store interests, personality traits, inside jokes, and communication style
+- 📈 **Relationship Stage Tracking** — From "Just Met" to "Serious" with stage-appropriate suggestions
+- 💡 **Pro Tips** — Psychology-backed flirting insights for each stage
+
+### History & Favorites
+
+- 📜 **Conversation History** — Full log of all generated suggestions with timestamps
+- ⭐ **Favorites** — Save and quickly access your best replies
+- 📋 **Copy to Clipboard** — One-tap copy with haptic feedback
+- 🔢 **Usage Count Badges** — Track how often you use each quick action
+
+### Quick Actions (Home Screen)
+
+- ⚡ **Quick Reply** — Generate instant responses without full context
+- 💬 **Conversation Starters** — AI-powered openers for new conversations
+- 🎉 **Date Ideas** — Creative, personalized date suggestions
+- 🚫 **What to Avoid** — AI warns you about conversation pitfalls
+- 📊 **Interest Level Analysis** — Gauge how interested they are based on messages
+
+### Quality & UX
+
+- 🌙 **Dark/Light Theme** — System-aware with manual override
+- ♿ **Accessibility** — Reduce motion, high contrast, large text, screen reader support
+- 📴 **Offline-First** — Requests queue when offline, replay on reconnect
+- 💾 **Response Caching** — 24h TTL to reduce redundant API calls
+- 📳 **Haptic Feedback** — Tactile response on copy, favorite, and interactions
 
 ---
 
-## 📱 Screenshots
+## 🏗️ Architecture
 
-_Coming soon..._
+```
+┌──────────────────────────────────────────────────────────────┐
+│              FlirtKey Mobile App (Expo / React Native)        │
+├──────────────────────────────────────────────────────────────┤
+│  Screens (14+)          │  Components (50+)                  │
+│  ├── Onboarding Flow    │  ├── Form (TextInput, Pickers)     │
+│  ├── Home + Quick Acts  │  ├── Chat (Bubble, Suggestions)    │
+│  ├── Contact Profiles   │  ├── Display (Avatar, Badge)       │
+│  ├── History + Favs     │  ├── Loading / Error / Empty       │
+│  ├── Screenshot OCR     │  └── Accessibility wrappers        │
+│  └── Settings           │                                     │
+├──────────────────────────────────────────────────────────────┤
+│  Services               │  Hooks (15+)                       │
+│  ├── ai.ts (OpenAI)     │  useContact, useContacts           │
+│  ├── styleAnalyzer.ts   │  useHistory, useForm               │
+│  ├── historyService.ts  │  useNetworkStatus, useDebounce     │
+│  ├── apiClient.ts       │  useAppState, useOrientation       │
+│  ├── responseCache.ts   │  useAsyncState                     │
+│  ├── offlineQueue.ts    │                                     │
+│  ├── ocr.ts             │                                     │
+│  └── humanizer.ts       │                                     │
+├──────────────────────────────────────────────────────────────┤
+│  State: Zustand + persist → AsyncStorage                     │
+│  ├── useStore (contacts, conversations, cache)               │
+│  ├── useSettingsStore (theme, prefs, a11y)                   │
+│  └── subscriptionStore (tier, usage tracking)                │
+├──────────────────────────────────────────────────────────────┤
+│             Backend API Proxy (Express.js)                    │
+│  ├── Device-token auth (no accounts needed)                  │
+│  ├── Per-user usage tracking + rate limits                   │
+│  ├── Free tier: 5 req/day │ Premium: unlimited               │
+│  └── Proxies to OpenAI API (gpt-4o-mini)                    │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Key Patterns
+
+- **Zustand selectors** — `useStore((s) => s.field)` prevents full re-renders
+- **Offline-first** — Requests queue when offline, auto-replay on reconnect
+- **Response caching** — 24h TTL reduces API calls for similar prompts
+- **Error boundaries** — Per-screen error recovery
+- **Culture-aware prompts** — Different styles for different cultural contexts
+- **Dual API mode** — Server proxy by default, BYOK as fallback
+
+---
+
+## 📁 Project Structure
+
+```
+flirtkey-app/
+├── src/
+│   ├── components/          # 50+ reusable UI components
+│   ├── screens/             # 14+ app screens
+│   ├── services/            # AI, OCR, caching, history, offline queue
+│   ├── stores/              # Zustand stores (contacts, settings, subscription)
+│   ├── hooks/               # 15+ custom React hooks
+│   ├── contexts/            # ThemeContext
+│   ├── types/               # TypeScript definitions
+│   ├── utils/               # Validation, haptics, formatting, a11y
+│   └── constants/           # Theme, config, navigation, prompts
+├── backend/                 # Express.js API proxy server
+│   ├── server.js            # Proxy server with auth + rate limiting
+│   ├── __tests__/           # Jest test suite
+│   ├── ecosystem.config.js  # PM2 configuration
+│   └── package.json
+├── assets/                  # App icons, splash screen
+├── eas.json                 # EAS Build configuration
+└── package.json
+```
 
 ---
 
@@ -33,11 +132,10 @@ _Coming soon..._
 
 ### Prerequisites
 
-- Node.js 18+ ([install](https://nodejs.org))
-- npm or yarn
+- Node.js 18+
+- npm
 - Expo CLI: `npm install -g expo-cli`
-- iOS Simulator (Mac only) or Android Emulator
-- OpenAI API key ([get one](https://platform.openai.com))
+- iOS Simulator (Mac) or Android Emulator
 
 ### Installation
 
@@ -46,92 +144,61 @@ _Coming soon..._
 git clone https://github.com/yourusername/flirtkey-app.git
 cd flirtkey-app
 
-# Install dependencies
+# Install app dependencies
 npm install
+
+# Install backend dependencies
+cd backend && npm install && cd ..
 
 # Start development server
 npm start
 ```
 
+### Running the Backend Proxy
+
+```bash
+cd backend
+
+# Set environment variables
+export OPENAI_API_KEY=sk-your-key-here
+export AUTH_SECRET=your-secret-key
+export PORT=4060
+
+# Start the server
+npm start          # Production
+npm run dev        # Development (auto-reload)
+```
+
 ### Running the App
 
 ```bash
-# iOS (requires Mac with Xcode)
-npm run ios
-
-# Android (requires Android Studio/emulator)
-npm run android
-
-# Web (limited features)
-npm run web
+npm run ios        # iOS Simulator
+npm run android    # Android Emulator
+npm run web        # Web (limited features)
 ```
-
-### Using the App
-
-1. Complete the quick onboarding
-2. Add your OpenAI API key in Settings
-3. Create a profile for someone you're texting
-4. Enter their message and generate suggestions!
 
 ---
 
-## 🏗️ Architecture
+## ⚙️ Environment Variables
 
-### High-Level Overview
+### Backend (`backend/.env`)
 
-```
-┌─────────────────────────────────────────────┐
-│  App.tsx (GestureHandler → ErrorBoundary     │
-│  → ThemeProvider → ToastProvider → Navigator) │
-├─────────────────────────────────────────────┤
-│  Screens (14)        Components (50+)        │
-│  ├─ Onboarding Flow  ├─ Form (TextInput…)   │
-│  ├─ Home / Chat      ├─ Display (Avatar…)   │
-│  ├─ Profiles         ├─ Chat (Bubble…)      │
-│  ├─ Screenshot       ├─ Suggestions          │
-│  └─ Settings         └─ Loading / Error      │
-├─────────────────────────────────────────────┤
-│  Hooks (15)     │  Services (7)             │
-│  useAI          │  ai (OpenAI GPT)          │
-│  useForm        │  ocr                      │
-│  useImagePicker │  offlineQueue             │
-│  useDebounce    │  responseCache            │
-│  useOrientation │  storage (SecureStore)    │
-│  …              │  feedback                 │
-├─────────────────────────────────────────────┤
-│  Stores (Zustand + persist → AsyncStorage)   │
-│  ├─ useStore (girls, conversations, cache)   │
-│  └─ useSettingsStore (theme, prefs, a11y)    │
-└─────────────────────────────────────────────┘
-```
+| Variable         | Required | Default  | Description                         |
+| ---------------- | -------- | -------- | ----------------------------------- |
+| `OPENAI_API_KEY` | ✅       | —        | OpenAI API key for proxied requests |
+| `AUTH_SECRET`    | ✅       | —        | Secret for device token signing     |
+| `PORT`           | —        | `4060`   | Server port                         |
+| `DATA_DIR`       | —        | `./data` | Directory for user data persistence |
 
-### Key Patterns
+### App (`.env`)
 
-- **Zustand selectors** — all store access uses `useStore((s) => s.field)` to avoid full re-renders
-- **Offline-first** — requests queue when offline, replay on reconnect
-- **Response caching** — 24h TTL on suggestion cache to reduce API calls
-- **Error boundaries** — per-screen error recovery with `ErrorBoundary`
-- **Accessibility** — reduce motion, high contrast, haptic feedback, large text
-- **Culture-aware prompts** — Uzbek, Russian, Western, Asian, Universal styles
-
-### Project Structure
-
-```
-flirtkey-app/
-├── src/
-│   ├── components/      # 50+ reusable UI components
-│   ├── screens/         # 14 app screens
-│   ├── services/        # AI, OCR, caching, offline queue
-│   ├── stores/          # Zustand state (useStore, useSettingsStore)
-│   ├── hooks/           # 15 custom hooks
-│   ├── contexts/        # ThemeContext
-│   ├── types/           # TypeScript definitions
-│   ├── utils/           # Validation, a11y, haptics, formatting
-│   └── constants/       # Theme, config, navigation, prompts
-├── assets/              # App icons and splash
-├── eas.json             # EAS Build configuration
-└── package.json
-```
+| Variable             | Required | Default       | Description                     |
+| -------------------- | -------- | ------------- | ------------------------------- |
+| `APP_ENV`            | —        | `development` | Environment mode                |
+| `API_TIMEOUT_MS`     | —        | `30000`       | API request timeout             |
+| `MAX_RETRY_ATTEMPTS` | —        | `3`           | Max retries for failed requests |
+| `ENABLE_ANALYTICS`   | —        | `false`       | Enable analytics tracking       |
+| `DEBUG_MODE`         | —        | `true`        | Enable debug logging            |
 
 ---
 
@@ -139,120 +206,40 @@ flirtkey-app/
 
 ### Scripts
 
-| Command                 | Description                   |
-| ----------------------- | ----------------------------- |
-| `npm start`             | Start Expo development server |
-| `npm run ios`           | Run on iOS simulator          |
-| `npm run android`       | Run on Android emulator       |
-| `npm run lint`          | Run ESLint                    |
-| `npm run lint:fix`      | Fix ESLint issues             |
-| `npm run format`        | Format code with Prettier     |
-| `npm run typecheck`     | Check TypeScript types        |
-| `npm test`              | Run tests                     |
-| `npm run test:coverage` | Run tests with coverage       |
+| Command                 | Description                |
+| ----------------------- | -------------------------- |
+| `npm start`             | Start Expo dev server      |
+| `npm run ios`           | Run on iOS Simulator       |
+| `npm run android`       | Run on Android Emulator    |
+| `npm run lint`          | Run ESLint                 |
+| `npm run lint:fix`      | Auto-fix lint issues       |
+| `npm run format`        | Format with Prettier       |
+| `npm run typecheck`     | TypeScript type check      |
+| `npm test`              | Run Jest tests             |
+| `npm run test:coverage` | Tests with coverage report |
 
 ### Code Quality
 
-This project uses:
-
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **Husky** - Git hooks for pre-commit checks
-- **TypeScript** - Static type checking
-
-Pre-commit hooks automatically run linting and formatting.
-
-### Environment Variables
-
-Create a `.env` file based on `.env.example`:
-
-```bash
-# App Environment
-APP_ENV=development
-
-# Feature Flags
-ENABLE_ANALYTICS=false
-ENABLE_CRASH_REPORTING=false
-
-# API Configuration
-API_TIMEOUT_MS=30000
-MAX_RETRY_ATTEMPTS=3
-
-# Debug
-DEBUG_MODE=true
-LOG_LEVEL=debug
-```
+- **ESLint** + **Prettier** — Enforced via Husky pre-commit hooks
+- **TypeScript** — Strict mode, full type coverage
+- **Jest** — Unit and integration tests
 
 ---
 
 ## 📦 Building for Production
 
-### Prerequisites
-
-1. Install EAS CLI:
-
-   ```bash
-   npm install -g eas-cli
-   ```
-
-2. Login to Expo:
-
-   ```bash
-   eas login
-   ```
-
-3. Initialize EAS (first time only):
-   ```bash
-   eas init
-   ```
-   This will create/update your `eas.json` and add the project ID to `app.config.js`.
-
-### Build Commands
-
 ```bash
-# Development build (with dev client)
-eas build --profile development --platform ios
-eas build --profile development --platform android
+# Install EAS CLI
+npm install -g eas-cli
 
-# Preview build (internal testing)
-eas build --profile preview --platform all
+# Login to Expo
+eas login
 
-# Production build (for app stores)
+# Build for stores
 eas build --profile production --platform ios
 eas build --profile production --platform android
 
-# Build for all platforms
-eas build --profile production --platform all
-```
-
-### iOS-Specific Setup
-
-1. **Apple Developer Account** required ($99/year)
-2. EAS handles provisioning profiles automatically
-3. For manual setup:
-   ```bash
-   eas credentials
-   ```
-
-### Android-Specific Setup
-
-1. EAS generates a keystore automatically for first build
-2. For existing keystore:
-   ```bash
-   eas credentials
-   # Select Android → Keystore → Upload
-   ```
-
-### Submitting to Stores
-
-```bash
-# Submit to App Store
-eas submit --platform ios
-
-# Submit to Play Store
-eas submit --platform android
-
-# Submit to both
+# Submit to stores
 eas submit --platform all
 ```
 
@@ -260,146 +247,40 @@ eas submit --platform all
 
 ## 🔐 Security
 
-### API Key Storage
-
-- OpenAI API keys are stored in `expo-secure-store`
-- Uses device-level encryption (Keychain on iOS, Keystore on Android)
-- Keys are never sent to any server except OpenAI
-
-### Data Privacy
-
-- All profile data stored locally in `AsyncStorage`
-- No analytics or tracking by default
-- Optional crash reporting (disabled by default)
-- See [STORE_ASSETS.md](./STORE_ASSETS.md) for full privacy policy
+- **API keys** stored in `expo-secure-store` (device-level Keychain/Keystore encryption)
+- **Backend proxy** keeps the OpenAI key server-side — never exposed to clients
+- **Device-token auth** for backend with HMAC signing
+- **All profile data** stored locally on device
+- **No analytics/tracking** by default
+- **Helmet.js** security headers on backend
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests
+# App tests
 npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Generate coverage report
 npm run test:coverage
-```
 
-### Test Structure
-
-```
-__tests__/
-├── components/    # Component tests
-├── hooks/         # Hook tests
-├── services/      # Service tests
-├── stores/        # Store tests
-└── utils/         # Utility tests
+# Backend tests
+cd backend && npm test
 ```
 
 ---
 
 ## 📖 Documentation
 
-- [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) - Full development roadmap
-- [STORE_ASSETS.md](./STORE_ASSETS.md) - App store assets and copy
-- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
-Quick start:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Run tests: `npm test`
-5. Commit: `git commit -m 'Add amazing feature'`
-6. Push: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### "Cannot find module" errors
-
-```bash
-# Clear caches and reinstall
-rm -rf node_modules
-npm cache clean --force
-npm install
-```
-
-#### Metro bundler issues
-
-```bash
-# Reset Metro cache
-npx expo start --clear
-```
-
-#### iOS build fails
-
-```bash
-# Reinstall pods
-cd ios && pod install && cd ..
-```
-
-#### Android build fails
-
-```bash
-# Clean Gradle cache
-cd android && ./gradlew clean && cd ..
-```
-
-#### API key not saving
-
-- Ensure you're testing on a physical device or properly configured emulator
-- Check that expo-secure-store is properly installed
-- Try reinstalling the app
-
-#### Screenshots not loading
-
-- Check photo library permissions in device settings
-- Restart the app after granting permissions
-
-### Getting Help
-
-1. Check [Issues](https://github.com/yourusername/flirtkey-app/issues)
-2. Create a new issue with:
-   - Device/emulator info
-   - React Native version
-   - Steps to reproduce
-   - Error messages/logs
+- [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) — Full development roadmap
+- [STORE_ASSETS.md](./STORE_ASSETS.md) — App store listing assets
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — Contribution guidelines
+- [backend/README.md](./backend/README.md) — Backend proxy documentation
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [OpenAI](https://openai.com) - GPT-4 API powering suggestions
-- [Expo](https://expo.dev) - React Native tooling
-- [Zustand](https://github.com/pmndrs/zustand) - State management
-
----
-
-## 📬 Contact
-
-- **Support:** support@flirtkey.app
-- **Privacy:** privacy@flirtkey.app
-- **Twitter:** [@FlirtKeyApp](https://twitter.com/FlirtKeyApp)
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
