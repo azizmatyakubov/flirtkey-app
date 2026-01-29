@@ -34,7 +34,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'QuickReply'>;
 
 export function QuickReplyScreen({ navigation }: Props) {
   const { theme } = useTheme();
-  const { contacts, selectedContact, selectContact, userCulture, apiKey } = useStore();
+  const { contacts, selectedContact, selectContact, userCulture, apiKey, apiMode } = useStore();
   const { preferences, accessibility } = useSettingsStore();
 
   const [theirMessage, setHerMessage] = useState('');
@@ -78,8 +78,8 @@ export function QuickReplyScreen({ navigation }: Props) {
 
   const handleGetReply = useCallback(async () => {
     if (!theirMessage.trim()) return;
-    if (!apiKey) {
-      setError('Set up your API key in Settings first');
+    if (apiMode === 'byok' && !apiKey) {
+      setError('Set up your API key in Settings or switch to Server Mode');
       return;
     }
 
@@ -117,6 +117,7 @@ export function QuickReplyScreen({ navigation }: Props) {
         userCulture: userCulture,
         apiKey,
         tone: selectedTone,
+        apiMode,
       });
 
       if (result && result.suggestions && result.suggestions.length > 0) {
@@ -132,7 +133,7 @@ export function QuickReplyScreen({ navigation }: Props) {
     } finally {
       setIsLoading(false);
     }
-  }, [theirMessage, pickedContact, selectedTone, userCulture, apiKey]);
+  }, [theirMessage, pickedContact, selectedTone, userCulture, apiKey, apiMode]);
 
   const handleCopySuggestion = async (text: string, index: number) => {
     try {

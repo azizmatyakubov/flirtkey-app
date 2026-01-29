@@ -66,6 +66,8 @@ const AUTO_LOCK_OPTIONS = [
 
 export function SettingsScreen({ navigation }: { navigation: RootNavigationProp }) {
   const apiKey = useStore((s) => s.apiKey);
+  const apiMode = useStore((s) => s.apiMode);
+  const setApiMode = useStore((s) => s.setApiMode);
   const userCulture = useStore((s) => s.userCulture);
   const setUserCulture = useStore((s) => s.setUserCulture);
   const clearAllData = useStore((s) => s.clearAllData);
@@ -364,7 +366,75 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
         {renderSectionHeader('Account', 'person-circle' as any, 'account')}
         {expandedSection === 'account' && (
           <View style={styles.sectionContent}>
-            {renderSettingRow(
+            {/* API Mode Toggle */}
+            <Text style={[styles.subsectionTitle, { color: theme.colors.textSecondary }]}>
+              AI Connection
+            </Text>
+            <View style={[styles.apiModeContainer, { backgroundColor: theme.colors.surface }]}>
+              <TouchableOpacity
+                style={[
+                  styles.apiModeOption,
+                  apiMode === 'proxy' && { backgroundColor: accentColors.rose },
+                ]}
+                onPress={() => { setApiMode('proxy'); }}
+                accessibilityLabel="Server Mode"
+              >
+                <Ionicons
+                  name="cloud"
+                  size={18}
+                  color={apiMode === 'proxy' ? '#fff' : theme.colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.apiModeText,
+                    { color: apiMode === 'proxy' ? '#fff' : theme.colors.text },
+                  ]}
+                >
+                  Server Mode
+                </Text>
+                <Text
+                  style={[
+                    styles.apiModeSubtext,
+                    { color: apiMode === 'proxy' ? 'rgba(255,255,255,0.7)' : theme.colors.textSecondary },
+                  ]}
+                >
+                  No API key needed
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.apiModeOption,
+                  apiMode === 'byok' && { backgroundColor: accentColors.rose },
+                ]}
+                onPress={() => { setApiMode('byok'); }}
+                accessibilityLabel="Own Key Mode"
+              >
+                <Ionicons
+                  name="key"
+                  size={18}
+                  color={apiMode === 'byok' ? '#fff' : theme.colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.apiModeText,
+                    { color: apiMode === 'byok' ? '#fff' : theme.colors.text },
+                  ]}
+                >
+                  Own Key
+                </Text>
+                <Text
+                  style={[
+                    styles.apiModeSubtext,
+                    { color: apiMode === 'byok' ? 'rgba(255,255,255,0.7)' : theme.colors.textSecondary },
+                  ]}
+                >
+                  Use your OpenAI key
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Show API key setting only in BYOK mode */}
+            {apiMode === 'byok' && renderSettingRow(
               'API Key',
               apiKey ? '••••••' + apiKey.slice(-4) : 'Not set',
               handleApiKeyPress,
@@ -782,5 +852,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: spacing.xl,
     lineHeight: 18,
+  },
+  apiModeContainer: {
+    flexDirection: 'row',
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+    gap: spacing.xs,
+    padding: spacing.xs,
+  },
+  apiModeOption: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xs,
+    borderRadius: borderRadius.md,
+    gap: 2,
+  },
+  apiModeText: {
+    fontSize: 13,
+    fontWeight: '600',
+    fontFamily: fonts.semiBold,
+  },
+  apiModeSubtext: {
+    fontSize: 10,
   },
 });

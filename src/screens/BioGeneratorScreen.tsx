@@ -19,7 +19,7 @@ import {
 import Animated, { FadeIn, SlideInDown, SlideInRight } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
-import axios from 'axios';
+import { apiClient } from '../services/apiClient';
 import { useStore } from '../stores/useStore';
 import { humanize } from '../services/humanizer';
 import { TONES, type ToneKey } from '../constants/tones';
@@ -63,7 +63,7 @@ const BIO_TONES: ToneKey[] = ['funny', 'deep', 'bold', 'sweet', 'witty'];
 // ==========================================
 
 export function BioGeneratorScreen({ navigation }: any) {
-  const { apiKey, userStyle } = useStore();
+  const { apiKey, apiMode, userStyle } = useStore();
 
   // Form state
   const [age, setAge] = useState('');
@@ -85,9 +85,9 @@ export function BioGeneratorScreen({ navigation }: any) {
   // ==========================================
 
   const handleGenerate = useCallback(async () => {
-    if (!apiKey) {
+    if (apiMode === 'byok' && !apiKey) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('API Key Required', 'Please set up your API key in Settings first');
+      Alert.alert('API Key Required', 'Please set up your API key in Settings or switch to Server Mode');
       return;
     }
 
@@ -111,8 +111,8 @@ export function BioGeneratorScreen({ navigation }: any) {
         traits ? `Personality: ${traits}` : '',
       ].filter(Boolean).join('\n');
 
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+      const response = await apiClient.chatCompletion(
+        apiMode,
         {
           model: 'gpt-4o-mini',
           messages: [
@@ -150,16 +150,10 @@ Remember: authentic, not cringe, match the ${toneConfig.name.toLowerCase()} tone
           max_tokens: 800,
           temperature: 0.9,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 30000,
-        }
+        apiKey
       );
 
-      const content = response.data?.choices?.[0]?.message?.content || '';
+      const content = response.choices?.[0]?.message?.content || '';
       const jsonMatch = content.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
@@ -191,7 +185,7 @@ Remember: authentic, not cringe, match the ${toneConfig.name.toLowerCase()} tone
     } finally {
       setLoading(false);
     }
-  }, [apiKey, age, interests, occupation, lookingFor, traits, selectedPlatform, selectedTone, platform, userStyle]);
+  }, [apiKey, apiMode, age, interests, occupation, lookingFor, traits, selectedPlatform, selectedTone, platform, userStyle]);
 
   const handleCopy = useCallback(async (bio: GeneratedBio) => {
     const text = bio.editedText || bio.text;

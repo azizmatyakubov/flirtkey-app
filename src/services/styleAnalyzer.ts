@@ -7,6 +7,7 @@
 
 import axios from 'axios';
 import { UserStyle, StyleAnalysisResult } from '../types';
+import { apiClient, ApiMode } from './apiClient';
 
 /**
  * Analyze an array of user messages to extract style patterns.
@@ -14,7 +15,8 @@ import { UserStyle, StyleAnalysisResult } from '../types';
  */
 export async function analyzeMessages(
   messages: string[],
-  apiKey: string
+  apiKey: string,
+  apiMode: ApiMode = 'byok'
 ): Promise<StyleAnalysisResult> {
   if (messages.length < 5) {
     throw new Error('Need at least 5 messages to analyze your style');
@@ -48,8 +50,8 @@ ANALYSIS GUIDELINES:
 - summary: e.g. "You text casually, use 😂🔥 often, average 15 words, dry humor"`;
 
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
+    const response = await apiClient.chatCompletion(
+      apiMode,
       {
         model: 'gpt-4o-mini',
         messages: [
@@ -62,16 +64,10 @@ ANALYSIS GUIDELINES:
         temperature: 0.3,
         max_tokens: 800,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: 30000,
-      }
+      apiKey
     );
 
-    const content = response.data.choices[0]?.message?.content;
+    const content = response.choices[0]?.message?.content;
     if (!content) {
       throw new Error('Empty response from AI');
     }

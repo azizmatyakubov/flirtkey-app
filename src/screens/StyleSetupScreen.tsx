@@ -37,7 +37,7 @@ interface StyleSetupScreenProps {
 
 export function StyleSetupScreen({ navigation, route }: StyleSetupScreenProps) {
   const fromSettings = route?.params?.fromSettings ?? false;
-  const { apiKey, userStyle, setUserStyle } = useStore();
+  const { apiKey, apiMode, userStyle, setUserStyle } = useStore();
 
   const [messagesText, setMessagesText] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
@@ -76,8 +76,8 @@ export function StyleSetupScreen({ navigation, route }: StyleSetupScreenProps) {
       return;
     }
 
-    if (!apiKey) {
-      Alert.alert('API Key needed', 'Set up your OpenAI API key first in Settings');
+    if (apiMode === 'byok' && !apiKey) {
+      Alert.alert('API Key needed', 'Set up your OpenAI API key in Settings or switch to Server Mode');
       return;
     }
 
@@ -85,7 +85,7 @@ export function StyleSetupScreen({ navigation, route }: StyleSetupScreenProps) {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      const result = await analyzeMessages(lines, apiKey);
+      const result = await analyzeMessages(lines, apiKey, apiMode);
       setAnalysisResult(result);
       setFormality(result.formality);
       setHumorStyle(result.humorStyle as 'dry' | 'silly' | 'sarcastic' | 'none');

@@ -346,7 +346,7 @@ export function OnboardingFlowScreen({ navigation }: any) {
   const [suggestion, setSuggestion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { addContact, setUserStyle, apiKey } = useStore();
+  const { addContact, setUserStyle, apiKey, apiMode } = useStore();
 
   const handleQuizDone = () => {
     // Convert quiz to UserStyle
@@ -383,13 +383,14 @@ export function OnboardingFlowScreen({ navigation }: any) {
 
     // Try to generate a first suggestion using the contact from the store
     // (avoids race condition where local object has a different ID)
-    if (apiKey) {
+    // Try to generate a first suggestion — works in both proxy and BYOK modes
+    if (apiMode === 'proxy' || apiKey) {
       try {
         // Get the freshly added contact from the store (last one added)
         const storeContacts = useStore.getState().contacts;
         const addedContact = storeContacts[storeContacts.length - 1];
         if (addedContact) {
-          const result = await generateResponse(apiKey, addedContact, 'Hey!', 'universal');
+          const result = await generateResponse(apiKey, addedContact, 'Hey!', 'universal', apiMode);
           if (result.suggestions.length > 0 && result.suggestions[0]) {
             setSuggestion(result.suggestions[0].text);
           }
@@ -410,9 +411,11 @@ export function OnboardingFlowScreen({ navigation }: any) {
       // no-op
     }
 
-    // If user has no API key, send them to setup; otherwise go Home
+    // In proxy mode, no API key needed — go straight home.
+    // In BYOK mode, redirect to API key setup if no key is set.
     const currentApiKey = useStore.getState().apiKey;
-    if (!currentApiKey) {
+    const currentApiMode = useStore.getState().apiMode;
+    if (currentApiMode === 'byok' && !currentApiKey) {
       navigation.reset({
         index: 0,
         routes: [{ name: 'ApiKeySetup' }],

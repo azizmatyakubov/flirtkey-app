@@ -3,6 +3,7 @@ import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { Contact, User, Culture, Suggestion, UserStyle } from '../types';
+import type { ApiMode } from '../services/apiClient';
 
 // Get API key from env config (falls back to empty string)
 const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | undefined)?.['openaiApiKey'] || '';
@@ -80,6 +81,10 @@ interface AppState {
   apiKey: string;
   setApiKey: (key: string) => void;
 
+  // API Mode: 'proxy' (server handles key) or 'byok' (user's own key)
+  apiMode: ApiMode;
+  setApiMode: (mode: ApiMode) => void;
+
   // User style (Sound Like Me)
   userStyle: UserStyle | null;
   setUserStyle: (style: UserStyle | null) => void;
@@ -103,6 +108,7 @@ interface PersistedState {
   suggestionsCache?: CachedSuggestion[];
   userCulture?: Culture;
   apiKey?: string;
+  apiMode?: ApiMode;
 }
 
 const migrate = (persistedState: unknown, version: number): PersistedState => {
@@ -312,6 +318,10 @@ const storeCreator: AppStateCreator = (set, get) => ({
   apiKey: ENV_API_KEY,
   setApiKey: (key) => set({ apiKey: key }),
 
+  // API Mode — default to 'proxy' (server handles key, no BYOK friction)
+  apiMode: 'proxy' as ApiMode,
+  setApiMode: (mode) => set({ apiMode: mode }),
+
   // User style (Sound Like Me)
   userStyle: null,
   setUserStyle: (style) => set({ userStyle: style }),
@@ -326,6 +336,7 @@ const storeCreator: AppStateCreator = (set, get) => ({
       suggestionsCache: [],
       userCulture: 'universal',
       apiKey: '',
+      apiMode: 'proxy' as ApiMode,
       userStyle: null,
     });
   },
@@ -346,6 +357,7 @@ const persistConfig: PersistOptions<AppState, PersistedState> = {
     // suggestionsCache excluded — ephemeral, rebuilt on use
     userCulture: state.userCulture,
     apiKey: state.apiKey,
+    apiMode: state.apiMode,
     userStyle: state.userStyle,
   }),
   onRehydrateStorage: () => (state) => {

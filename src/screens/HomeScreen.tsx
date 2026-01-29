@@ -59,6 +59,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
   const selectContact = useStore((s) => s.selectContact);
   const deleteContact = useStore((s) => s.deleteContact);
   const apiKey = useStore((s) => s.apiKey);
+  const apiMode = useStore((s) => s.apiMode);
   const { showToast } = useToast();
 
   // UI State
@@ -294,8 +295,8 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
         </View>
       </LinearGradient>
 
-      {/* API Key Warning */}
-      {!apiKey && (
+      {/* API Key Warning — only shown in BYOK mode when no key is set */}
+      {apiMode === 'byok' && !apiKey && (
         <TouchableOpacity style={styles.warning} onPress={() => navigation.navigate('Settings')}>
           <Ionicons name="warning-outline" size={18} color={accentColors.gold} />
           <Text style={styles.warningText}>Set up your API key to start</Text>

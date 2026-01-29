@@ -71,6 +71,7 @@ interface FavoriteSuggestion {
 export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
   const selectedContact = useStore((s) => s.selectedContact);
   const apiKey = useStore((s) => s.apiKey);
+  const apiMode = useStore((s) => s.apiMode);
   const updateContact = useStore((s) => s.updateContact);
   const userCulture = useStore((s) => s.userCulture);
   const addConversation = useStore((s) => s.addConversation);
@@ -201,9 +202,9 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
       Alert.alert('Enter their message first!');
       return;
     }
-    if (!apiKey) {
+    if (apiMode === 'byok' && !apiKey) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
-      Alert.alert('No API Key', 'Please set up your OpenAI API key in Settings, or add OPENAI_API_KEY to your .env file.');
+      Alert.alert('No API Key', 'Please set up your OpenAI API key in Settings, or switch to Server Mode.');
       return;
     }
 
@@ -223,7 +224,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
     setLoading(true);
 
     try {
-      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture);
+      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture, apiMode);
 
       // Guard against state updates after unmount (e.g., rotation mid-generation)
       if (!isMountedRef.current) return;
@@ -299,15 +300,15 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setLoading(false);
       }
     }
-  }, [selectedContact, theirMessage, apiKey, userCulture, buttonScale, updateContact, addConversation]);
+  }, [selectedContact, theirMessage, apiKey, apiMode, userCulture, buttonScale, updateContact, addConversation]);
 
   // Handle regeneration (6.2.13)
   const handleRegenerate = useCallback(async (type?: Suggestion['type']) => {
-    if (!selectedContact || !theirMessage.trim() || !apiKey) return;
+    if (!selectedContact || !theirMessage.trim() || (apiMode === 'byok' && !apiKey)) return;
     setLoading(true);
 
     try {
-      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture);
+      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture, apiMode);
 
       if (!isMountedRef.current) return;
 
@@ -331,7 +332,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setLoading(false);
       }
     }
-  }, [selectedContact, theirMessage, apiKey, userCulture, result]);
+  }, [selectedContact, theirMessage, apiKey, apiMode, userCulture, result]);
 
   // Handle screenshot
   const handleScreenshot = useCallback(async () => {
@@ -343,7 +344,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
 
   // Handle pull to refresh (6.1.15)
   const handleRefresh = useCallback(async () => {
-    if (!theirMessage.trim() || !apiKey || loading) return;
+    if (!theirMessage.trim() || (apiMode === 'byok' && !apiKey) || loading) return;
     setRefreshing(true);
     try {
       await handleGenerate();
@@ -354,7 +355,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setRefreshing(false);
       }
     }
-  }, [theirMessage, apiKey, loading, handleGenerate]);
+  }, [theirMessage, apiKey, apiMode, loading, handleGenerate]);
 
   // Handle quick phrase selection (6.1.9)
   const handleQuickPhrase = useCallback((phrase: string) => {

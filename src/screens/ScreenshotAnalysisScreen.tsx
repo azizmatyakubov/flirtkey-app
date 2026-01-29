@@ -74,6 +74,7 @@ interface AnalysisHistory {
 
 export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalysisScreenProps) {
   const apiKey = useStore((s) => s.apiKey);
+  const apiMode = useStore((s) => s.apiMode);
   const selectedContact = useStore((s) => s.selectedContact);
   const contacts = useStore((s) => s.contacts);
   const userCulture = useStore((s) => s.userCulture);
@@ -129,9 +130,9 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
       return;
     }
 
-    if (!apiKey) {
+    if (apiMode === 'byok' && !apiKey) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('API Key Required', 'Please set up your API key in Settings first');
+      Alert.alert('API Key Required', 'Please set up your API key in Settings or switch to Server Mode');
       return;
     }
 
@@ -145,6 +146,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
         userCulture,
         apiKey,
         model: 'gpt-4o',
+        apiMode,
       });
 
       setResult(analysisResult);
@@ -166,7 +168,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
     } finally {
       setIsAnalyzing(false);
     }
-  }, [imagePicker.image, apiKey, selectedContactForAnalysis, userCulture]);
+  }, [imagePicker.image, apiKey, apiMode, selectedContactForAnalysis, userCulture]);
 
   const handleRetake = useCallback(() => {
     imagePicker.clear();

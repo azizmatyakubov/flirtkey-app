@@ -38,6 +38,7 @@ import {
   type RedFlagParams,
   type TimingParams,
 } from '../constants/prompts';
+import { apiClient, ApiMode } from './apiClient';
 
 // Re-export for backward compatibility
 export { CULTURE_STYLES, STAGES };
@@ -537,6 +538,8 @@ export interface GenerateFlirtRequest {
   model?: AIModel;
   useCache?: boolean;
   tone?: string;
+  /** API mode: 'proxy' (server key) or 'byok' (user's key). Defaults to 'byok' for backward compat. */
+  apiMode?: ApiMode;
 }
 
 export interface AnalyzeScreenshotRequest {
@@ -545,6 +548,8 @@ export interface AnalyzeScreenshotRequest {
   userCulture: Culture;
   apiKey: string;
   model?: AIModel;
+  /** API mode: 'proxy' (server key) or 'byok' (user's key). Defaults to 'byok' for backward compat. */
+  apiMode?: ApiMode;
 }
 
 // ==========================================
@@ -753,40 +758,31 @@ async function makeAPICall(
   model: AIModel = 'gpt-4o-mini',
   maxTokens: number = 1000,
   temperature: number = 0.8,
-  requestId?: string
-): Promise<{ content: string; usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }> {
+  requestId?: string,
+  apiMode: ApiMode = 'byok'
+): Promise<{ content: string; usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number }; _flirtkey?: unknown }> {
   // Rate limiting
   await rateLimiter.waitForToken();
   
   const cancelSource = requestId ? createCancelToken(requestId) : undefined;
   
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model,
-        messages,
-        temperature,
-        max_tokens: maxTokens,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: model === 'gpt-4o' ? 60000 : 30000, // 60s for vision, 30s for text
-        cancelToken: cancelSource?.token,
-      }
+    // Use the unified API client which handles both proxy and BYOK modes
+    const response = await apiClient.chatCompletion(
+      apiMode,
+      { model, messages, temperature, max_tokens: maxTokens },
+      apiKey,
+      cancelSource
     );
     
-    const content = response.data.choices[0]?.message?.content;
-    const usage = response.data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+    const content = response.choices?.[0]?.message?.content;
+    const usage = response.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
     
     if (!content) {
       throw new Error('Empty response from AI');
     }
     
-    return { content, usage };
+    return { content, usage, _flirtkey: response._flirtkey };
   } finally {
     if (requestId) {
       cleanupCancelToken(requestId);
@@ -798,7 +794,7 @@ async function makeAPICall(
 export async function generateFlirtResponse(
   request: GenerateFlirtRequest
 ): Promise<AnalysisResult> {
-  const { contact, theirMessage, userCulture, context, apiKey, model = 'gpt-4o-mini', useCache = true } = request;
+  const { contact, theirMessage, userCulture, context, apiKey, model = 'gpt-4o-mini', useCache = true, apiMode = 'byok' } = request;
   
   // Check cache first
   if (useCache) {
@@ -825,7 +821,8 @@ export async function generateFlirtResponse(
       model,
       1000,
       0.8,
-      requestId
+      requestId,
+      apiMode
     );
     
     // Track usage
@@ -858,7 +855,7 @@ export async function generateFlirtResponse(
 export async function analyzeScreenshot(
   request: AnalyzeScreenshotRequest
 ): Promise<AnalysisResult> {
-  const { contact, imageBase64, userCulture, apiKey, model = 'gpt-4o' } = request;
+  const { contact, imageBase64, userCulture, apiKey, model = 'gpt-4o', apiMode = 'byok' } = request;
   
   const { prompt } = buildScreenshotPrompt({ contact, userCulture });
   const requestId = `screenshot-${Date.now()}`;
@@ -890,7 +887,8 @@ export async function analyzeScreenshot(
       model,
       1500,
       0.7,
-      requestId
+      requestId,
+      apiMode
     );
     
     // Track usage
@@ -917,9 +915,9 @@ export async function analyzeScreenshot(
 // ==========================================
 
 export async function generateConversationStarter(
-  params: ConversationStarterParams & { apiKey: string }
+  params: ConversationStarterParams & { apiKey: string; apiMode?: ApiMode }
 ): Promise<AnalysisResult> {
-  const { apiKey, ...promptParams } = params;
+  const { apiKey, apiMode = 'byok', ...promptParams } = params;
   const { prompt } = buildConversationStarterPrompt(promptParams);
   const requestId = `starter-${Date.now()}`;
   
@@ -933,7 +931,8 @@ export async function generateConversationStarter(
       'gpt-4o-mini',
       800,
       0.9,
-      requestId
+      requestId,
+      apiMode
     );
     
     usageTracker.track({
@@ -950,9 +949,9 @@ export async function generateConversationStarter(
 }
 
 export async function generateDateIdeas(
-  params: DateIdeaParams & { apiKey: string }
+  params: DateIdeaParams & { apiKey: string; apiMode?: ApiMode }
 ): Promise<unknown> {
-  const { apiKey, ...promptParams } = params;
+  const { apiKey, apiMode = 'byok', ...promptParams } = params;
   const { prompt } = buildDateIdeaPrompt(promptParams);
   const requestId = `date-${Date.now()}`;
   
@@ -966,7 +965,8 @@ export async function generateDateIdeas(
       'gpt-4o-mini',
       1000,
       0.8,
-      requestId
+      requestId,
+      apiMode
     );
     
     usageTracker.track({
@@ -988,9 +988,9 @@ export async function generateDateIdeas(
 }
 
 export async function analyzeWhatToAvoid(
-  params: WhatToAvoidParams & { apiKey: string }
+  params: WhatToAvoidParams & { apiKey: string; apiMode?: ApiMode }
 ): Promise<unknown> {
-  const { apiKey, ...promptParams } = params;
+  const { apiKey, apiMode = 'byok', ...promptParams } = params;
   const { prompt } = buildWhatToAvoidPrompt(promptParams);
   const requestId = `avoid-${Date.now()}`;
   
@@ -1004,7 +1004,8 @@ export async function analyzeWhatToAvoid(
       'gpt-4o-mini',
       600,
       0.5,
-      requestId
+      requestId,
+      apiMode
     );
     
     usageTracker.track({
@@ -1026,9 +1027,9 @@ export async function analyzeWhatToAvoid(
 }
 
 export async function analyzeInterestLevel(
-  params: InterestLevelParams & { apiKey: string }
+  params: InterestLevelParams & { apiKey: string; apiMode?: ApiMode }
 ): Promise<unknown> {
-  const { apiKey, ...promptParams } = params;
+  const { apiKey, apiMode = 'byok', ...promptParams } = params;
   const { prompt } = buildInterestLevelPrompt(promptParams);
   const requestId = `interest-${Date.now()}`;
   
@@ -1042,7 +1043,8 @@ export async function analyzeInterestLevel(
       'gpt-4o-mini',
       500,
       0.3,
-      requestId
+      requestId,
+      apiMode
     );
     
     usageTracker.track({
@@ -1064,9 +1066,9 @@ export async function analyzeInterestLevel(
 }
 
 export async function detectRedFlags(
-  params: RedFlagParams & { apiKey: string }
+  params: RedFlagParams & { apiKey: string; apiMode?: ApiMode }
 ): Promise<unknown> {
-  const { apiKey, ...promptParams } = params;
+  const { apiKey, apiMode = 'byok', ...promptParams } = params;
   const { prompt } = buildRedFlagPrompt(promptParams);
   const requestId = `redflags-${Date.now()}`;
   
@@ -1080,7 +1082,8 @@ export async function detectRedFlags(
       'gpt-4o-mini',
       800,
       0.3,
-      requestId
+      requestId,
+      apiMode
     );
     
     usageTracker.track({
@@ -1102,9 +1105,9 @@ export async function detectRedFlags(
 }
 
 export async function getTimingSuggestion(
-  params: TimingParams & { apiKey: string }
+  params: TimingParams & { apiKey: string; apiMode?: ApiMode }
 ): Promise<unknown> {
-  const { apiKey, ...promptParams } = params;
+  const { apiKey, apiMode = 'byok', ...promptParams } = params;
   const { prompt } = buildTimingPrompt(promptParams);
   const requestId = `timing-${Date.now()}`;
   
@@ -1118,7 +1121,8 @@ export async function getTimingSuggestion(
       'gpt-4o-mini',
       400,
       0.3,
-      requestId
+      requestId,
+      apiMode
     );
     
     usageTracker.track({
@@ -1197,18 +1201,20 @@ export async function generateResponse(
   apiKey: string,
   contact: Contact,
   theirMessage: string,
-  userCulture: Culture
+  userCulture: Culture,
+  apiMode: ApiMode = 'byok'
 ): Promise<AnalysisResult> {
-  return generateFlirtResponse({ contact, theirMessage, userCulture, apiKey });
+  return generateFlirtResponse({ contact, theirMessage, userCulture, apiKey, apiMode });
 }
 
 export async function analyzeScreenshotLegacy(
   apiKey: string,
   imageBase64: string,
   contact: Contact | null,
-  userCulture: Culture
+  userCulture: Culture,
+  apiMode: ApiMode = 'byok'
 ): Promise<AnalysisResult> {
-  return analyzeScreenshot({ contact, imageBase64, userCulture, apiKey });
+  return analyzeScreenshot({ contact, imageBase64, userCulture, apiKey, apiMode });
 }
 
 export default AIService;

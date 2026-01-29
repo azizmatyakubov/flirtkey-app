@@ -19,8 +19,8 @@ import {
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideInRight } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
-import axios from 'axios';
 import { useStore } from '../stores/useStore';
+import { apiClient } from '../services/apiClient';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { ImagePreview } from '../components/ImagePreview';
 import { performOCR } from '../services/ocr';
@@ -47,7 +47,7 @@ interface GeneratedOpener {
 // ==========================================
 
 export function OpenerGeneratorScreen({ navigation }: any) {
-  const { apiKey, userStyle } = useStore();
+  const { apiKey, apiMode, userStyle } = useStore();
   const { preferences } = useSettingsStore();
   const coachingEnabled = preferences.coachingMode !== false; // default ON
 
@@ -84,9 +84,9 @@ export function OpenerGeneratorScreen({ navigation }: any) {
       Alert.alert('No Image', 'Please select an image first');
       return;
     }
-    if (!apiKey) {
+    if (apiMode === 'byok' && !apiKey) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('API Key Required', 'Please set up your API key in Settings first');
+      Alert.alert('API Key Required', 'Please set up your API key in Settings or switch to Server Mode');
       return;
     }
 
@@ -115,7 +115,7 @@ export function OpenerGeneratorScreen({ navigation }: any) {
   }, [imagePicker.image, apiKey]);
 
   const generateOpeners = useCallback(async (profileText: string, toneFilter?: ToneKey) => {
-    if (!apiKey) return;
+    if (apiMode === 'byok' && !apiKey) return;
     setIsGenerating(true);
 
     try {
@@ -127,8 +127,8 @@ export function OpenerGeneratorScreen({ navigation }: any) {
         ? '\nFor EACH opener, also include an "explanation" field with a brief "Why this works" explanation (1-2 sentences about the psychology/strategy behind it).'
         : '';
 
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+      const response = await apiClient.chatCompletion(
+        apiMode,
         {
           model: 'gpt-4o-mini',
           messages: [
@@ -156,16 +156,10 @@ Return ONLY JSON:
           max_tokens: 1000,
           temperature: 0.9,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 30000,
-        }
+        apiKey
       );
 
-      const content = response.data?.choices?.[0]?.message?.content || '';
+      const content = response.choices?.[0]?.message?.content || '';
       const jsonMatch = content.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
@@ -199,7 +193,7 @@ Return ONLY JSON:
     } finally {
       setIsGenerating(false);
     }
-  }, [apiKey, userStyle, coachingEnabled]);
+  }, [apiKey, apiMode, userStyle, coachingEnabled]);
 
   const handleMoreLikeThis = useCallback(async (tone: ToneKey) => {
     if (!extractedText) return;
