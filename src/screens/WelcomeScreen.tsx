@@ -147,6 +147,8 @@ export function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           onPress={handleGetStarted}
           activeOpacity={0.85}
           style={styles.ctaWrapper}
+          accessibilityLabel="Get Started"
+          accessibilityRole="button"
         >
           <LinearGradient
             colors={[accentColors.gradientStart, accentColors.gradientEnd]}

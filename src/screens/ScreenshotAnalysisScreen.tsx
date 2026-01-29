@@ -50,6 +50,7 @@ import { InterestLevelDisplay } from '../components/InterestLevelDisplay';
 import { ProTipCard } from '../components/ProTipCard';
 import { LoadingShimmer } from '../components/ShimmerEffect';
 import { TypingIndicator } from '../components/TypingIndicator';
+import { OfflineIndicator } from '../components/OfflineIndicator';
 import type { AnalysisResult, Suggestion, Girl } from '../types';
 import { darkColors, accentColors, spacing, borderRadius, fontSizes, shadows } from '../constants/theme';
 
@@ -194,14 +195,17 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
   }, [handleAnalyze, imagePicker.image]);
 
   // 7.3.11: Export analysis
-  const handleExport = useCallback(() => {
+  const handleExport = useCallback(async () => {
     if (!result) return;
 
     const text = formatAnalysisForExport(result, selectedGirlForAnalysis);
-    Clipboard.setStringAsync(text);
-
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert('Copied!', 'Analysis copied to clipboard');
+    try {
+      await Clipboard.setStringAsync(text);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      Alert.alert('Copied!', 'Analysis copied to clipboard');
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard. Please try again.');
+    }
   }, [result, selectedGirlForAnalysis]);
 
   // 7.3.12: Share analysis
@@ -222,9 +226,13 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 
   // Suggestion handlers
   const handleSuggestionUse = useCallback(async (suggestion: Suggestion) => {
-    await Clipboard.setStringAsync(suggestion.text);
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert('Copied!', 'Response copied to clipboard');
+    try {
+      await Clipboard.setStringAsync(suggestion.text);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      Alert.alert('Copied!', 'Response copied to clipboard');
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard.');
+    }
   }, []);
 
   const handleFavorite = useCallback((suggestion: Suggestion) => {
@@ -254,6 +262,9 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 
   return (
     <View style={styles.container}>
+      {/* Offline Indicator */}
+      <OfflineIndicator />
+
       {/* Header */}
       <LinearGradient
         colors={[accentColors.gradientStart, accentColors.gradientEnd]}
@@ -264,6 +275,8 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
         >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
@@ -271,10 +284,10 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
         <View style={styles.headerRight}>
           {result && (
             <>
-              <TouchableOpacity onPress={handleExport} style={styles.headerAction}>
+              <TouchableOpacity onPress={handleExport} style={styles.headerAction} accessibilityLabel="Copy analysis to clipboard" accessibilityRole="button">
                 <Ionicons name="clipboard" size={20} color="#FFFFFF" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleShare} style={styles.headerAction}>
+              <TouchableOpacity onPress={handleShare} style={styles.headerAction} accessibilityLabel="Share analysis" accessibilityRole="button">
                 <Ionicons name="share" size={20} color="#FFFFFF" />
               </TouchableOpacity>
             </>
@@ -530,10 +543,16 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
                     key={index}
                     style={styles.followUpChip}
                     onPress={async () => {
-                      await Clipboard.setStringAsync(question);
-                      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      Alert.alert('Copied!', 'Question copied to clipboard');
+                      try {
+                        await Clipboard.setStringAsync(question);
+                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+                        Alert.alert('Copied!', 'Question copied to clipboard');
+                      } catch {
+                        Alert.alert('Error', 'Failed to copy to clipboard.');
+                      }
                     }}
+                    accessibilityLabel={`Copy question: ${question}`}
+                    accessibilityRole="button"
                   >
                     <Text style={styles.followUpText}>{question}</Text>
                   </TouchableOpacity>

@@ -55,15 +55,19 @@ export function SuggestionEditor({ visible, suggestion, onClose, onSave }: Sugge
   const hasChanges = editedText !== originalText;
 
   const handleCopyAndClose = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await Clipboard.setStringAsync(editedText);
-    Alert.alert('Copied! 📋', 'Your edited message is ready to paste');
-    onSave(editedText);
-    onClose();
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      await Clipboard.setStringAsync(editedText);
+      Alert.alert('Copied! 📋', 'Your edited message is ready to paste');
+      onSave(editedText);
+      onClose();
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard.');
+    }
   };
 
   const handleReset = () => {
-    Haptics.selectionAsync();
+    Haptics.selectionAsync().catch(() => {});
     setEditedText(originalText);
   };
 

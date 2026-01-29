@@ -87,10 +87,13 @@ export function useClipboardDetection(isActive: boolean) {
   }, [isActive]);
 
   useEffect(() => {
+    if (!isActive) return;
     // Check clipboard periodically when screen is active
-    const interval = setInterval(checkClipboard, 2000);
+    const interval = setInterval(checkClipboard, 3000);
+    // Also check immediately on mount/activation
+    checkClipboard();
     return () => clearInterval(interval);
-  }, [checkClipboard]);
+  }, [checkClipboard, isActive]);
 
   const dismissPrompt = useCallback(() => {
     setShowPrompt(false);

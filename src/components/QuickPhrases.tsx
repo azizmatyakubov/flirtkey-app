@@ -55,7 +55,7 @@ export function QuickPhrases({ onSelect, relationshipStage = 'just_met' }: Quick
   const allPhrases = [...stagePhrases, ...UNIVERSAL_PHRASES];
 
   const handleSelect = async (phrase: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     onSelect(phrase);
   };
 
@@ -73,6 +73,8 @@ export function QuickPhrases({ onSelect, relationshipStage = 'just_met' }: Quick
             style={styles.chip}
             onPress={() => handleSelect(phrase)}
             activeOpacity={0.7}
+            accessibilityLabel={`Quick phrase: ${phrase}`}
+            accessibilityRole="button"
           >
             <Text style={styles.chipText}>{phrase}</Text>
           </TouchableOpacity>

@@ -305,6 +305,8 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
             navigation.goBack();
           }}
           style={styles.backBtn}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
         >
           <Ionicons name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>

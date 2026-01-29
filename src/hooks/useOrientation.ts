@@ -54,13 +54,18 @@ export function useOrientation(): OrientationState {
   const [state, setState] = useState<OrientationState>(getOrientationState);
 
   useEffect(() => {
+    let isMounted = true;
+
     const handleChange = () => {
-      setState(getOrientationState());
+      if (isMounted) {
+        setState(getOrientationState());
+      }
     };
 
     const subscription = Dimensions.addEventListener('change', handleChange);
 
     return () => {
+      isMounted = false;
       subscription?.remove();
     };
   }, [getOrientationState]);

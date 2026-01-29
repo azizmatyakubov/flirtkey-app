@@ -69,31 +69,39 @@ function AnimatedSuggestionCardBase({
   }));
 
   const handleCopy = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await Clipboard.setStringAsync(suggestion.text);
-    setCopied(true);
-    onUse?.(suggestion);
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      await Clipboard.setStringAsync(suggestion.text);
+      setCopied(true);
+      onUse?.(suggestion);
 
-    scale.value = withSpring(0.95, {}, () => {
-      scale.value = withSpring(1);
-    });
+      scale.value = withSpring(0.95, {}, () => {
+        scale.value = withSpring(1);
+      });
 
-    Alert.alert('Copied!', 'Paste it in your chat');
+      Alert.alert('Copied!', 'Paste it in your chat');
 
-    setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard. Please try again.');
+    }
   };
 
   const handleSendThis = async () => {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await Clipboard.setStringAsync(suggestion.text);
-    setSent(true);
-    onSendThis?.(suggestion);
+    try {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      await Clipboard.setStringAsync(suggestion.text);
+      setSent(true);
+      onSendThis?.(suggestion);
 
-    scale.value = withSpring(0.93, {}, () => {
-      scale.value = withSpring(1);
-    });
+      scale.value = withSpring(0.93, {}, () => {
+        scale.value = withSpring(1);
+      });
 
-    setTimeout(() => setSent(false), 3000);
+      setTimeout(() => setSent(false), 3000);
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard.');
+    }
   };
 
   const handleFeedback = async (positive: boolean) => {
@@ -113,7 +121,13 @@ function AnimatedSuggestionCardBase({
         animatedStyle,
       ]}
     >
-      <TouchableOpacity onPress={handleCopy} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={handleCopy}
+        activeOpacity={0.8}
+        accessibilityLabel={`${colors.label} suggestion: ${suggestion.text}. Tap to copy.`}
+        accessibilityRole="button"
+        accessibilityState={{ selected: copied }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.typeBadge, { backgroundColor: `${colors.border}25` }]}>

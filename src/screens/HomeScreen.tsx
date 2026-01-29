@@ -195,6 +195,9 @@ export function HomeScreen({ navigation }: any) {
               onPress={() => handleSelectGirl(item)}
               onLongPress={() => handleEditGirl(item)}
               activeOpacity={0.7}
+              accessibilityLabel={`${item.name}, ${item.relationshipStage.replace('_', ' ')}, ${item.messageCount} messages`}
+              accessibilityRole="button"
+              accessibilityHint="Tap to open chat, long press to edit"
             >
               <Avatar name={item.name} imageUri={item.avatar} size="md" />
               <View style={styles.girlInfo}>
@@ -280,6 +283,8 @@ export function HomeScreen({ navigation }: any) {
           <TouchableOpacity
             style={styles.settingsButton}
             onPress={() => navigation.navigate('Settings')}
+            accessibilityLabel="Settings"
+            accessibilityRole="button"
           >
             <Ionicons name="settings-outline" size={24} color="#fff" />
           </TouchableOpacity>
@@ -340,6 +345,8 @@ export function HomeScreen({ navigation }: any) {
         style={styles.fab}
         onPress={() => navigation.navigate('AddGirl')}
         activeOpacity={0.85}
+        accessibilityLabel="Add new connection"
+        accessibilityRole="button"
       >
         <LinearGradient
           colors={[accentColors.gradientStart, accentColors.gradientEnd]}

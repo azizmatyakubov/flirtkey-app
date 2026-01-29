@@ -39,6 +39,8 @@ const getStageEmoji = (stage: Girl['relationshipStage']): string => {
 };
 
 export function ConversationContext({ girl, onViewHistory }: ConversationContextProps) {
+  if (!girl) return null;
+
   const lastMessageTime = getTimeAgo(girl.lastMessageDate);
   const hasContext = girl.lastTopic || girl.insideJokes || girl.greenLights;
 

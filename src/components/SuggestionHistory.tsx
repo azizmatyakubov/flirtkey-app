@@ -41,9 +41,13 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
   };
 
   const handleCopy = async (text: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await Clipboard.setStringAsync(text);
-    Alert.alert('Copied! 📋', 'Message copied to clipboard');
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      await Clipboard.setStringAsync(text);
+      Alert.alert('Copied! 📋', 'Message copied to clipboard');
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard.');
+    }
   };
 
   const renderEntry = ({ item }: { item: ConversationEntry }) => {

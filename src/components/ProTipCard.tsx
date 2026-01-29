@@ -75,10 +75,12 @@ export function ProTipCard({
   showActions = true,
 }: ProTipCardProps) {
   const [saved, setSaved] = useState(isSaved);
-  const config = CATEGORY_CONFIG[category];
+  const config = CATEGORY_CONFIG[category] ?? CATEGORY_CONFIG.general;
+
+  if (!tip) return null;
 
   const handleSave = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setSaved(!saved);
     onSave?.(tip);
     if (!saved) {
@@ -87,18 +89,18 @@ export function ProTipCard({
   };
 
   const handleShare = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     try {
       await Share.share({
         message: `💡 Dating tip: "${tip}" - Shared from FlirtKey`,
       });
-    } catch (error) {
-      console.error('Error sharing:', error);
+    } catch {
+      // User cancelled or share failed
     }
   };
 
   const handleDismiss = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     onDismiss?.();
   };
 

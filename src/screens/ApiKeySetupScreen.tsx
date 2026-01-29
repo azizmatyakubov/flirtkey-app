@@ -188,8 +188,12 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
     }
   };
 
-  const openOpenAIPlatform = () => {
-    Linking.openURL('https://platform.openai.com/api-keys');
+  const openOpenAIPlatform = async () => {
+    try {
+      await Linking.openURL('https://platform.openai.com/api-keys');
+    } catch {
+      Alert.alert('Error', 'Could not open browser. Please visit platform.openai.com manually.');
+    }
   };
 
   const getStatusColor = () => {

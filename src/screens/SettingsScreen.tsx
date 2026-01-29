@@ -177,8 +177,12 @@ export function SettingsScreen({ navigation }: any) {
       android: 'https://play.google.com/store/apps/details?id=com.flirtkey',
     });
     if (storeUrl) {
-      await Linking.openURL(storeUrl);
-      setHasRatedApp(true);
+      try {
+        await Linking.openURL(storeUrl);
+        setHasRatedApp(true);
+      } catch {
+        Alert.alert('Error', 'Could not open app store. Please try again.');
+      }
     }
   };
 
@@ -197,17 +201,29 @@ export function SettingsScreen({ navigation }: any) {
 
   const handleContactSupport = async () => {
     triggerHaptic();
-    await Linking.openURL('mailto:support@flirtkey.app?subject=FlirtKey Support');
+    try {
+      await Linking.openURL('mailto:support@flirtkey.app?subject=FlirtKey Support');
+    } catch {
+      Alert.alert('Error', 'Could not open email client.');
+    }
   };
 
   const handlePrivacyPolicy = async () => {
     triggerHaptic();
-    await Linking.openURL('https://flirtkey.app/privacy');
+    try {
+      await Linking.openURL('https://flirtkey.app/privacy');
+    } catch {
+      Alert.alert('Error', 'Could not open browser.');
+    }
   };
 
   const handleTermsOfService = async () => {
     triggerHaptic();
-    await Linking.openURL('https://flirtkey.app/terms');
+    try {
+      await Linking.openURL('https://flirtkey.app/terms');
+    } catch {
+      Alert.alert('Error', 'Could not open browser.');
+    }
   };
 
   const handleBiometricToggle = async (enabled: boolean) => {
@@ -340,10 +356,10 @@ export function SettingsScreen({ navigation }: any) {
         end={{ x: 1, y: 0 }}
         style={styles.header}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton} accessibilityLabel="Go back" accessibilityRole="button">
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">Settings</Text>
         <View style={{ width: 40 }} />
       </LinearGradient>
 

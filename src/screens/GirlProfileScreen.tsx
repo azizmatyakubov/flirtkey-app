@@ -121,9 +121,16 @@ export function GirlProfileScreen({ navigation }: any) {
   };
 
   const handleSelectPhoto = async () => {
-    const result = await pickFromLibrary();
-    if (result?.uri) {
-      updateField('avatar', result.uri);
+    try {
+      const result = await pickFromLibrary();
+      if (result?.uri) {
+        updateField('avatar', result.uri);
+      }
+    } catch {
+      showToast({
+        message: 'Failed to select photo. Please try again.',
+        type: 'error',
+      });
     }
   };
 
@@ -202,11 +209,11 @@ export function GirlProfileScreen({ navigation }: any) {
         end={{ x: 1, y: 0 }}
         style={styles.header}
       >
-        <TouchableOpacity onPress={handleCancel} style={styles.headerButton}>
+        <TouchableOpacity onPress={handleCancel} style={styles.headerButton} accessibilityLabel="Cancel" accessibilityRole="button">
           <Ionicons name="close" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>{selectedGirl.name}</Text>
-        <TouchableOpacity onPress={handleSave} disabled={!hasChanges || isSaving} style={styles.headerButton}>
+        <Text style={styles.title} accessibilityRole="header">{selectedGirl.name}</Text>
+        <TouchableOpacity onPress={handleSave} disabled={!hasChanges || isSaving} style={styles.headerButton} accessibilityLabel={isSaving ? 'Saving...' : 'Save changes'} accessibilityRole="button" accessibilityState={{ disabled: !hasChanges || isSaving }}>
           <Text style={[styles.save, (!hasChanges || isSaving) && styles.saveDisabled]}>
             {isSaving ? 'Saving...' : 'Save'}
           </Text>

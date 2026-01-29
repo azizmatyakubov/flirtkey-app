@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -43,6 +43,7 @@ import { SuggestionHistory } from '../components/SuggestionHistory';
 import { RegenerateButton } from '../components/SuggestionRegenerate';
 // shareSuggestion available via suggestion card actions
 import { InterestLevelChart } from '../components/InterestLevelChart';
+import { OfflineIndicator } from '../components/OfflineIndicator';
 import { useOrientation } from '../hooks/useOrientation';
 import { darkColors, fontSizes, spacing, borderRadius, accentColors, shadows } from '../constants/theme';
 import { fonts } from '../constants/fonts';
@@ -110,6 +111,7 @@ export function ChatScreen({ navigation }: any) {
   // Refs
   const inputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+  const isMountedRef = useRef(true);
 
   // Animation values
   const buttonScale = useSharedValue(1);
@@ -121,6 +123,14 @@ export function ChatScreen({ navigation }: any) {
 
   // Get conversation history
   const conversationHistory = selectedGirl ? getConversationsForGirl(selectedGirl.id) : [];
+
+  // Cleanup mounted ref on unmount (prevents state updates after unmount)
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Loading text rotation
   useEffect(() => {
@@ -161,26 +171,37 @@ export function ChatScreen({ navigation }: any) {
 
   if (!selectedGirl) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, styles.noGirlContainer]}>
+        <Ionicons name="person-outline" size={48} color={darkColors.textSecondary} />
         <Text style={styles.noGirl}>Select someone first</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Home')}
+          style={styles.noGirlButton}
+          accessibilityLabel="Go to home screen"
+          accessibilityRole="button"
+        >
+          <Text style={styles.noGirlButtonText}>Go to Home</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   // Handle generate (with haptics - 6.1.13)
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
+    if (!selectedGirl) return;
+
     if (!herMessage.trim()) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
       Alert.alert('Enter her message first!');
       return;
     }
     if (!apiKey) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
       Alert.alert('No API Key', 'Please set up your OpenAI API key in Settings, or add OPENAI_API_KEY to your .env file.');
       return;
     }
 
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     buttonScale.value = withSpring(0.95, {}, () => {
       buttonScale.value = withSpring(1);
     });
@@ -190,14 +211,23 @@ export function ChatScreen({ navigation }: any) {
 
     try {
       const response = await generateResponse(apiKey, selectedGirl, herMessage, userCulture);
+
+      // Guard against state updates after unmount (e.g., rotation mid-generation)
+      if (!isMountedRef.current) return;
+
+      if (!response || !response.suggestions || response.suggestions.length === 0) {
+        Alert.alert('Empty Response', 'AI returned an empty response. Try rephrasing your message.');
+        setLoading(false);
+        return;
+      }
+
       setResult(response);
 
-      if (response?.interestLevel) {
+      if (response.interestLevel) {
         setPreviousInterestLevel(response.interestLevel);
       }
 
       updateGirl(selectedGirl.id, {
-        // Note: messageCount is auto-incremented by addConversation in the store
         lastTopic: herMessage.substring(0, 100),
         lastMessageDate: new Date().toISOString(),
       });
@@ -210,26 +240,60 @@ export function ChatScreen({ navigation }: any) {
         interestLevel: response.interestLevel,
       });
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 
       setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
+        if (isMountedRef.current) {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }
       }, 300);
     } catch (error: unknown) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
+      if (!isMountedRef.current) return;
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+
+      // Classify error for user-friendly message
+      let errorMessage = 'Something went wrong. Please try again.';
+      if (error && typeof error === 'object' && 'code' in error) {
+        const apiError = error as { code: string; message: string };
+        switch (apiError.code) {
+          case 'NETWORK_ERROR':
+            errorMessage = '📡 No internet connection. Check your network and try again.';
+            break;
+          case 'TIMEOUT':
+            errorMessage = '⏰ Request took too long. Try again or use a shorter message.';
+            break;
+          case 'RATE_LIMITED':
+            errorMessage = '🐌 Too many requests. Wait a moment and try again.';
+            break;
+          case 'INVALID_API_KEY':
+            errorMessage = '🔑 API key is invalid. Update it in Settings.';
+            break;
+          case 'INSUFFICIENT_QUOTA':
+            errorMessage = '💸 OpenAI quota exceeded. Check your billing at platform.openai.com.';
+            break;
+          default:
+            errorMessage = apiError.message || errorMessage;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       Alert.alert('Error', errorMessage);
+    } finally {
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
-    setLoading(false);
-  };
+  }, [selectedGirl, herMessage, apiKey, userCulture, buttonScale, updateGirl, addConversation]);
 
   // Handle regeneration (6.2.13)
-  const handleRegenerate = async (type?: Suggestion['type']) => {
-    if (!herMessage.trim() || !apiKey) return;
+  const handleRegenerate = useCallback(async (type?: Suggestion['type']) => {
+    if (!selectedGirl || !herMessage.trim() || !apiKey) return;
     setLoading(true);
 
     try {
       const response = await generateResponse(apiKey, selectedGirl, herMessage, userCulture);
+
+      if (!isMountedRef.current) return;
 
       if (type && result) {
         // Replace only specific suggestion type
@@ -241,14 +305,17 @@ export function ChatScreen({ navigation }: any) {
         setResult(response);
       }
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', 'Failed to regenerate suggestions');
+      if (!isMountedRef.current) return;
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      Alert.alert('Error', 'Failed to regenerate suggestions. Please try again.');
+    } finally {
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
-
-    setLoading(false);
-  };
+  }, [selectedGirl, herMessage, apiKey, userCulture, result]);
 
   // Handle screenshot
   const handleScreenshot = async () => {
@@ -259,15 +326,19 @@ export function ChatScreen({ navigation }: any) {
   };
 
   // Handle pull to refresh (6.1.15)
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     if (!herMessage.trim() || !apiKey) return;
     setRefreshing(true);
     try {
       await handleGenerate();
+    } catch {
+      // Errors handled inside handleGenerate
     } finally {
-      setRefreshing(false);
+      if (isMountedRef.current) {
+        setRefreshing(false);
+      }
     }
-  };
+  }, [herMessage, apiKey, handleGenerate]);
 
   // Handle quick phrase selection (6.1.9)
   const handleQuickPhrase = (phrase: string) => {
@@ -374,6 +445,9 @@ export function ChatScreen({ navigation }: any) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
     >
+      {/* Offline Indicator */}
+      <OfflineIndicator />
+
       {/* Paste Detection Prompt (6.1.11) */}
       <PasteDetector
         currentValue={herMessage}
@@ -396,6 +470,8 @@ export function ChatScreen({ navigation }: any) {
             navigation.goBack();
           }}
           style={styles.backBtn}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
         >
           <Ionicons name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
@@ -407,13 +483,20 @@ export function ChatScreen({ navigation }: any) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
                 navigation.navigate('GirlProfile');
               }}
+              accessibilityLabel={`Edit ${selectedGirl.name}'s profile`}
+              accessibilityRole="button"
             >
               <Text style={styles.editProfile}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
           <LastTopicIndicator topic={selectedGirl.lastTopic} />
         </View>
-        <TouchableOpacity onPress={() => setShowContextMenu(!showContextMenu)} style={styles.menuButton}>
+        <TouchableOpacity
+          onPress={() => setShowContextMenu(!showContextMenu)}
+          style={styles.menuButton}
+          accessibilityLabel="More options"
+          accessibilityRole="button"
+        >
           <Ionicons name="ellipsis-horizontal" size={22} color="#fff" />
         </TouchableOpacity>
       </LinearGradient>
@@ -475,6 +558,8 @@ export function ChatScreen({ navigation }: any) {
             multiline
             maxLength={MAX_INPUT_LENGTH}
             inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_ID : undefined}
+            accessibilityLabel="Enter her message"
+            accessibilityHint="Paste or type the message she sent you"
           />
 
           {/* Character Count (6.1.8) */}
@@ -495,6 +580,9 @@ export function ChatScreen({ navigation }: any) {
                 onPress={handleGenerate}
                 disabled={loading}
                 activeOpacity={0.85}
+                accessibilityLabel={loading ? 'Generating replies...' : 'Get perfect replies'}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: loading, busy: loading }}
               >
                 <LinearGradient
                   colors={[accentColors.gradientStart, accentColors.gradientEnd]}
@@ -518,6 +606,9 @@ export function ChatScreen({ navigation }: any) {
               onPress={handleScreenshot}
               disabled={loading}
               activeOpacity={0.7}
+              accessibilityLabel="Analyze screenshot"
+              accessibilityRole="button"
+              accessibilityState={{ disabled: loading }}
             >
               <Ionicons name="camera-outline" size={22} color={accentColors.rose} />
             </TouchableOpacity>
@@ -660,10 +751,30 @@ const styles = StyleSheet.create({
   containerSplitScreen: {
     paddingHorizontal: spacing.sm,
   },
+  noGirlContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+  },
   noGirl: {
     color: darkColors.text,
     textAlign: 'center',
-    marginTop: 100,
+    marginTop: spacing.md,
+    fontSize: fontSizes.lg,
+    fontWeight: '600',
+    fontFamily: fonts.semiBold,
+  },
+  noGirlButton: {
+    marginTop: spacing.lg,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    backgroundColor: darkColors.primary,
+    borderRadius: borderRadius.lg,
+  },
+  noGirlButtonText: {
+    color: '#fff',
+    fontSize: fontSizes.md,
+    fontWeight: '600',
   },
   header: {
     paddingTop: 60,

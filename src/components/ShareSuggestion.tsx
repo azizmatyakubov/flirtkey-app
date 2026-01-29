@@ -9,7 +9,7 @@ import { Suggestion } from '../types';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 export async function shareSuggestion(suggestion: Suggestion, girlName?: string): Promise<void> {
-  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 
   const suggestionType = suggestion.type.charAt(0).toUpperCase() + suggestion.type.slice(1);
 
@@ -83,17 +83,25 @@ export function ShareMenu({ visible, suggestion, girlName, onClose }: ShareMenuP
   if (!visible) return null;
 
   const handleCopyText = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await Clipboard.setStringAsync(suggestion.text);
-    Alert.alert('Copied!', 'Message text copied to clipboard.');
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      await Clipboard.setStringAsync(suggestion.text);
+      Alert.alert('Copied!', 'Message text copied to clipboard.');
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard.');
+    }
     onClose();
   };
 
   const handleCopyWithReason = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const text = `"${suggestion.text}"\n\n💡 ${suggestion.reason}`;
-    await Clipboard.setStringAsync(text);
-    Alert.alert('Copied!', 'Message with reasoning copied to clipboard.');
+    try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      const text = `"${suggestion.text}"\n\n💡 ${suggestion.reason}`;
+      await Clipboard.setStringAsync(text);
+      Alert.alert('Copied!', 'Message with reasoning copied to clipboard.');
+    } catch {
+      Alert.alert('Error', 'Failed to copy to clipboard.');
+    }
     onClose();
   };
 
