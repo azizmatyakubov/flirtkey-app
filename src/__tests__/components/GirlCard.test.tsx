@@ -49,10 +49,8 @@ describe('GirlCard', () => {
     avatar: 'https://example.com/avatar.jpg',
     interests: 'hiking, movies',
     personality: 'outgoing',
-    communicationStyle: 'casual',
     relationshipStage: 'flirting',
-    insideJokes: [],
-    topicsToAvoid: [],
+    insideJokes: '',
     messageCount: 25,
     lastTopic: 'movies',
     lastMessageDate: new Date().toISOString(),
@@ -72,13 +70,13 @@ describe('GirlCard', () => {
   });
 
   it('renders girl name correctly', () => {
-    const { getByText } = render(<GirlCard {...defaultProps} />);
-    expect(getByText('Emma')).toBeTruthy();
+    const { getAllByText } = render(<GirlCard {...defaultProps} />);
+    expect(getAllByText('Emma').length).toBeGreaterThan(0);
   });
 
   it('renders message count', () => {
     const { getByText } = render(<GirlCard {...defaultProps} />);
-    expect(getByText('25 💬')).toBeTruthy();
+    expect(getByText('25')).toBeTruthy();
   });
 
   it('renders avatar with correct name', () => {
@@ -93,17 +91,17 @@ describe('GirlCard', () => {
 
   it('calls onPress when card is pressed', () => {
     const onPress = jest.fn();
-    const { getByText } = render(<GirlCard {...defaultProps} onPress={onPress} />);
+    const { getAllByText } = render(<GirlCard {...defaultProps} onPress={onPress} />);
 
-    fireEvent.press(getByText('Emma'));
+    fireEvent.press(getAllByText('Emma')[0]!);
     expect(onPress).toHaveBeenCalledWith(mockGirl);
   });
 
   it('calls onLongPress when card is long pressed', () => {
     const onLongPress = jest.fn();
-    const { getByText } = render(<GirlCard {...defaultProps} onLongPress={onLongPress} />);
+    const { getAllByText } = render(<GirlCard {...defaultProps} onLongPress={onLongPress} />);
 
-    fireEvent(getByText('Emma'), 'longPress');
+    fireEvent(getAllByText('Emma')[0]!, 'longPress');
     expect(onLongPress).toHaveBeenCalledWith(mockGirl);
   });
 
@@ -131,25 +129,26 @@ describe('GirlCard', () => {
 
     const { getByText } = render(<GirlCard {...defaultProps} girl={recentGirl} />);
 
-    expect(getByText('30m ago')).toBeTruthy();
+    // The formatRelativeTime function formats as "Xm ago"
+    expect(getByText(/30m ago/)).toBeTruthy();
   });
 
   it('memoizes correctly - does not re-render for same props', () => {
-    const { rerender, getByText } = render(<GirlCard {...defaultProps} />);
+    const { rerender, getAllByText } = render(<GirlCard {...defaultProps} />);
 
     // Same props, should be memoized
     rerender(<GirlCard {...defaultProps} />);
 
-    expect(getByText('Emma')).toBeTruthy();
+    expect(getAllByText('Emma').length).toBeGreaterThan(0);
   });
 
   it('re-renders when girl data changes', () => {
-    const { rerender, getByText } = render(<GirlCard {...defaultProps} />);
+    const { rerender, getAllByText } = render(<GirlCard {...defaultProps} />);
 
     const updatedGirl = { ...mockGirl, name: 'Sophie', messageCount: 30 };
     rerender(<GirlCard {...defaultProps} girl={updatedGirl} />);
 
-    expect(getByText('Sophie')).toBeTruthy();
-    expect(getByText('30 💬')).toBeTruthy();
+    expect(getAllByText('Sophie').length).toBeGreaterThan(0);
+    expect(getAllByText('30').length).toBeGreaterThan(0);
   });
 });

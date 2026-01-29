@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, waitFor, act } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 
 // Mock reanimated
 jest.mock('react-native-reanimated', () => {
@@ -29,7 +29,7 @@ describe('CelebrationAnimation', () => {
   });
 
   it('renders nothing when not visible', () => {
-    const { queryByTestId, toJSON } = render(<CelebrationAnimation visible={false} />);
+    const { toJSON } = render(<CelebrationAnimation visible={false} />);
 
     // Component should return null when not visible
     expect(toJSON()).toBeNull();

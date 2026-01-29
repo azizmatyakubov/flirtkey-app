@@ -64,7 +64,7 @@ const getColorFromName = (name: string): string => {
   return AVATAR_COLORS[index] ?? accentColors.rose;
 };
 
-export function Avatar({
+export const Avatar = React.memo(function Avatar({
   name,
   imageUri,
   size = 'md',
@@ -141,7 +141,7 @@ export function Avatar({
   }
 
   return content;
-}
+});
 
 const styles = StyleSheet.create({
   outerRing: {

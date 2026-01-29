@@ -1,5 +1,5 @@
 // 6.2.14 Suggestion history
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Alert } from 'react-native';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,7 +50,7 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
     }
   };
 
-  const renderEntry = ({ item }: { item: ConversationEntry }) => {
+  const renderEntry = useCallback(({ item }: { item: ConversationEntry }) => {
     const isExpanded = expandedId === item.id;
 
     return (
@@ -153,7 +153,7 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
         </View>
       </TouchableOpacity>
     );
-  };
+  }, [expandedId, onReuse, onClose]);
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>

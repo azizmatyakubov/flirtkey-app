@@ -58,24 +58,7 @@ import { darkColors, accentColors, spacing, borderRadius, fontSizes, shadows } f
 // Types
 // ==========================================
 
-interface ScreenshotAnalysisScreenProps {
-  navigation: any;
-  route?: {
-    params?: {
-      imageUri?: string;
-      imageBase64?: string;
-      girlId?: number;
-    };
-  };
-}
-
-// ConversationBreakdown type for future use
-// interface ConversationBreakdown {
-//   herMessages: string[];
-//   yourMessages: string[];
-//   topics: string[];
-//   tone: string;
-// }
+import type { ScreenshotAnalysisScreenProps } from '../types/navigation';
 
 interface AnalysisHistory {
   id: string;
@@ -729,7 +712,6 @@ const styles = StyleSheet.create({
   headerAction: {
     padding: spacing.xs,
   },
-  // headerActionText removed - using Ionicons
   content: {
     flex: 1,
   },
@@ -804,7 +786,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // pickerButtonIcon removed - using Ionicons
   pickerButtonText: {
     color: darkColors.text,
     fontSize: fontSizes.sm,

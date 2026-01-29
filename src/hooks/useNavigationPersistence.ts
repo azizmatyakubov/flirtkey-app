@@ -42,7 +42,7 @@ export function useNavigationPersistence(
         }
       } catch (e) {
         // Ignore errors - just don't restore state
-        console.warn('Failed to restore navigation state:', e);
+        if (__DEV__) console.warn('Failed to restore navigation state:', e);
       } finally {
         setIsReady(true);
       }
@@ -57,7 +57,7 @@ export function useNavigationPersistence(
 
       // Debounce the save to avoid too many writes
       AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state)).catch((e) => {
-        console.warn('Failed to save navigation state:', e);
+        if (__DEV__) console.warn('Failed to save navigation state:', e);
       });
     },
     [enabled]
@@ -78,7 +78,7 @@ export async function clearNavigationState(): Promise<void> {
   try {
     await AsyncStorage.removeItem(NAVIGATION_STATE_KEY);
   } catch (e) {
-    console.warn('Failed to clear navigation state:', e);
+    if (__DEV__) console.warn('Failed to clear navigation state:', e);
   }
 }
 

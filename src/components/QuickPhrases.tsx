@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
@@ -50,14 +50,14 @@ const UNIVERSAL_PHRASES = [
   "Sounds fun!",
 ];
 
-export function QuickPhrases({ onSelect, relationshipStage = 'just_met' }: QuickPhrasesProps) {
+export const QuickPhrases = memo(function QuickPhrases({ onSelect, relationshipStage = 'just_met' }: QuickPhrasesProps) {
   const stagePhrases = QUICK_PHRASES[relationshipStage] ?? QUICK_PHRASES['just_met'] ?? [];
   const allPhrases = [...stagePhrases, ...UNIVERSAL_PHRASES];
 
-  const handleSelect = async (phrase: string) => {
+  const handleSelect = useCallback(async (phrase: string) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     onSelect(phrase);
-  };
+  }, [onSelect]);
 
   return (
     <View style={styles.container}>
@@ -82,7 +82,9 @@ export function QuickPhrases({ onSelect, relationshipStage = 'just_met' }: Quick
       </ScrollView>
     </View>
   );
-}
+});
+
+QuickPhrases.displayName = 'QuickPhrases';
 
 const styles = StyleSheet.create({
   container: {

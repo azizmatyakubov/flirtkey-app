@@ -98,7 +98,7 @@ describe('Image Picker Logic', () => {
       });
 
       expect(result.canceled).toBe(false);
-      expect(result.assets?.[0].uri).toBe('file://test.jpg');
+      expect(result.assets![0]!.uri).toBe('file://test.jpg');
     });
 
     it('handles cancelled selection', async () => {
@@ -129,7 +129,7 @@ describe('Image Picker Logic', () => {
       });
 
       expect(result.canceled).toBe(false);
-      expect(result.assets?.[0].uri).toBe('file://camera.jpg');
+      expect(result.assets![0]!.uri).toBe('file://camera.jpg');
     });
   });
 

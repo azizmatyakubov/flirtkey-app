@@ -47,7 +47,7 @@ class ResponseLogger {
       }
       this.loaded = true;
     } catch (error) {
-      console.error('Failed to load response logs:', error);
+      if (__DEV__) console.error('Failed to load response logs:', error);
       this.logs = [];
       this.loaded = true;
     }
@@ -57,7 +57,7 @@ class ResponseLogger {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.logs));
     } catch (error) {
-      console.error('Failed to save response logs:', error);
+      if (__DEV__) console.error('Failed to save response logs:', error);
     }
   }
 
@@ -149,7 +149,7 @@ class FeedbackCollector {
       }
       this.loaded = true;
     } catch (error) {
-      console.error('Failed to load feedback:', error);
+      if (__DEV__) console.error('Failed to load feedback:', error);
       this.feedback = [];
       this.loaded = true;
     }
@@ -159,7 +159,7 @@ class FeedbackCollector {
     try {
       await AsyncStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(this.feedback));
     } catch (error) {
-      console.error('Failed to save feedback:', error);
+      if (__DEV__) console.error('Failed to save feedback:', error);
     }
   }
 

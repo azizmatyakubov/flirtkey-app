@@ -47,6 +47,7 @@ import { OfflineIndicator } from '../components/OfflineIndicator';
 import { useOrientation } from '../hooks/useOrientation';
 import { darkColors, fontSizes, spacing, borderRadius, accentColors, shadows } from '../constants/theme';
 import { fonts } from '../constants/fonts';
+import type { RootNavigationProp } from '../types/navigation';
 
 const MAX_INPUT_LENGTH = 500;
 const INPUT_ACCESSORY_ID = 'chat-input-accessory';
@@ -66,7 +67,7 @@ interface FavoriteSuggestion {
   savedAt: number;
 }
 
-export function ChatScreen({ navigation }: any) {
+export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
   const {
     selectedGirl,
     apiKey,
@@ -112,6 +113,7 @@ export function ChatScreen({ navigation }: any) {
   const inputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const isMountedRef = useRef(true);
+  const lastGenerateRef = useRef<number>(0);
 
   // Animation values
   const buttonScale = useSharedValue(1);
@@ -189,6 +191,11 @@ export function ChatScreen({ navigation }: any) {
   // Handle generate (with haptics - 6.1.13)
   const handleGenerate = useCallback(async () => {
     if (!selectedGirl) return;
+
+    // Debounce rapid taps (min 1s between generates)
+    const now = Date.now();
+    if (now - lastGenerateRef.current < 1000) return;
+    lastGenerateRef.current = now;
 
     if (!herMessage.trim()) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
@@ -318,12 +325,12 @@ export function ChatScreen({ navigation }: any) {
   }, [selectedGirl, herMessage, apiKey, userCulture, result]);
 
   // Handle screenshot
-  const handleScreenshot = async () => {
+  const handleScreenshot = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate('ScreenshotAnalysis', {
       girlId: selectedGirl?.id,
     });
-  };
+  }, [navigation, selectedGirl?.id]);
 
   // Handle pull to refresh (6.1.15)
   const handleRefresh = useCallback(async () => {
@@ -341,91 +348,91 @@ export function ChatScreen({ navigation }: any) {
   }, [herMessage, apiKey, handleGenerate]);
 
   // Handle quick phrase selection (6.1.9)
-  const handleQuickPhrase = (phrase: string) => {
+  const handleQuickPhrase = useCallback((phrase: string) => {
     setHerMessage((prev) => (prev ? `${prev} ${phrase}` : phrase));
     inputRef.current?.focus();
-  };
+  }, []);
 
   // Handle paste detection (6.1.11)
-  const handlePasteDetected = (text: string) => {
+  const handlePasteDetected = useCallback((text: string) => {
     setHerMessage(text);
-  };
+  }, []);
 
   // Handle keyboard accessory insert (6.1.12)
-  const handleInsertEmoji = (emoji: string) => {
+  const handleInsertEmoji = useCallback((emoji: string) => {
     setHerMessage((prev) => prev + emoji);
-  };
+  }, []);
 
-  const handleInsertPhrase = (phrase: string) => {
+  const handleInsertPhrase = useCallback((phrase: string) => {
     setHerMessage((prev) => (prev ? `${prev} ${phrase}` : phrase));
-  };
+  }, []);
 
   // Track suggestion usage (6.2.9)
-  const handleSuggestionUse = (suggestion: Suggestion) => {
+  const handleSuggestionUse = useCallback((suggestion: Suggestion) => {
     setSuggestionUsage((prev) => ({
       ...prev,
       [suggestion.type]: (prev[suggestion.type] || 0) + 1,
     }));
-  };
+  }, []);
 
   // Handle favorite (6.2.11)
-  const handleFavorite = (suggestion: Suggestion) => {
-    const exists = favorites.some((f) => f.text === suggestion.text);
-    if (exists) {
-      setFavorites((prev) => prev.filter((f) => f.text !== suggestion.text));
-    } else {
-      setFavorites((prev) => [
+  const handleFavorite = useCallback((suggestion: Suggestion) => {
+    setFavorites((prev) => {
+      const exists = prev.some((f) => f.text === suggestion.text);
+      if (exists) {
+        return prev.filter((f) => f.text !== suggestion.text);
+      }
+      return [
         ...prev,
         { text: suggestion.text, type: suggestion.type, savedAt: Date.now() },
-      ]);
-    }
-  };
+      ];
+    });
+  }, []);
 
   // Handle edit suggestion (6.2.12)
-  const handleEditSuggestion = (suggestion: Suggestion) => {
+  const handleEditSuggestion = useCallback((suggestion: Suggestion) => {
     setEditingSuggestion(suggestion);
-  };
+  }, []);
 
   // Handle reuse from history (6.2.14)
-  const handleReuseSuggestion = (suggestion: Suggestion) => {
-    // Add to current results if we have results
-    if (result) {
-      setResult({
-        ...result,
-        suggestions: [...result.suggestions, suggestion],
-      });
-    }
-  };
+  const handleReuseSuggestion = useCallback((suggestion: Suggestion) => {
+    setResult((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        suggestions: [...prev.suggestions, suggestion],
+      };
+    });
+  }, []);
 
   // Handle feedback (6.2.16)
-  const handleFeedback = (_suggestion: Suggestion, positive: boolean) => {
+  const handleFeedback = useCallback((_suggestion: Suggestion, positive: boolean) => {
     const message = positive ? 'Thanks for the feedback! 👍' : "We'll try to do better next time!";
     Alert.alert('Feedback recorded', message);
-  };
+  }, []);
 
   // Handle "Send This" — mark selected suggestion & copy to clipboard
-  const handleSendThis = (suggestion: Suggestion) => {
+  const handleSendThis = useCallback((suggestion: Suggestion) => {
     if (!selectedGirl) return;
-    // Find the most recent conversation entry for this girl
     const lastConvo = getLastConversationForGirl(selectedGirl.id);
     if (lastConvo) {
       selectSuggestion(lastConvo.id, suggestion);
     }
-    // Scroll down to show the update
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 300);
-  };
+  }, [selectedGirl, getLastConversationForGirl, selectSuggestion]);
 
   // Save pro tip (6.4.5)
-  const handleSaveTip = (tip: string) => {
-    if (!savedTips.includes(tip)) {
-      setSavedTips((prev) => [...prev, tip]);
-    }
-  };
+  const handleSaveTip = useCallback((tip: string) => {
+    setSavedTips((prev) => {
+      if (prev.includes(tip)) return prev;
+      return [...prev, tip];
+    });
+  }, []);
 
   // Check if suggestion is favorite
-  const isFavorite = (suggestion: Suggestion) => favorites.some((f) => f.text === suggestion.text);
+  const isFavorite = useCallback((suggestion: Suggestion) => favorites.some((f) => f.text === suggestion.text), [favorites]);
 
   // Responsive styles for landscape/split-screen (6.1.19, 6.1.20)
   const containerStyle = [
@@ -481,7 +488,7 @@ export function ChatScreen({ navigation }: any) {
             <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-                navigation.navigate('GirlProfile');
+                navigation.navigate({ name: 'GirlProfile', params: {} });
               }}
               accessibilityLabel={`Edit ${selectedGirl.name}'s profile`}
               accessibilityRole="button"
@@ -516,7 +523,7 @@ export function ChatScreen({ navigation }: any) {
             <Ionicons name="information-circle-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>{showContext ? 'Hide Context' : 'Show Context'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate('GirlProfile'); setShowContextMenu(false); }}>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate({ name: 'GirlProfile', params: {} }); setShowContextMenu(false); }}>
             <Ionicons name="person-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>Edit Profile</Text>
           </TouchableOpacity>

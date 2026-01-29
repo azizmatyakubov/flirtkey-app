@@ -18,6 +18,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useSettingsStore } from '../stores/settingsStore';
 import { Modal } from '../components/Modal';
 import { accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import type { RootNavigationProp } from '../types/navigation';
 
 // ==========================================
 // Constants
@@ -69,7 +70,7 @@ const LICENSES = [
 // Component
 // ==========================================
 
-export function AboutScreen({ navigation }: any) {
+export function AboutScreen({ navigation }: { navigation: RootNavigationProp }) {
   const { theme } = useTheme();
   const { accessibility, setHasRatedApp, hasRatedApp, stats } = useSettingsStore();
   const [showFAQ, setShowFAQ] = useState(false);

@@ -174,7 +174,7 @@ export function toast(config: ToastConfig) {
   if (globalShowToast) {
     globalShowToast(config);
   } else {
-    console.warn('Toast provider not initialized');
+    if (__DEV__) console.warn('Toast provider not initialized');
   }
 }
 

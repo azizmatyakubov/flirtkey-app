@@ -56,7 +56,7 @@ export const useClipboard = (): UseClipboardResult => {
 
       return true;
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
+      if (__DEV__) console.error('Failed to copy to clipboard:', error);
       return false;
     }
   }, []);
@@ -67,7 +67,7 @@ export const useClipboard = (): UseClipboardResult => {
       const text = await Clipboard.getStringAsync();
       return text || '';
     } catch (error) {
-      console.error('Failed to paste from clipboard:', error);
+      if (__DEV__) console.error('Failed to paste from clipboard:', error);
       return '';
     } finally {
       setIsPasting(false);

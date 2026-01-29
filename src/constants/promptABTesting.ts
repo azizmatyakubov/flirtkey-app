@@ -197,7 +197,7 @@ class ABTestManager {
 
       this.initialized = true;
     } catch (error) {
-      console.error('Failed to initialize ABTestManager:', error);
+      if (__DEV__) console.error('Failed to initialize ABTestManager:', error);
       this.initialized = true; // Continue without persisted data
     }
   }
@@ -216,7 +216,7 @@ class ABTestManager {
         AsyncStorage.setItem(STORAGE_KEYS.RESULTS, JSON.stringify(this.results.slice(-1000))), // Keep last 1000
       ]);
     } catch (error) {
-      console.error('Failed to persist ABTestManager state:', error);
+      if (__DEV__) console.error('Failed to persist ABTestManager state:', error);
     }
   }
 

@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({ errorInfo });
 
     // Log to external service in production
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (__DEV__) console.error('ErrorBoundary caught an error:', error, errorInfo);
 
     // Call optional onError callback
     this.props.onError?.(error, errorInfo);
@@ -126,7 +126,7 @@ export class ScreenErrorBoundary extends Component<ScreenErrorBoundaryProps, Sta
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ errorInfo });
-    console.error(`Error in ${this.props.screenName || 'Screen'}:`, error, errorInfo);
+    if (__DEV__) console.error(`Error in ${this.props.screenName || 'Screen'}:`, error, errorInfo);
     this.props.onError?.(error, errorInfo);
   }
 

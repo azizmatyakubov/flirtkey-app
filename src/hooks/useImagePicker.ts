@@ -254,7 +254,7 @@ export const useImagePicker = (options: UseImagePickerOptions = {}): UseImagePic
         return result;
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to process image';
-        console.error('Image processing error:', message);
+        if (__DEV__) console.error('Image processing error:', message);
         return null;
       }
     },

@@ -29,6 +29,7 @@ import { DeleteDialog, UnsavedChangesDialog } from '../components/ConfirmDialog'
 import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import type { RootNavigationProp } from '../types/navigation';
 
 const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
   { key: 'just_met', label: 'Just Met', emoji: '🆕' },
@@ -55,7 +56,7 @@ interface FormState {
   avatar?: string;
 }
 
-export function GirlProfileScreen({ navigation }: any) {
+export function GirlProfileScreen({ navigation }: { navigation: RootNavigationProp }) {
   const { selectedGirl, updateGirl, deleteGirl, getConversationsForGirl } = useStore();
   const { showToast } = useToast();
   const { pickFromLibrary } = useImagePicker({
@@ -251,7 +252,7 @@ export function GirlProfileScreen({ navigation }: any) {
                 end={{ x: 1, y: 0 }}
                 style={[
                   styles.completenessProgress,
-                  { width: `${completeness.score}%` as any },
+                  { width: `${completeness.score}%` as unknown as number },
                   completeness.score === 100 && styles.completenessComplete,
                 ]}
               />

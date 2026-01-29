@@ -16,6 +16,7 @@ import { useSettingsStore, ResponseTone, ResponseLength } from '../stores/settin
 import { useTheme } from '../contexts/ThemeContext';
 import { Modal } from '../components/Modal';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import type { RootNavigationProp } from '../types/navigation';
 
 // ==========================================
 // Constants
@@ -50,7 +51,7 @@ const BOLDNESS_OPTIONS: {
 // Component
 // ==========================================
 
-export function PreferencesScreen({ navigation }: any) {
+export function PreferencesScreen({ navigation }: { navigation: RootNavigationProp }) {
   const {
     preferences,
     setPreferences,

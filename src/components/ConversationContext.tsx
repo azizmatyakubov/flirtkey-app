@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Girl } from '../types';
@@ -38,7 +38,7 @@ const getStageEmoji = (stage: Girl['relationshipStage']): string => {
   return emojis[stage] || '👋';
 };
 
-export function ConversationContext({ girl, onViewHistory }: ConversationContextProps) {
+export const ConversationContext = memo(function ConversationContext({ girl, onViewHistory }: ConversationContextProps) {
   if (!girl) return null;
 
   const lastMessageTime = getTimeAgo(girl.lastMessageDate);
@@ -117,10 +117,12 @@ export function ConversationContext({ girl, onViewHistory }: ConversationContext
       )}
     </Animated.View>
   );
-}
+});
+
+ConversationContext.displayName = 'ConversationContext';
 
 // Compact version for the header
-export function LastTopicIndicator({ topic }: { topic?: string }) {
+export const LastTopicIndicator = memo(function LastTopicIndicator({ topic }: { topic?: string }) {
   if (!topic) return null;
 
   return (
@@ -131,7 +133,9 @@ export function LastTopicIndicator({ topic }: { topic?: string }) {
       </Text>
     </View>
   );
-}
+});
+
+LastTopicIndicator.displayName = 'LastTopicIndicator';
 
 const styles = StyleSheet.create({
   container: {

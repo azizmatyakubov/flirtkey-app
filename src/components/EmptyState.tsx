@@ -20,7 +20,7 @@ export interface EmptyStateProps {
   style?: ViewStyle;
 }
 
-export function EmptyState({
+export const EmptyState = React.memo(function EmptyState({
   icon,
   title,
   message,
@@ -46,7 +46,7 @@ export function EmptyState({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

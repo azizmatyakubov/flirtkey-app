@@ -55,12 +55,12 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(
     const [isFocused, setIsFocused] = useState(false);
     const charCount = value?.length || 0;
 
-    const handleFocus = (e: any) => {
+    const handleFocus = (e: Parameters<NonNullable<React.ComponentProps<typeof RNTextInput>['onFocus']>>[0]) => {
       setIsFocused(true);
       onFocus?.(e);
     };
 
-    const handleBlur = (e: any) => {
+    const handleBlur = (e: Parameters<NonNullable<React.ComponentProps<typeof RNTextInput>['onBlur']>>[0]) => {
       setIsFocused(false);
       onBlur?.(e);
     };

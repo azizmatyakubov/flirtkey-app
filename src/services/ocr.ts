@@ -210,7 +210,7 @@ export async function extractMessagesFromScreenshot(
       platform: parsed.platform,
     };
   } catch (error) {
-    console.error('Message extraction failed:', error);
+    if (__DEV__) console.error('Message extraction failed:', error);
     return {
       messages: [],
       participants: [],

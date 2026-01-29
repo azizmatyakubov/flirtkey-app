@@ -68,7 +68,7 @@ async function loadQueue(): Promise<void> {
       notifyListeners();
     }
   } catch (error) {
-    console.warn('[OfflineQueue] Failed to load queue:', error);
+    if (__DEV__) console.warn('[OfflineQueue] Failed to load queue:', error);
   }
 }
 
@@ -76,7 +76,7 @@ async function saveQueue(): Promise<void> {
   try {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state.queue));
   } catch (error) {
-    console.warn('[OfflineQueue] Failed to save queue:', error);
+    if (__DEV__) console.warn('[OfflineQueue] Failed to save queue:', error);
   }
 }
 
@@ -100,7 +100,7 @@ function notifyListeners(): void {
     try {
       listener({ ...state });
     } catch (error) {
-      console.warn('[OfflineQueue] Listener error:', error);
+      if (__DEV__) console.warn('[OfflineQueue] Listener error:', error);
     }
   });
 }
@@ -163,7 +163,7 @@ export async function addToQueue(
   await saveQueue();
   notifyListeners();
 
-  console.log(
+  if (__DEV__) console.log(
     `[OfflineQueue] Added request ${request.id} (${type}). Queue size: ${state.queue.length}`
   );
   return request.id;
@@ -222,12 +222,12 @@ export async function processQueue(): Promise<{ processed: number; failed: numbe
   // Check if online
   const netInfo = await NetInfo.fetch();
   if (!netInfo.isConnected) {
-    console.log('[OfflineQueue] Still offline, skipping processing');
+    if (__DEV__) console.log('[OfflineQueue] Still offline, skipping processing');
     return { processed: 0, failed: 0 };
   }
 
   if (!processCallback) {
-    console.warn('[OfflineQueue] No process callback set');
+    if (__DEV__) console.warn('[OfflineQueue] No process callback set');
     return { processed: 0, failed: 0 };
   }
 
@@ -243,14 +243,14 @@ export async function processQueue(): Promise<{ processed: number; failed: numbe
     if (!request) break;
 
     try {
-      console.log(`[OfflineQueue] Processing request ${request.id} (${request.type})`);
+      if (__DEV__) console.log(`[OfflineQueue] Processing request ${request.id} (${request.type})`);
       const success = await processCallback(request);
 
       if (success) {
         // Remove from queue
         state.queue.shift();
         processed++;
-        console.log(`[OfflineQueue] Request ${request.id} processed successfully`);
+        if (__DEV__) console.log(`[OfflineQueue] Request ${request.id} processed successfully`);
       } else {
         // Increment retry count
         request.retryCount++;
@@ -258,12 +258,12 @@ export async function processQueue(): Promise<{ processed: number; failed: numbe
           // Remove failed request after max retries
           state.queue.shift();
           failed++;
-          console.warn(`[OfflineQueue] Request ${request.id} failed after ${MAX_RETRIES} retries`);
+          if (__DEV__) console.warn(`[OfflineQueue] Request ${request.id} failed after ${MAX_RETRIES} retries`);
         } else {
           // Move to end of queue for retry
           state.queue.shift();
           state.queue.push(request);
-          console.log(
+          if (__DEV__) console.log(
             `[OfflineQueue] Request ${request.id} failed, will retry (${request.retryCount}/${MAX_RETRIES})`
           );
         }
@@ -277,7 +277,7 @@ export async function processQueue(): Promise<{ processed: number; failed: numbe
         await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
       }
     } catch (error) {
-      console.error(`[OfflineQueue] Error processing request ${request.id}:`, error);
+      if (__DEV__) console.error(`[OfflineQueue] Error processing request ${request.id}:`, error);
       request.retryCount++;
       if (request.retryCount >= MAX_RETRIES) {
         state.queue.shift();
@@ -290,7 +290,7 @@ export async function processQueue(): Promise<{ processed: number; failed: numbe
     // Check if still online
     const currentNetInfo = await NetInfo.fetch();
     if (!currentNetInfo.isConnected) {
-      console.log('[OfflineQueue] Went offline during processing, pausing');
+      if (__DEV__) console.log('[OfflineQueue] Went offline during processing, pausing');
       break;
     }
   }
@@ -299,7 +299,7 @@ export async function processQueue(): Promise<{ processed: number; failed: numbe
   state.lastProcessed = Date.now();
   notifyListeners();
 
-  console.log(
+  if (__DEV__) console.log(
     `[OfflineQueue] Processing complete. Processed: ${processed}, Failed: ${failed}, Remaining: ${state.queue.length}`
   );
   return { processed, failed };
@@ -317,19 +317,19 @@ export function startNetworkMonitoring(): void {
   unsubscribeNetInfo = NetInfo.addEventListener((netState) => {
     if (netState.isConnected && netState.isInternetReachable !== false) {
       // Back online - process queue
-      console.log('[OfflineQueue] Network restored, processing queue...');
+      if (__DEV__) console.log('[OfflineQueue] Network restored, processing queue...');
       processQueue();
     }
   });
 
-  console.log('[OfflineQueue] Network monitoring started');
+  if (__DEV__) console.log('[OfflineQueue] Network monitoring started');
 }
 
 export function stopNetworkMonitoring(): void {
   if (unsubscribeNetInfo) {
     unsubscribeNetInfo();
     unsubscribeNetInfo = null;
-    console.log('[OfflineQueue] Network monitoring stopped');
+    if (__DEV__) console.log('[OfflineQueue] Network monitoring stopped');
   }
 }
 

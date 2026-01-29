@@ -22,6 +22,7 @@ import { Culture } from '../types';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 import { fonts } from '../constants/fonts';
+import type { RootNavigationProp } from '../types/navigation';
 
 // ==========================================
 // Constants
@@ -59,18 +60,11 @@ const AUTO_LOCK_OPTIONS = [
   { key: 'never', label: 'Never' },
 ] as const;
 
-// Section icon mapping
-// Icon mapping used by renderSectionHeader
-// const SECTION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
-//   account: 'person-circle', preferences: 'settings', notifications: 'notifications',
-//   privacy: 'lock-closed', data: 'server', accessibility: 'accessibility', about: 'information-circle',
-// };
-
 // ==========================================
 // Component
 // ==========================================
 
-export function SettingsScreen({ navigation }: any) {
+export function SettingsScreen({ navigation }: { navigation: RootNavigationProp }) {
   const { apiKey, userCulture, setUserCulture, clearAllData, clearSuggestionsCache } = useStore();
   const {
     themeMode,

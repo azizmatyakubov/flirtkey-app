@@ -15,7 +15,6 @@ import { APIError } from '../../types';
 
 // Mock axios module
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('AI Service', () => {
   beforeEach(() => {

@@ -203,7 +203,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-          useNativeDriver: false,
+          useNativeDriver: false, // Required: animating width/layout properties
         })}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}

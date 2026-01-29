@@ -94,7 +94,7 @@ export function parseDeepLink(
       params,
     };
   } catch (error) {
-    console.error('Error parsing deep link:', error);
+    if (__DEV__) console.error('Error parsing deep link:', error);
     return null;
   }
 }
@@ -110,7 +110,7 @@ export async function getInitialURL(): Promise<string | null> {
   try {
     return await Linking.getInitialURL();
   } catch (error) {
-    console.error('Error getting initial URL:', error);
+    if (__DEV__) console.error('Error getting initial URL:', error);
     return null;
   }
 }
@@ -157,7 +157,7 @@ export async function copySharedImage(sourceUri: string): Promise<string | null>
 
     return destUri;
   } catch (error) {
-    console.error('Error copying shared image:', error);
+    if (__DEV__) console.error('Error copying shared image:', error);
     return null;
   }
 }
@@ -172,7 +172,7 @@ export async function readSharedImageAsBase64(uri: string): Promise<string | nul
     });
     return base64;
   } catch (error) {
-    console.error('Error reading shared image:', error);
+    if (__DEV__) console.error('Error reading shared image:', error);
     return null;
   }
 }
@@ -199,7 +199,7 @@ export async function cleanupSharedFiles(): Promise<void> {
       })
     );
   } catch (error) {
-    console.error('Error cleaning up shared files:', error);
+    if (__DEV__) console.error('Error cleaning up shared files:', error);
   }
 }
 

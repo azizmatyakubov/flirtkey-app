@@ -70,7 +70,7 @@ const SIZE_STYLES: Record<BadgeSize, { paddingV: number; paddingH: number; fontS
   },
 };
 
-export function Badge({
+export const Badge = React.memo(function Badge({
   text,
   emoji,
   variant = 'default',
@@ -100,7 +100,7 @@ export function Badge({
       </Text>
     </View>
   );
-}
+});
 
 // Convenience component for relationship stages
 export type RelationshipStageBadgeProps = {
@@ -119,7 +119,7 @@ const STAGE_CONFIG: Record<
   serious: { text: 'Serious', emoji: '💑', variant: 'success' },
 };
 
-export function StageBadge({ stage, size = 'md' }: RelationshipStageBadgeProps) {
+export const StageBadge = React.memo(function StageBadge({ stage, size = 'md' }: RelationshipStageBadgeProps) {
   const config = STAGE_CONFIG[stage];
   return (
     <Badge
@@ -129,7 +129,7 @@ export function StageBadge({ stage, size = 'md' }: RelationshipStageBadgeProps) 
       size={size}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

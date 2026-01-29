@@ -516,7 +516,7 @@ async function withRetry<T>(
       const jitter = Math.random() * 0.3 * exponentialDelay;
       const delay = Math.min(exponentialDelay + jitter, maxDelay);
       
-      console.log(`Retry ${attempt + 1}/${maxRetries} after ${Math.round(delay)}ms`);
+      if (__DEV__) console.log(`Retry ${attempt + 1}/${maxRetries} after ${Math.round(delay)}ms`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -568,7 +568,7 @@ function parseAIResponse(content: string): AnalysisResult | null {
     // Try to extract JSON from the response
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.warn('No JSON found in response');
+      if (__DEV__) console.warn('No JSON found in response');
       return null;
     }
     
@@ -576,7 +576,7 @@ function parseAIResponse(content: string): AnalysisResult | null {
     
     // Validate required structure
     if (!parsed.suggestions || !Array.isArray(parsed.suggestions)) {
-      console.warn('Invalid suggestions structure');
+      if (__DEV__) console.warn('Invalid suggestions structure');
       return null;
     }
     
@@ -590,7 +590,7 @@ function parseAIResponse(content: string): AnalysisResult | null {
       .filter((s): s is Suggestion => s.text.length > 0);
     
     if (suggestions.length === 0) {
-      console.warn('No valid suggestions after filtering');
+      if (__DEV__) console.warn('No valid suggestions after filtering');
       return null;
     }
     
@@ -623,7 +623,7 @@ function parseAIResponse(content: string): AnalysisResult | null {
       mood: parsed.mood ? sanitizeResponse(parsed.mood) : undefined,
     };
   } catch (e) {
-    console.error('Failed to parse AI response:', e);
+    if (__DEV__) console.error('Failed to parse AI response:', e);
     return null;
   }
 }
@@ -839,7 +839,7 @@ export async function generateFlirtResponse(
     
     const parsed = parseAIResponse(content);
     if (!parsed) {
-      console.warn('Failed to parse response, using fallback');
+      if (__DEV__) console.warn('Failed to parse response, using fallback');
       return getFallbackResponse('default');
     }
     

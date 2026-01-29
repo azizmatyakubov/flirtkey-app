@@ -121,7 +121,7 @@ describe('OfflineIndicator', () => {
   it('shows "Back online" message when recovering', async () => {
     jest.useFakeTimers();
 
-    const { getByText, queryByText } = render(<OfflineIndicator showWhenOnline={true} />);
+    const { getByText } = render(<OfflineIndicator showWhenOnline={true} />);
 
     // Go offline
     act(() => {

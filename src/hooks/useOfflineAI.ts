@@ -91,7 +91,7 @@ export function useOfflineAI(): UseOfflineAIResult {
 
         return true;
       } catch (error) {
-        console.error('[useOfflineAI] Failed to process queued request:', error);
+        if (__DEV__) console.error('[useOfflineAI] Failed to process queued request:', error);
         return false;
       }
     });

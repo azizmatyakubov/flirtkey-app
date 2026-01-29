@@ -8,7 +8,7 @@ interface CharacterCountProps {
   warningThreshold?: number;
 }
 
-export function CharacterCount({
+export const CharacterCount = React.memo(function CharacterCount({
   current,
   max = 500,
   warningThreshold = 0.9,
@@ -31,7 +31,7 @@ export function CharacterCount({
       {isOver && <Text style={styles.warning}>Message too long!</Text>}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

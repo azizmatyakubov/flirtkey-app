@@ -50,7 +50,7 @@ const getLowInterestWarning = (level: number): string | null => {
   return null;
 };
 
-export function InterestLevelDisplay({
+export const InterestLevelDisplay = React.memo(function InterestLevelDisplay({
   level,
   previousLevel,
   mood,
@@ -124,7 +124,7 @@ export function InterestLevelDisplay({
       )}
     </Animated.View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

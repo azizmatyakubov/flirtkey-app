@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { spacing, fontSizes, borderRadius, accentColors, shadows } from '../constants/theme';
 import { fonts } from '../constants/fonts';
-
-const { width: _SCREEN_WIDTH } = Dimensions.get('window');
+import type { RootNavigationProp } from '../types/navigation';
 
 interface WelcomeScreenProps {
-  navigation: any;
+  navigation: RootNavigationProp;
 }
+
 
 export function WelcomeScreen({ navigation }: WelcomeScreenProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;

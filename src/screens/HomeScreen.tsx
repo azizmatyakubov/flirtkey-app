@@ -32,6 +32,7 @@ import { DeleteDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
 import { darkColors, spacing, accentColors, shadows, borderRadius, fontSizes } from '../constants/theme';
 import { fonts } from '../constants/fonts';
+import type { RootNavigationProp } from '../types/navigation';
 
 // Enable layout animations on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -54,7 +55,7 @@ const STAGE_ORDER: Record<Girl['relationshipStage'], number> = {
   serious: 5,
 };
 
-export function HomeScreen({ navigation }: any) {
+export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
   const { girls, selectGirl, deleteGirl, apiKey } = useStore();
   const { showToast } = useToast();
 
@@ -126,7 +127,7 @@ export function HomeScreen({ navigation }: any) {
   const handleEditGirl = useCallback(
     (girl: Girl) => {
       selectGirl(girl);
-      navigation.navigate('GirlProfile');
+      navigation.navigate({ name: 'GirlProfile', params: {} });
     },
     [selectGirl, navigation]
   );

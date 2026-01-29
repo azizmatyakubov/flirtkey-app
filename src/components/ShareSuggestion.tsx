@@ -38,7 +38,7 @@ export async function shareSuggestion(suggestion: Suggestion, girlName?: string)
       Alert.alert('Copied!', 'Suggestion copied to clipboard. You can now paste it anywhere.');
     }
   } catch (error) {
-    console.error('Error sharing:', error);
+    if (__DEV__) console.error('Error sharing:', error);
     // Fallback to clipboard
     await Clipboard.setStringAsync(shareText);
     Alert.alert('Copied!', 'Suggestion copied to clipboard.');

@@ -71,9 +71,12 @@ const SLIDES: OnboardingSlide[] = [
   },
 ];
 
+import type { RootNavigationProp } from '../types/navigation';
+
 interface OnboardingScreenProps {
-  navigation: any;
+  navigation: RootNavigationProp;
 }
+
 
 export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -84,7 +87,7 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
     try {
       await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
     } catch (error) {
-      console.error('Failed to mark onboarding complete:', error);
+      if (__DEV__) console.error('Failed to mark onboarding complete:', error);
     }
   }, []);
 
@@ -124,7 +127,7 @@ export function OnboardingScreen({ navigation }: OnboardingScreenProps) {
   };
 
   const onScroll = Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
-    useNativeDriver: false,
+    useNativeDriver: false, // Required: animating width/layout properties
   });
 
   const onMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -302,7 +305,7 @@ export async function resetOnboarding(): Promise<void> {
   try {
     await AsyncStorage.removeItem(ONBOARDING_COMPLETE_KEY);
   } catch (error) {
-    console.error('Failed to reset onboarding:', error);
+    if (__DEV__) console.error('Failed to reset onboarding:', error);
   }
 }
 

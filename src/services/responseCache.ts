@@ -76,7 +76,7 @@ async function loadIndex(): Promise<CacheIndex> {
       }
     }
   } catch (error) {
-    console.warn('[ResponseCache] Failed to load index:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to load index:', error);
   }
   return { entries: [], version: CACHE_VERSION };
 }
@@ -85,7 +85,7 @@ async function saveIndex(index: CacheIndex): Promise<void> {
   try {
     await AsyncStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(index));
   } catch (error) {
-    console.warn('[ResponseCache] Failed to save index:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to save index:', error);
   }
 }
 
@@ -122,10 +122,10 @@ export async function getCachedResponse(
     entry.lastAccessed = Date.now();
     await AsyncStorage.setItem(key, JSON.stringify(entry));
 
-    console.log(`[ResponseCache] Cache hit for ${girlId}/${messageHash}`);
+    if (__DEV__) console.log(`[ResponseCache] Cache hit for ${girlId}/${messageHash}`);
     return entry.response;
   } catch (error) {
-    console.warn('[ResponseCache] Failed to get cached response:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to get cached response:', error);
     return null;
   }
 }
@@ -186,9 +186,9 @@ export async function cacheResponse(
     }
 
     await saveIndex(index);
-    console.log(`[ResponseCache] Cached response for ${girlId}/${messageHash}`);
+    if (__DEV__) console.log(`[ResponseCache] Cached response for ${girlId}/${messageHash}`);
   } catch (error) {
-    console.warn('[ResponseCache] Failed to cache response:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to cache response:', error);
   }
 }
 
@@ -204,7 +204,7 @@ async function removeCacheEntry(cacheId: string): Promise<void> {
     index.entries = index.entries.filter((e) => e.id !== cacheId);
     await saveIndex(index);
   } catch (error) {
-    console.warn('[ResponseCache] Failed to remove entry:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to remove entry:', error);
   }
 }
 
@@ -243,7 +243,7 @@ async function enforceMaxSize(index: CacheIndex): Promise<void> {
     index.entries = index.entries.filter((e) => e.id !== entry.id);
   }
 
-  console.log(`[ResponseCache] Evicted ${toRemove.length} entries (LRU)`);
+  if (__DEV__) console.log(`[ResponseCache] Evicted ${toRemove.length} entries (LRU)`);
 }
 
 /**
@@ -329,9 +329,9 @@ export async function clearCache(): Promise<void> {
 
   try {
     await AsyncStorage.multiRemove(keysToRemove);
-    console.log(`[ResponseCache] Cleared ${index.entries.length} cached responses`);
+    if (__DEV__) console.log(`[ResponseCache] Cleared ${index.entries.length} cached responses`);
   } catch (error) {
-    console.warn('[ResponseCache] Failed to clear cache:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to clear cache:', error);
   }
 }
 
@@ -348,10 +348,10 @@ export async function clearCacheForGirl(girlId: string): Promise<number> {
     await AsyncStorage.multiRemove(keysToRemove);
     index.entries = index.entries.filter((e) => e.girlId !== girlId);
     await saveIndex(index);
-    console.log(`[ResponseCache] Cleared ${girlEntries.length} cached responses for ${girlId}`);
+    if (__DEV__) console.log(`[ResponseCache] Cleared ${girlEntries.length} cached responses for ${girlId}`);
     return girlEntries.length;
   } catch (error) {
-    console.warn('[ResponseCache] Failed to clear cache for girl:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to clear cache for girl:', error);
     return 0;
   }
 }
@@ -378,7 +378,7 @@ export async function cleanupExpired(): Promise<number> {
     await AsyncStorage.multiRemove(keysToRemove);
     index.entries = validEntries;
     await saveIndex(index);
-    console.log(`[ResponseCache] Cleaned up ${removed} expired entries`);
+    if (__DEV__) console.log(`[ResponseCache] Cleaned up ${removed} expired entries`);
   }
 
   return removed;

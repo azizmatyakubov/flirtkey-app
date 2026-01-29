@@ -34,14 +34,7 @@ const CULTURES: { key: Culture; label: string; emoji: string }[] = [
   { key: 'universal', label: 'Universal', emoji: '🌐' },
 ];
 
-interface UserProfileSetupScreenProps {
-  navigation: any;
-  route?: {
-    params?: {
-      fromSettings?: boolean;
-    };
-  };
-}
+import type { UserProfileSetupScreenProps } from '../types/navigation';
 
 export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupScreenProps) {
   const { user, setUser, userCulture, setUserCulture } = useStore();
@@ -291,10 +284,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     minHeight: 80,
   },
-  backText: {
-    color: darkColors.primary,
-    fontSize: fontSizes.md,
-  },
   titleContainer: {
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
@@ -361,10 +350,6 @@ const styles = StyleSheet.create({
     flex: 1,
     color: darkColors.text,
     fontSize: fontSizes.md,
-  },
-  selectorArrow: {
-    color: darkColors.textSecondary,
-    fontSize: fontSizes.sm,
   },
   languageList: {
     marginTop: spacing.sm,

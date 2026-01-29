@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import * as Notifications from 'expo-notifications';
 import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import type { PermissionsScreenProps as PermissionsNavProps } from '../types/navigation';
 
 type PermissionStatus = 'undetermined' | 'granted' | 'denied' | 'limited';
 
@@ -17,16 +18,7 @@ interface Permission {
   required: boolean;
 }
 
-interface PermissionsScreenProps {
-  navigation: any;
-  route?: {
-    params?: {
-      fromSettings?: boolean;
-    };
-  };
-}
-
-export function PermissionsScreen({ navigation, route }: PermissionsScreenProps) {
+export function PermissionsScreen({ navigation, route }: PermissionsNavProps) {
   const fromSettings = route?.params?.fromSettings;
 
   const [permissions, setPermissions] = useState<Permission[]>([
@@ -382,10 +374,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: 60,
     minHeight: 80,
-  },
-  backText: {
-    color: darkColors.primary,
-    fontSize: fontSizes.md,
   },
   titleContainer: {
     paddingHorizontal: spacing.lg,

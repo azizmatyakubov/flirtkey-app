@@ -66,7 +66,7 @@ export function getTipOfTheDay(): { tip: string; category: TipCategory } {
   return { tip: randomTip, category: randomCategory };
 }
 
-export function ProTipCard({
+export const ProTipCard = React.memo(function ProTipCard({
   tip,
   category = 'general',
   onSave,
@@ -151,7 +151,7 @@ export function ProTipCard({
       )}
     </Animated.View>
   );
-}
+});
 
 // Special component for Tip of the Day
 export function TipOfTheDay({

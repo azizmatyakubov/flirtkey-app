@@ -29,6 +29,7 @@ import { useImagePicker } from '../hooks/useImagePicker';
 import { validateName, validateAge } from '../utils/validation';
 import { darkColors, accentColors, spacing, fontSizes } from '../constants/theme';
 import { fonts } from '../constants/fonts';
+import type { RootNavigationProp } from '../types/navigation';
 
 const CULTURES: { key: Culture; label: string; emoji: string }[] = [
   { key: 'uzbek', label: 'Uzbek', emoji: '🇺🇿' },
@@ -51,7 +52,7 @@ interface FormErrors {
   age?: string;
 }
 
-export function AddGirlScreen({ navigation }: any) {
+export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }) {
   const { addGirl } = useStore();
   const { showToast } = useToast();
   const { pickFromLibrary, image: selectedImage, clear: clearImage } = useImagePicker({

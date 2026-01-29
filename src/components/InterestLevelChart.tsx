@@ -1,5 +1,5 @@
 // 6.3.7 Show level chart over time
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
@@ -14,7 +14,7 @@ interface InterestLevelChartProps {
   showLabels?: boolean;
 }
 
-export function InterestLevelChart({
+export const InterestLevelChart = memo(function InterestLevelChart({
   history,
   maxPoints = 10,
   height = 150,
@@ -157,7 +157,9 @@ export function InterestLevelChart({
       </View>
     </View>
   );
-}
+});
+
+InterestLevelChart.displayName = 'InterestLevelChart';
 
 // Mini chart for compact display
 interface MiniChartProps {
@@ -166,7 +168,7 @@ interface MiniChartProps {
   height?: number;
 }
 
-export function MiniInterestChart({ history, width = 80, height = 30 }: MiniChartProps) {
+export const MiniInterestChart = memo(function MiniInterestChart({ history, width = 80, height = 30 }: MiniChartProps) {
   const dataPoints = history
     .filter((entry) => entry.interestLevel !== undefined)
     .slice(0, 7)
@@ -208,7 +210,9 @@ export function MiniInterestChart({ history, width = 80, height = 30 }: MiniChar
       </View>
     </View>
   );
-}
+});
+
+MiniInterestChart.displayName = 'MiniInterestChart';
 
 const styles = StyleSheet.create({
   container: {

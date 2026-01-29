@@ -24,7 +24,7 @@ describe('Share Intent Logic', () => {
     it('extracts scheme from URL', () => {
       const getScheme = (url: string) => {
         const match = url.match(/^([a-z]+):\/\//i);
-        return match ? match[1].toLowerCase() : null;
+        return match ? match[1]!.toLowerCase() : null;
       };
 
       expect(getScheme('file://test.jpg')).toBe('file');
@@ -49,8 +49,8 @@ describe('Share Intent Logic', () => {
 
   describe('MIME Type Detection', () => {
     it('detects image MIME types', () => {
-      const getMimeType = (filename: string) => {
-        const ext = filename.split('.').pop()?.toLowerCase();
+      const getMimeType = (filename: string): string => {
+        const ext = filename.split('.').pop()?.toLowerCase() ?? '';
         const mimeTypes: Record<string, string> = {
           jpg: 'image/jpeg',
           jpeg: 'image/jpeg',
@@ -199,7 +199,7 @@ describe('Share Intent Logic', () => {
     });
 
     it('handles iOS file:// URI', () => {
-      const normalizeUri = (uri: string, platform: 'ios' | 'android') => {
+      const normalizeUri = (uri: string, _platform: 'ios' | 'android') => {
         return uri;
       };
 

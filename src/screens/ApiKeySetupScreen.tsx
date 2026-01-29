@@ -21,14 +21,7 @@ const SECURE_API_KEY = 'flirtkey_openai_key';
 
 type KeyStatus = 'missing' | 'validating' | 'valid' | 'invalid' | 'rate_limited' | 'error';
 
-interface ApiKeySetupScreenProps {
-  navigation: any;
-  route?: {
-    params?: {
-      fromSettings?: boolean;
-    };
-  };
-}
+import type { ApiKeySetupScreenProps } from '../types/navigation';
 
 export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps) {
   const { setApiKey } = useStore();
@@ -55,7 +48,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
         setStatusMessage('Key loaded from secure storage');
       }
     } catch (error) {
-      console.error('Failed to load secure key:', error);
+      if (__DEV__) console.error('Failed to load secure key:', error);
     }
   };
 
@@ -63,7 +56,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
     try {
       await SecureStore.setItemAsync(SECURE_API_KEY, key);
     } catch (error) {
-      console.error('Failed to save secure key:', error);
+      if (__DEV__) console.error('Failed to save secure key:', error);
       throw error;
     }
   };
@@ -72,7 +65,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
     try {
       await SecureStore.deleteItemAsync(SECURE_API_KEY);
     } catch (error) {
-      console.error('Failed to delete secure key:', error);
+      if (__DEV__) console.error('Failed to delete secure key:', error);
     }
   };
 

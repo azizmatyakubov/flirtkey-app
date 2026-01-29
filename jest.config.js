@@ -10,9 +10,21 @@ module.exports = {
     '^expo/(.*)$': '<rootDir>/src/__tests__/__mocks__/expo.ts',
     '^react-native$': '<rootDir>/src/__tests__/__mocks__/react-native.ts',
     '^@react-native-async-storage/async-storage$': '<rootDir>/src/__tests__/__mocks__/async-storage.ts',
+    '^@expo/vector-icons$': '<rootDir>/src/__tests__/__mocks__/expo-vector-icons.ts',
+    '^@expo/vector-icons/(.*)$': '<rootDir>/src/__tests__/__mocks__/expo-vector-icons.ts',
+    '^expo-linear-gradient$': '<rootDir>/src/__tests__/__mocks__/expo-linear-gradient.ts',
+    '^expo-haptics$': '<rootDir>/src/__tests__/__mocks__/expo-haptics.ts',
+    '^expo-clipboard$': '<rootDir>/src/__tests__/__mocks__/expo-clipboard.ts',
+    '^react-native-reanimated$': '<rootDir>/src/__tests__/__mocks__/react-native-reanimated.ts',
+    '^react-native-gesture-handler$': '<rootDir>/src/__tests__/__mocks__/react-native-gesture-handler.ts',
   },
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', { isolatedModules: true }],
+    '^.+\\.tsx?$': ['ts-jest', {
+      isolatedModules: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+      },
+    }],
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
