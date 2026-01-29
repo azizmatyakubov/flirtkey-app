@@ -332,7 +332,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
 
   // Handle pull to refresh (6.1.15)
   const handleRefresh = useCallback(async () => {
-    if (!herMessage.trim() || !apiKey) return;
+    if (!herMessage.trim() || !apiKey || loading) return;
     setRefreshing(true);
     try {
       await handleGenerate();
@@ -343,7 +343,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setRefreshing(false);
       }
     }
-  }, [herMessage, apiKey, handleGenerate]);
+  }, [herMessage, apiKey, loading, handleGenerate]);
 
   // Handle quick phrase selection (6.1.9)
   const handleQuickPhrase = useCallback((phrase: string) => {
