@@ -26,6 +26,7 @@ import { PermissionsScreen } from './src/screens/PermissionsScreen';
 import { UserProfileSetupScreen } from './src/screens/UserProfileSetupScreen';
 import { ScreenshotAnalysisScreen } from './src/screens/ScreenshotAnalysisScreen';
 import { ChatHistoryScreen } from './src/screens/ChatHistoryScreen';
+import { HistoryScreen } from './src/screens/HistoryScreen';
 import { PreferencesScreen } from './src/screens/PreferencesScreen';
 import { AboutScreen } from './src/screens/AboutScreen';
 import { RootStackParamList } from './src/types';
@@ -105,7 +106,11 @@ function AppContent() {
         {/* Main App Flow */}
         <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
         <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
-        <Stack.Screen name="AddContact" component={AddContactScreen} options={screenOptions.AddContact} />
+        <Stack.Screen
+          name="AddContact"
+          component={AddContactScreen}
+          options={screenOptions.AddContact}
+        />
         <Stack.Screen
           name="ContactProfile"
           component={ContactProfileScreen}
@@ -121,6 +126,16 @@ function AppContent() {
           name="ChatHistory"
           component={ChatHistoryScreen}
           options={screenOptions.ChatHistory}
+        />
+
+        {/* History Screen */}
+        <Stack.Screen
+          name="History"
+          component={HistoryScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
         />
 
         {/* Phase 8: Settings Screens */}

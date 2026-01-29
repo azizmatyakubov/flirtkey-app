@@ -114,6 +114,7 @@ export type RootStackParamList = {
   BioGenerator: undefined;
   OpenerGenerator: undefined;
   OnboardingFlow: undefined;
+  History: undefined;
 };
 
 // Navigation prop types for screens

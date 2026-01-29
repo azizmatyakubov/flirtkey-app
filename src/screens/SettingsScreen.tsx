@@ -188,8 +188,7 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
     triggerHaptic();
     try {
       await Share.share({
-        message:
-          'Check out FlirtKey - AI-powered dating message assistant!\nhttps://flirtkey.app',
+        message: 'Check out FlirtKey - AI-powered dating message assistant!\nhttps://flirtkey.app',
         title: 'Share FlirtKey',
       });
     } catch (error) {
@@ -244,9 +243,19 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
   // Render Helpers
   // ==========================================
 
-  const renderSectionHeader = (title: string, iconName: keyof typeof Ionicons.glyphMap, section: string) => (
+  const renderSectionHeader = (
+    title: string,
+    iconName: keyof typeof Ionicons.glyphMap,
+    section: string
+  ) => (
     <TouchableOpacity
-      style={[styles.sectionHeader, { backgroundColor: expandedSection === section ? accentColors.surfaceHighlight : theme.colors.surface }]}
+      style={[
+        styles.sectionHeader,
+        {
+          backgroundColor:
+            expandedSection === section ? accentColors.surfaceHighlight : theme.colors.surface,
+        },
+      ]}
       onPress={() => toggleSection(section)}
     >
       <View style={styles.sectionHeaderLeft}>
@@ -277,14 +286,25 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
     >
       <View style={styles.settingRowLeft}>
         {iconName && (
-          <Ionicons name={iconName as any} size={18} color={theme.colors.textSecondary} style={{ marginRight: spacing.sm }} />
+          <Ionicons
+            name={iconName as any}
+            size={18}
+            color={theme.colors.textSecondary}
+            style={{ marginRight: spacing.sm }}
+          />
         )}
         <Text style={[styles.settingLabel, { color: theme.colors.text }]}>{label}</Text>
       </View>
       {rightElement || (
         <View style={styles.settingRowRight}>
-          {value && <Text style={[styles.settingValue, { color: theme.colors.textSecondary }]}>{value}</Text>}
-          {onPress && <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />}
+          {value && (
+            <Text style={[styles.settingValue, { color: theme.colors.textSecondary }]}>
+              {value}
+            </Text>
+          )}
+          {onPress && (
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
+          )}
         </View>
       )}
     </TouchableOpacity>
@@ -354,10 +374,17 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
         end={{ x: 1, y: 0 }}
         style={styles.header}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton} accessibilityLabel="Go back" accessibilityRole="button">
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.headerButton}
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+        >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} accessibilityRole="header">Settings</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">
+          Settings
+        </Text>
         <View style={{ width: 40 }} />
       </LinearGradient>
 
@@ -376,7 +403,9 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
                   styles.apiModeOption,
                   apiMode === 'proxy' && { backgroundColor: accentColors.rose },
                 ]}
-                onPress={() => { setApiMode('proxy'); }}
+                onPress={() => {
+                  setApiMode('proxy');
+                }}
                 accessibilityLabel="Server Mode"
               >
                 <Ionicons
@@ -395,7 +424,10 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
                 <Text
                   style={[
                     styles.apiModeSubtext,
-                    { color: apiMode === 'proxy' ? 'rgba(255,255,255,0.7)' : theme.colors.textSecondary },
+                    {
+                      color:
+                        apiMode === 'proxy' ? 'rgba(255,255,255,0.7)' : theme.colors.textSecondary,
+                    },
                   ]}
                 >
                   No API key needed
@@ -406,7 +438,9 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
                   styles.apiModeOption,
                   apiMode === 'byok' && { backgroundColor: accentColors.rose },
                 ]}
-                onPress={() => { setApiMode('byok'); }}
+                onPress={() => {
+                  setApiMode('byok');
+                }}
                 accessibilityLabel="Own Key Mode"
               >
                 <Ionicons
@@ -425,7 +459,10 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
                 <Text
                   style={[
                     styles.apiModeSubtext,
-                    { color: apiMode === 'byok' ? 'rgba(255,255,255,0.7)' : theme.colors.textSecondary },
+                    {
+                      color:
+                        apiMode === 'byok' ? 'rgba(255,255,255,0.7)' : theme.colors.textSecondary,
+                    },
                   ]}
                 >
                   Use your OpenAI key
@@ -434,13 +471,14 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
             </View>
 
             {/* Show API key setting only in BYOK mode */}
-            {apiMode === 'byok' && renderSettingRow(
-              'API Key',
-              apiKey ? '••••••' + apiKey.slice(-4) : 'Not set',
-              handleApiKeyPress,
-              undefined,
-              'key' as any
-            )}
+            {apiMode === 'byok' &&
+              renderSettingRow(
+                'API Key',
+                apiKey ? '••••••' + apiKey.slice(-4) : 'Not set',
+                handleApiKeyPress,
+                undefined,
+                'key' as any
+              )}
 
             <Text style={[styles.subsectionTitle, { color: theme.colors.textSecondary }]}>
               Dating Culture
@@ -453,10 +491,16 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
         {renderSectionHeader('Preferences', 'settings' as any, 'preferences')}
         {expandedSection === 'preferences' && (
           <View style={styles.sectionContent}>
-            {renderSettingRow('Response Preferences', 'Tone, length, emoji...', () => {
-              triggerHaptic();
-              navigation.navigate('Preferences');
-            }, undefined, 'options' as any)}
+            {renderSettingRow(
+              'Response Preferences',
+              'Tone, length, emoji...',
+              () => {
+                triggerHaptic();
+                navigation.navigate('Preferences');
+              },
+              undefined,
+              'options' as any
+            )}
 
             <Text style={[styles.subsectionTitle, { color: theme.colors.textSecondary }]}>
               Theme
@@ -531,8 +575,20 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
             </ScrollView>
 
             <View style={{ height: 16 }} />
-            {renderSettingRow('Privacy Policy', undefined, handlePrivacyPolicy, undefined, 'shield-checkmark' as any)}
-            {renderSettingRow('Terms of Service', undefined, handleTermsOfService, undefined, 'document-text' as any)}
+            {renderSettingRow(
+              'Privacy Policy',
+              undefined,
+              handlePrivacyPolicy,
+              undefined,
+              'shield-checkmark' as any
+            )}
+            {renderSettingRow(
+              'Terms of Service',
+              undefined,
+              handleTermsOfService,
+              undefined,
+              'document-text' as any
+            )}
           </View>
         )}
 
@@ -540,9 +596,37 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
         {renderSectionHeader('Data Management', 'server' as any, 'data')}
         {expandedSection === 'data' && (
           <View style={styles.sectionContent}>
-            {renderSettingRow('Export Data', undefined, handleExportData, undefined, 'download' as any)}
-            {renderSettingRow('Clear Cache', undefined, handleClearCache, undefined, 'trash-bin' as any)}
-            {renderSettingRow('Clear All Data', undefined, handleClearAllData, undefined, 'warning' as any)}
+            {renderSettingRow(
+              'AI Reply History',
+              'View all generated replies',
+              () => {
+                triggerHaptic();
+                navigation.navigate('History' as any);
+              },
+              undefined,
+              'time' as any
+            )}
+            {renderSettingRow(
+              'Export Data',
+              undefined,
+              handleExportData,
+              undefined,
+              'download' as any
+            )}
+            {renderSettingRow(
+              'Clear Cache',
+              undefined,
+              handleClearCache,
+              undefined,
+              'trash-bin' as any
+            )}
+            {renderSettingRow(
+              'Clear All Data',
+              undefined,
+              handleClearAllData,
+              undefined,
+              'warning' as any
+            )}
             <TouchableOpacity
               style={[styles.dangerButton, { borderColor: theme.colors.error }]}
               onPress={handleDeleteAccount}
@@ -581,16 +665,50 @@ export function SettingsScreen({ navigation }: { navigation: RootNavigationProp 
         {renderSectionHeader('About', 'information-circle' as any, 'about')}
         {expandedSection === 'about' && (
           <View style={styles.sectionContent}>
-            {renderSettingRow('Version', `${appVersion} (${buildNumber})`, undefined, undefined, 'code-slash' as any)}
-            {renderSettingRow('More Info & FAQ', undefined, () => {
-              triggerHaptic();
-              navigation.navigate('About');
-            }, undefined, 'help-circle' as any)}
-            {renderSettingRow('Rate FlirtKey', hasRatedApp ? 'Rated' : undefined, handleRateApp, undefined, 'star' as any)}
-            {renderSettingRow('Share with Friends', undefined, handleShareApp, undefined, 'share-social' as any)}
-            {renderSettingRow('Contact Support', undefined, handleContactSupport, undefined, 'chatbubble-ellipses' as any)}
-            {renderSettingRow('FAQ & Help', undefined, () =>
-              Linking.openURL('https://flirtkey.app/faq'), undefined, 'book' as any
+            {renderSettingRow(
+              'Version',
+              `${appVersion} (${buildNumber})`,
+              undefined,
+              undefined,
+              'code-slash' as any
+            )}
+            {renderSettingRow(
+              'More Info & FAQ',
+              undefined,
+              () => {
+                triggerHaptic();
+                navigation.navigate('About');
+              },
+              undefined,
+              'help-circle' as any
+            )}
+            {renderSettingRow(
+              'Rate FlirtKey',
+              hasRatedApp ? 'Rated' : undefined,
+              handleRateApp,
+              undefined,
+              'star' as any
+            )}
+            {renderSettingRow(
+              'Share with Friends',
+              undefined,
+              handleShareApp,
+              undefined,
+              'share-social' as any
+            )}
+            {renderSettingRow(
+              'Contact Support',
+              undefined,
+              handleContactSupport,
+              undefined,
+              'chatbubble-ellipses' as any
+            )}
+            {renderSettingRow(
+              'FAQ & Help',
+              undefined,
+              () => Linking.openURL('https://flirtkey.app/faq'),
+              undefined,
+              'book' as any
             )}
 
             <View style={styles.statsContainer}>
