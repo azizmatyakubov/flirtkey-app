@@ -20,6 +20,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '../stores/useStore';
+import { useHistory } from '../hooks/useHistory';
 import { Contact } from '../types';
 import { Avatar } from '../components/Avatar';
 import { StageBadge } from '../components/Badge';
@@ -61,6 +62,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
   const apiKey = useStore((s) => s.apiKey);
   const apiMode = useStore((s) => s.apiMode);
   const { showToast } = useToast();
+  const { usageCounts, totalCount } = useHistory();
 
   // UI State
   const [searchQuery, setSearchQuery] = useState('');
@@ -322,6 +324,88 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
         renderItem={renderContact}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={[styles.list, filteredContacts.length === 0 && styles.listEmpty]}
+        ListHeaderComponent={
+          contacts.length > 0 ? (
+            <View style={styles.quickActions}>
+              {/* Stats row */}
+              {totalCount > 0 && (
+                <TouchableOpacity
+                  style={styles.statsRow}
+                  onPress={() => navigation.navigate('History' as any)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="sparkles" size={16} color={accentColors.gold} />
+                  <Text style={styles.statsText}>
+                    {totalCount} AI {totalCount === 1 ? 'reply' : 'replies'} generated
+                  </Text>
+                  <Ionicons name="chevron-forward" size={14} color={darkColors.textTertiary} />
+                </TouchableOpacity>
+              )}
+
+              {/* Quick action cards */}
+              <View style={styles.quickActionCards}>
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('QuickReply')}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#FF6B6B20', '#FF6B6B08']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>💬</Text>
+                    <Text style={styles.quickActionLabel}>Reply</Text>
+                    {usageCounts.chat_reply + usageCounts.quick_reply > 0 && (
+                      <View style={styles.usageBadge}>
+                        <Text style={styles.usageBadgeText}>
+                          {usageCounts.chat_reply + usageCounts.quick_reply}
+                        </Text>
+                      </View>
+                    )}
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('BioGenerator')}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#A78BFA20', '#A78BFA08']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>📝</Text>
+                    <Text style={styles.quickActionLabel}>Bio</Text>
+                    {usageCounts.bio > 0 && (
+                      <View style={[styles.usageBadge, { backgroundColor: '#A78BFA' }]}>
+                        <Text style={styles.usageBadgeText}>{usageCounts.bio}</Text>
+                      </View>
+                    )}
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('OpenerGenerator')}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#34D39920', '#34D39908']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>👋</Text>
+                    <Text style={styles.quickActionLabel}>Opener</Text>
+                    {usageCounts.opener > 0 && (
+                      <View style={[styles.usageBadge, { backgroundColor: '#34D399' }]}>
+                        <Text style={styles.usageBadgeText}>{usageCounts.opener}</Text>
+                      </View>
+                    )}
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : null
+        }
         ListEmptyComponent={renderEmptyState}
         refreshControl={
           <RefreshControl
@@ -437,6 +521,72 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flex: 1,
+  },
+  quickActions: {
+    marginBottom: spacing.md,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: darkColors.surface,
+    paddingVertical: 10,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: darkColors.border,
+  },
+  statsText: {
+    flex: 1,
+    color: darkColors.textSecondary,
+    fontSize: fontSizes.sm,
+    fontFamily: fonts.medium,
+  },
+  quickActionCards: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  quickActionCard: {
+    flex: 1,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: darkColors.border,
+  },
+  quickActionGradient: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: spacing.sm,
+    position: 'relative',
+  },
+  quickActionEmoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  quickActionLabel: {
+    color: darkColors.text,
+    fontSize: fontSizes.xs,
+    fontWeight: '600',
+    fontFamily: fonts.semiBold,
+  },
+  usageBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: accentColors.coral,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+  },
+  usageBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: fonts.bold,
   },
   list: {
     padding: 16,
