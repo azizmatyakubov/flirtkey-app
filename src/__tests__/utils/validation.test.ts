@@ -13,7 +13,6 @@ import {
   validateApiKey,
   validateGirl,
   validateCreateGirl,
-  validateUser,
   validateSuggestion,
   validateAIResponse,
   getValidationError,

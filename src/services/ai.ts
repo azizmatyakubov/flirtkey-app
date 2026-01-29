@@ -683,6 +683,16 @@ const FALLBACK_RESPONSES: Record<string, AnalysisResult> = {
         text: 'Could not analyze the image clearly',
         reason: 'Try a clearer screenshot',
       },
+      {
+        type: 'balanced',
+        text: 'Try uploading a clearer image',
+        reason: 'Better image quality helps analysis',
+      },
+      {
+        type: 'bold',
+        text: 'Screenshot the conversation and try again',
+        reason: 'Full conversation context helps',
+      },
     ],
     proTip: 'Make sure the chat messages are clearly visible in the screenshot',
   },

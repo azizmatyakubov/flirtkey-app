@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import { Girl, User, Culture, Suggestion } from '../types';
 
 // Get API key from env config (falls back to empty string)
-const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | undefined)?.openaiApiKey || '';
+const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | undefined)?.['openaiApiKey'] || '';
 
 // ==========================================
 // State Types

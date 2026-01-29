@@ -49,6 +49,11 @@ import { fonts } from '../constants/fonts';
 
 const MAX_INPUT_LENGTH = 500;
 const INPUT_ACCESSORY_ID = 'chat-input-accessory';
+const LOADING_TEXTS = [
+  'Reading between the lines...',
+  'Crafting the perfect response...',
+  'Almost there...',
+];
 
 interface SuggestionUsage {
   [key: string]: number;
@@ -118,12 +123,6 @@ export function ChatScreen({ navigation }: any) {
   const conversationHistory = selectedGirl ? getConversationsForGirl(selectedGirl.id) : [];
 
   // Loading text rotation
-  const LOADING_TEXTS = [
-    'Reading between the lines...',
-    'Crafting the perfect response...',
-    'Almost there...',
-  ];
-
   useEffect(() => {
     if (!loading) return;
     const interval = setInterval(() => {
@@ -193,12 +192,12 @@ export function ChatScreen({ navigation }: any) {
       const response = await generateResponse(apiKey, selectedGirl, herMessage, userCulture);
       setResult(response);
 
-      if (result?.interestLevel) {
-        setPreviousInterestLevel(result.interestLevel);
+      if (response?.interestLevel) {
+        setPreviousInterestLevel(response.interestLevel);
       }
 
       updateGirl(selectedGirl.id, {
-        messageCount: selectedGirl.messageCount + 1,
+        // Note: messageCount is auto-incremented by addConversation in the store
         lastTopic: herMessage.substring(0, 100),
         lastMessageDate: new Date().toISOString(),
       });
@@ -263,19 +262,17 @@ export function ChatScreen({ navigation }: any) {
   const handleRefresh = async () => {
     if (!herMessage.trim() || !apiKey) return;
     setRefreshing(true);
-    await handleGenerate();
-    setRefreshing(false);
+    try {
+      await handleGenerate();
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   // Handle quick phrase selection (6.1.9)
   const handleQuickPhrase = (phrase: string) => {
     setHerMessage((prev) => (prev ? `${prev} ${phrase}` : phrase));
     inputRef.current?.focus();
-  };
-
-  // Handle voice transcript (6.1.10)
-  const handleVoiceTranscript = (text: string) => {
-    setHerMessage((prev) => (prev ? `${prev} ${text}` : text));
   };
 
   // Handle paste detection (6.1.11)
@@ -395,7 +392,7 @@ export function ChatScreen({ navigation }: any) {
       >
         <TouchableOpacity
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
             navigation.goBack();
           }}
           style={styles.backBtn}
@@ -407,7 +404,7 @@ export function ChatScreen({ navigation }: any) {
           <View style={styles.headerActions}>
             <TouchableOpacity
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
                 navigation.navigate('GirlProfile');
               }}
             >

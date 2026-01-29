@@ -60,15 +60,11 @@ const AUTO_LOCK_OPTIONS = [
 ] as const;
 
 // Section icon mapping
-const _SECTION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
-  account: 'person-circle',
-  preferences: 'settings',
-  notifications: 'notifications',
-  privacy: 'lock-closed',
-  data: 'server',
-  accessibility: 'accessibility',
-  about: 'information-circle',
-};
+// Icon mapping used by renderSectionHeader
+// const SECTION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+//   account: 'person-circle', preferences: 'settings', notifications: 'notifications',
+//   privacy: 'lock-closed', data: 'server', accessibility: 'accessibility', about: 'information-circle',
+// };
 
 // ==========================================
 // Component

@@ -27,7 +27,7 @@ import { ConfirmDialog, UnsavedChangesDialog } from '../components/ConfirmDialog
 import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
 import { validateName, validateAge } from '../utils/validation';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 
 const CULTURES: { key: Culture; label: string; emoji: string }[] = [

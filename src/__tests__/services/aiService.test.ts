@@ -13,8 +13,8 @@ describe('AI Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Set up default mock behavior
-    (axios.isCancel as jest.Mock).mockReturnValue(false);
-    (axios.isAxiosError as jest.Mock).mockReturnValue(false);
+    (axios.isCancel as unknown as jest.Mock).mockReturnValue(false);
+    (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(false);
   });
 
   // ==========================================
@@ -54,7 +54,7 @@ describe('AI Service', () => {
 
   describe('Error Classification', () => {
     it('classifies rate limit errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         response: { status: 429, data: { error: { message: 'Rate limit exceeded' } } },
@@ -64,7 +64,7 @@ describe('AI Service', () => {
     });
 
     it('classifies authentication errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         response: { status: 401, data: { error: { message: 'Invalid API key' } } },
@@ -74,7 +74,7 @@ describe('AI Service', () => {
     });
 
     it('classifies network errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         code: 'ERR_NETWORK',
@@ -86,7 +86,7 @@ describe('AI Service', () => {
     });
 
     it('classifies timeout errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         code: 'ECONNABORTED',
@@ -98,7 +98,7 @@ describe('AI Service', () => {
     });
 
     it('classifies server errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         response: { status: 500, data: { error: { message: 'Internal server error' } } },
@@ -108,7 +108,7 @@ describe('AI Service', () => {
     });
 
     it('classifies quota exceeded errors (402)', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         response: { status: 402, data: { error: { message: 'quota exceeded' } } },
@@ -118,15 +118,15 @@ describe('AI Service', () => {
     });
 
     it('classifies unknown errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(false);
-      (axios.isCancel as jest.Mock).mockReturnValue(false);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(false);
+      (axios.isCancel as unknown as jest.Mock).mockReturnValue(false);
       const error = new Error('Something weird happened');
       const result = classifyError(error as any);
       expect(result.code).toBe('UNKNOWN_ERROR');
     });
 
     it('includes retry suggestion for rate limit', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         response: { status: 429, data: { error: { message: 'Rate limit' } } },
@@ -136,7 +136,7 @@ describe('AI Service', () => {
     });
 
     it('does not suggest retry for auth errors', () => {
-      (axios.isAxiosError as jest.Mock).mockReturnValue(true);
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
       const error = {
         isAxiosError: true,
         response: { status: 401, data: { error: { message: 'Invalid key' } } },

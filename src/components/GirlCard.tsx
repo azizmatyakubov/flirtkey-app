@@ -10,7 +10,7 @@ import { Girl } from '../types';
 import { Avatar } from './Avatar';
 import { StageBadge } from './Badge';
 import { SwipeableRow } from './SwipeableRow';
-import { darkColors, spacing, fontSizes, borderRadius, shadows, accentColors } from '../constants/theme';
+import { darkColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 interface GirlCardProps {
   girl: Girl;

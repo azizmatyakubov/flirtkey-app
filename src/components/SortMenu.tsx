@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
+import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 export type SortOption = {
   key: string;

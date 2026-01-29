@@ -4,7 +4,7 @@
  */
 
 // Global variables
-(global as Record<string, unknown>).__DEV__ = true;
+(global as Record<string, unknown>)['__DEV__'] = true;
 
 // Mock console.warn to reduce noise
 const originalWarn = console.warn;
@@ -23,7 +23,7 @@ console.warn = (...args: unknown[]) => {
 };
 
 // Global test utilities
-(global as Record<string, unknown>).mockApiResponse = <T>(data: T) => ({
+(global as Record<string, unknown>)['mockApiResponse'] = <T>(data: T) => ({
   data,
   status: 200,
   statusText: 'OK',
@@ -31,7 +31,7 @@ console.warn = (...args: unknown[]) => {
   config: {},
 });
 
-(global as Record<string, unknown>).wait = (ms: number) =>
+(global as Record<string, unknown>)['wait'] = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 // Extend global types

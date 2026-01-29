@@ -5,9 +5,8 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Button, ButtonProps } from './Button';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes } from '../constants/theme';
 
 export interface EmptyStateProps {
   icon?: string;

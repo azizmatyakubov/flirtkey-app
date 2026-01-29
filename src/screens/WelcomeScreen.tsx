@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { spacing, fontSizes, borderRadius, accentColors, shadows } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 interface WelcomeScreenProps {
   navigation: any;

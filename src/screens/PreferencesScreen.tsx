@@ -21,7 +21,7 @@ import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../c
 // Constants
 // ==========================================
 
-const RESPONSE_TONES: { key: ResponseTone; label: string; icon: keyof typeof Ionicons.glyphName; description: string }[] = [
+const RESPONSE_TONES: { key: ResponseTone; label: string; icon: keyof typeof Ionicons.glyphMap; description: string }[] = [
   { key: 'flirty', label: 'Flirty', icon: 'flame' as any, description: 'Teasing and playful' },
   { key: 'casual', label: 'Casual', icon: 'happy' as any, description: 'Relaxed and friendly' },
   { key: 'confident', label: 'Confident', icon: 'shield-checkmark' as any, description: 'Bold and assertive' },
@@ -230,7 +230,7 @@ export function PreferencesScreen({ navigation }: any) {
 
   const renderPhraseList = (
     title: string,
-    iconName: keyof typeof Ionicons.glyphName,
+    iconName: keyof typeof Ionicons.glyphMap,
     phrases: string[],
     onRemove: (phrase: string) => void,
     onAdd: () => void,

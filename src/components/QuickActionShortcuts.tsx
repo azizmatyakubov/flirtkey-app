@@ -9,7 +9,7 @@ import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../c
 
 interface QuickAction {
   id: string;
-  icon: keyof typeof Ionicons.glyphName;
+  icon: keyof typeof Ionicons.glyphMap;
   label: string;
   action: () => void;
   color?: string;

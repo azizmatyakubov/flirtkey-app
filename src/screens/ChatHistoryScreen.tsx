@@ -121,15 +121,15 @@ function NoReplyIndicator({ index }: { index: number }) {
 
 function InterestIndicator({ level, index }: { level: number; index: number }) {
   const getColor = (l: number) => {
-    if (l >= 7) return darkColors.success;
-    if (l >= 4) return darkColors.warning;
+    if (l >= 70) return darkColors.success;
+    if (l >= 40) return darkColors.warning;
     return darkColors.error;
   };
 
   const getEmoji = (l: number) => {
-    if (l >= 8) return '🔥';
-    if (l >= 6) return '😊';
-    if (l >= 4) return '😐';
+    if (l >= 80) return '🔥';
+    if (l >= 60) return '😊';
+    if (l >= 40) return '😐';
     return '😬';
   };
 
@@ -141,7 +141,7 @@ function InterestIndicator({ level, index }: { level: number; index: number }) {
       <View style={[styles.interestPill, { borderColor: getColor(level) + '40' }]}>
         <Text style={styles.interestEmoji}>{getEmoji(level)}</Text>
         <Text style={[styles.interestText, { color: getColor(level) }]}>
-          Interest: {level}/10
+          Interest: {level}%
         </Text>
       </View>
     </Animated.View>
@@ -301,7 +301,7 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
       >
         <TouchableOpacity
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
             navigation.goBack();
           }}
           style={styles.backBtn}

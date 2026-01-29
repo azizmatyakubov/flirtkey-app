@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
-import { darkColors, accentColors, fontSizes, spacing, borderRadius } from '../constants/theme';
+import { darkColors, accentColors } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 
 // Tab param list type
@@ -18,8 +18,8 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 // Tab bar icon component
 interface TabIconProps {
   focused: boolean;
-  iconName: keyof typeof Ionicons.glyphName;
-  iconNameOutline: keyof typeof Ionicons.glyphName;
+  iconName: keyof typeof Ionicons.glyphMap;
+  iconNameOutline: keyof typeof Ionicons.glyphMap;
   label: string;
 }
 

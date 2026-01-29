@@ -71,9 +71,9 @@ describe('Zustand Store', () => {
 
       const { girls, selectedGirl } = useStore.getState();
       expect(girls).toHaveLength(1);
-      expect(girls[0].name).toBe('Anna');
-      expect(girls[0].messageCount).toBe(0);
-      expect(girls[0].id).toBeDefined();
+      expect(girls[0]!.name).toBe('Anna');
+      expect(girls[0]!.messageCount).toBe(0);
+      expect(girls[0]!.id).toBeDefined();
       expect(selectedGirl).toEqual(girls[0]);
     });
 
@@ -90,11 +90,11 @@ describe('Zustand Store', () => {
       useStore.getState().addGirl(mockGirl);
 
       const { girls } = useStore.getState();
-      const girlId = girls[0].id;
+      const girlId = girls[0]!.id;
 
       useStore.getState().updateGirl(girlId, { name: 'Anna Updated', age: 26 });
 
-      const updatedGirl = useStore.getState().girls[0];
+      const updatedGirl = useStore.getState().girls[0]!;
       expect(updatedGirl.name).toBe('Anna Updated');
       expect(updatedGirl.age).toBe(26);
     });
@@ -103,7 +103,7 @@ describe('Zustand Store', () => {
       useStore.getState().addGirl(mockGirl);
 
       const { girls } = useStore.getState();
-      const girlId = girls[0].id;
+      const girlId = girls[0]!.id;
 
       useStore.getState().updateGirl(girlId, { name: 'Updated' });
 
@@ -114,7 +114,7 @@ describe('Zustand Store', () => {
       useStore.getState().addGirl(mockGirl);
 
       const { girls } = useStore.getState();
-      const girlId = girls[0].id;
+      const girlId = girls[0]!.id;
 
       useStore.getState().deleteGirl(girlId);
 
@@ -125,7 +125,7 @@ describe('Zustand Store', () => {
     it('clears selected girl when deleting her', () => {
       useStore.getState().addGirl(mockGirl);
 
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().deleteGirl(girlId);
 
@@ -135,7 +135,7 @@ describe('Zustand Store', () => {
     it('selects a girl', () => {
       useStore.getState().addGirl(mockGirl);
 
-      const girl = useStore.getState().girls[0];
+      const girl = useStore.getState().girls[0]!;
 
       useStore.getState().selectGirl(null);
 
@@ -166,7 +166,7 @@ describe('Zustand Store', () => {
     });
 
     it('adds conversation entry', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().addConversation({
         girlId,
@@ -177,13 +177,13 @@ describe('Zustand Store', () => {
 
       const { conversationHistory } = useStore.getState();
       expect(conversationHistory).toHaveLength(1);
-      expect(conversationHistory[0].herMessage).toBe('Hey there!');
-      expect(conversationHistory[0].id).toBeDefined();
-      expect(conversationHistory[0].timestamp).toBeDefined();
+      expect(conversationHistory[0]!.herMessage).toBe('Hey there!');
+      expect(conversationHistory[0]!.id).toBeDefined();
+      expect(conversationHistory[0]!.timestamp).toBeDefined();
     });
 
     it('increments girl message count', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().addConversation({
         girlId,
@@ -196,12 +196,12 @@ describe('Zustand Store', () => {
         suggestions: mockSuggestions,
       });
 
-      const girl = useStore.getState().girls[0];
+      const girl = useStore.getState().girls[0]!;
       expect(girl.messageCount).toBe(2);
     });
 
     it('gets conversations for girl', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().addConversation({
         girlId,
@@ -223,7 +223,7 @@ describe('Zustand Store', () => {
     });
 
     it('clears conversation history for specific girl', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().addConversation({
         girlId,
@@ -237,7 +237,7 @@ describe('Zustand Store', () => {
     });
 
     it('clears all conversation history', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().addConversation({
         girlId,
@@ -265,7 +265,7 @@ describe('Zustand Store', () => {
     });
 
     it('caches suggestions', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().cacheSuggestions(girlId, 'Hello there', mockSuggestions, 'Pro tip');
 
@@ -276,13 +276,13 @@ describe('Zustand Store', () => {
     });
 
     it('returns null for non-existent cache', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
       const cached = useStore.getState().getCachedSuggestions(girlId, 'Non-existent message');
       expect(cached).toBeNull();
     });
 
     it('clears suggestions cache', () => {
-      const girlId = useStore.getState().girls[0].id;
+      const girlId = useStore.getState().girls[0]!.id;
 
       useStore.getState().cacheSuggestions(girlId, 'Hello', mockSuggestions);
       useStore.getState().clearSuggestionsCache();
@@ -357,7 +357,7 @@ describe('Zustand Store', () => {
     describe('selectGirlById', () => {
       it('finds girl by ID', () => {
         const state = useStore.getState();
-        const girlId = state.girls[0].id;
+        const girlId = state.girls[0]!.id;
         const girl = selectGirlById(girlId)(state);
         expect(girl?.name).toBe('Anna');
       });
@@ -382,7 +382,7 @@ describe('Zustand Store', () => {
 
         const sorted = selectGirlsSortedByRecent(useStore.getState());
         // The one with lastMessageDate should be first
-        expect(sorted[0].lastMessageDate).toBeDefined();
+        expect(sorted[0]!.lastMessageDate).toBeDefined();
       });
     });
 
@@ -404,7 +404,7 @@ describe('Zustand Store', () => {
         const initialCount = selectTotalMessageCount(useStore.getState());
         expect(initialCount).toBe(0);
 
-        const girlId = useStore.getState().girls[0].id;
+        const girlId = useStore.getState().girls[0]!.id;
         useStore.getState().addConversation({
           girlId,
           herMessage: 'Test',
@@ -449,7 +449,7 @@ describe('Zustand Store', () => {
       it('searches by name', () => {
         const results = selectGirlsBySearch('anna')(useStore.getState());
         expect(results).toHaveLength(1);
-        expect(results[0].name).toBe('Anna');
+        expect(results[0]!.name).toBe('Anna');
       });
 
       it('searches case-insensitively', () => {

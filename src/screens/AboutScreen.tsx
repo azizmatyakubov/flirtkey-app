@@ -17,7 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettingsStore } from '../stores/settingsStore';
 import { Modal } from '../components/Modal';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 
 // ==========================================
 // Constants

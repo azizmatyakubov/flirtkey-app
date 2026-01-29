@@ -13,10 +13,8 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 import {
-  ResponseCacheService,
   getCachedResponse,
   cacheResponse,
-  getCachedResponsesForGirl,
   getCacheStats,
   clearCache,
   clearCacheForGirl,

@@ -35,7 +35,6 @@ import {
   getQueuedRequests,
   getPendingCount,
   getQueueStats,
-  type QueuedRequest,
 } from '../../services/offlineQueue';
 
 import NetInfo from '@react-native-community/netinfo';
@@ -154,7 +153,7 @@ describe('OfflineQueueService', () => {
 
       await addToQueue('flirt', { message: 'test' }, 'girl-1');
 
-      const result = await OfflineQueueService.processQueue();
+      await OfflineQueueService.processQueue();
 
       expect(callCount).toBeGreaterThanOrEqual(2);
     });

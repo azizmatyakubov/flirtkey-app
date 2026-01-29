@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
 import { useStore } from '../stores/useStore';
 import { useTheme } from '../contexts/ThemeContext';
 import * as SecureStore from 'expo-secure-store';
@@ -293,7 +293,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Ionicons name="checkmark-shield" size={20} color="#FFFFFF" />
+                <Ionicons name="shield-checkmark" size={20} color="#FFFFFF" />
                 <Text style={styles.saveButtonText}>Validate & Save Key</Text>
               </>
             )}

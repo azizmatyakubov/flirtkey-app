@@ -16,7 +16,7 @@ interface ProTipCardProps {
   showActions?: boolean;
 }
 
-const CATEGORY_CONFIG: Record<TipCategory, { icon: keyof typeof Ionicons.glyphName; label: string; color: string }> = {
+const CATEGORY_CONFIG: Record<TipCategory, { icon: keyof typeof Ionicons.glyphMap; label: string; color: string }> = {
   general: { icon: 'bulb' as any, label: 'General', color: accentColors.coral },
   timing: { icon: 'time' as any, label: 'Timing', color: '#f59e0b' },
   conversation: { icon: 'chatbubble' as any, label: 'Conversation', color: '#22c55e' },

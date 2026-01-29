@@ -28,7 +28,7 @@ import { Modal } from '../components/Modal';
 import { DeleteDialog, UnsavedChangesDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
 import { useImagePicker } from '../hooks/useImagePicker';
-import { darkColors, accentColors, spacing, fontSizes, borderRadius, shadows } from '../constants/theme';
+import { darkColors, accentColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 
 const STAGES: { key: RelationshipStage; label: string; emoji: string }[] = [
   { key: 'just_met', label: 'Just Met', emoji: '🆕' },
