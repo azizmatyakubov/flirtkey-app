@@ -72,7 +72,10 @@ const LICENSES = [
 
 export function AboutScreen({ navigation }: { navigation: RootNavigationProp }) {
   const { theme } = useTheme();
-  const { accessibility, setHasRatedApp, hasRatedApp, stats } = useSettingsStore();
+  const accessibility = useSettingsStore((s) => s.accessibility);
+  const setHasRatedApp = useSettingsStore((s) => s.setHasRatedApp);
+  const hasRatedApp = useSettingsStore((s) => s.hasRatedApp);
+  const stats = useSettingsStore((s) => s.stats);
   const [showFAQ, setShowFAQ] = useState(false);
   const [showLicenses, setShowLicenses] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);

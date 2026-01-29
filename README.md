@@ -75,21 +75,60 @@ npm run web
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ Architecture
+
+### High-Level Overview
+
+```
+┌─────────────────────────────────────────────┐
+│  App.tsx (GestureHandler → ErrorBoundary     │
+│  → ThemeProvider → ToastProvider → Navigator) │
+├─────────────────────────────────────────────┤
+│  Screens (14)        Components (50+)        │
+│  ├─ Onboarding Flow  ├─ Form (TextInput…)   │
+│  ├─ Home / Chat      ├─ Display (Avatar…)   │
+│  ├─ Profiles         ├─ Chat (Bubble…)      │
+│  ├─ Screenshot       ├─ Suggestions          │
+│  └─ Settings         └─ Loading / Error      │
+├─────────────────────────────────────────────┤
+│  Hooks (15)     │  Services (7)             │
+│  useAI          │  ai (OpenAI GPT)          │
+│  useForm        │  ocr                      │
+│  useImagePicker │  offlineQueue             │
+│  useDebounce    │  responseCache            │
+│  useOrientation │  storage (SecureStore)    │
+│  …              │  feedback                 │
+├─────────────────────────────────────────────┤
+│  Stores (Zustand + persist → AsyncStorage)   │
+│  ├─ useStore (girls, conversations, cache)   │
+│  └─ useSettingsStore (theme, prefs, a11y)    │
+└─────────────────────────────────────────────┘
+```
+
+### Key Patterns
+
+- **Zustand selectors** — all store access uses `useStore((s) => s.field)` to avoid full re-renders
+- **Offline-first** — requests queue when offline, replay on reconnect
+- **Response caching** — 24h TTL on suggestion cache to reduce API calls
+- **Error boundaries** — per-screen error recovery with `ErrorBoundary`
+- **Accessibility** — reduce motion, high contrast, haptic feedback, large text
+- **Culture-aware prompts** — Uzbek, Russian, Western, Asian, Universal styles
+
+### Project Structure
 
 ```
 flirtkey-app/
 ├── src/
-│   ├── components/      # Reusable UI components
-│   ├── screens/         # App screens
-│   ├── services/        # API and business logic
-│   ├── stores/          # Zustand state management
-│   ├── hooks/           # Custom React hooks
+│   ├── components/      # 50+ reusable UI components
+│   ├── screens/         # 14 app screens
+│   ├── services/        # AI, OCR, caching, offline queue
+│   ├── stores/          # Zustand state (useStore, useSettingsStore)
+│   ├── hooks/           # 15 custom hooks
+│   ├── contexts/        # ThemeContext
 │   ├── types/           # TypeScript definitions
-│   ├── utils/           # Helper functions
-│   └── constants/       # App constants and theme
-├── assets/              # Images, fonts, icons
-├── app.config.js        # Expo configuration
+│   ├── utils/           # Validation, a11y, haptics, formatting
+│   └── constants/       # Theme, config, navigation, prompts
+├── assets/              # App icons and splash
 ├── eas.json             # EAS Build configuration
 └── package.json
 ```

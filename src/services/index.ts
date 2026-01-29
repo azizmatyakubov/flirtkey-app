@@ -55,48 +55,8 @@ export {
   type PromptInsight,
 } from './feedback';
 
-// Network Testing Service (5.1.15)
-export {
-  NetworkTestingService,
-  runNetworkTest,
-  runNetworkTestSuite,
-  testOfflineBehavior,
-  testRetryBehavior,
-  testCancellation,
-  NETWORK_CONDITIONS,
-  TEST_MESSAGES,
-  type NetworkCondition,
-  type NetworkConditionConfig,
-  type NetworkTestResult,
-  type NetworkTestSuiteResult,
-} from './networkTesting';
-
-// Prompt Testing Service (5.2.15)
-export {
-  PromptTestingService,
-  generateTestInputs,
-  runPromptTest,
-  runPromptTestSuite,
-  runCategoryTests,
-  type TestInput,
-  type TestCategory,
-  type TestResult,
-  type TestSuiteResult,
-} from './promptTesting';
-
-// Prompt Benchmark Service (5.2.18)
-export {
-  PromptBenchmarkService,
-  runBenchmark,
-  runQuickBenchmark,
-  compareBenchmarks,
-  generateReport,
-  type BenchmarkMetrics,
-  type BenchmarkRun,
-  type BenchmarkDetail,
-  type BenchmarkConfiguration,
-  type BenchmarkComparison,
-} from './promptBenchmark';
+// Dev-only testing services (networkTesting, promptTesting, promptBenchmark)
+// Import directly from their modules when needed for development.
 
 // OCR Service (7.2.12)
 export {
@@ -142,9 +102,8 @@ export {
 export { default as aiService } from './ai';
 export { default as storageService } from './storage';
 export { default as feedbackService } from './feedback';
-export { default as networkTestingService } from './networkTesting';
-export { default as promptTestingService } from './promptTesting';
-export { default as promptBenchmarkService } from './promptBenchmark';
+// Dev-only: networkTestingService, promptTestingService, promptBenchmarkService
+// Import directly from their modules for development use.
 export { default as ocrService } from './ocr';
 export { default as offlineQueueService } from './offlineQueue';
 export { default as responseCacheService } from './responseCache';

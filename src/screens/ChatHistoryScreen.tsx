@@ -188,7 +188,8 @@ function EmptyState() {
 
 export function ChatHistoryScreen({ navigation, route }: Props) {
   const { girlId } = route.params;
-  const { girls, getConversationsForGirl } = useStore();
+  const girls = useStore((s) => s.girls);
+  const getConversationsForGirl = useStore((s) => s.getConversationsForGirl);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const girl = girls.find((g) => g.id === girlId);

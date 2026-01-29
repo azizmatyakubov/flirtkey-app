@@ -28,7 +28,7 @@ interface SkeletonListProps {
 
 export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style }: SkeletonProps) {
   const { theme } = useTheme();
-  const { accessibility } = useSettingsStore();
+  const accessibility = useSettingsStore((s) => s.accessibility);
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

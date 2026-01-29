@@ -44,7 +44,7 @@ function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstLaunch, setIsFirstLaunch] = useState(true);
   const { theme, isDark } = useTheme();
-  const { recordAppOpen } = useSettingsStore();
+  const recordAppOpen = useSettingsStore((s) => s.recordAppOpen);
 
   useEffect(() => {
     checkOnboardingStatus();

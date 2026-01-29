@@ -32,7 +32,8 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const systemColorScheme = useColorScheme();
-  const { themeMode, setThemeMode } = useSettingsStore();
+  const themeMode = useSettingsStore((s) => s.themeMode);
+  const setThemeMode = useSettingsStore((s) => s.setThemeMode);
   const [currentScheme, setCurrentScheme] = useState(systemColorScheme);
 
   // Listen for system theme changes

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Localization from 'expo-localization';
@@ -37,7 +37,10 @@ const CULTURES: { key: Culture; label: string; emoji: string }[] = [
 import type { UserProfileSetupScreenProps } from '../types/navigation';
 
 export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupScreenProps) {
-  const { user, setUser, userCulture, setUserCulture } = useStore();
+  const user = useStore((s) => s.user);
+  const setUser = useStore((s) => s.setUser);
+  const userCulture = useStore((s) => s.userCulture);
+  const setUserCulture = useStore((s) => s.setUserCulture);
   const fromSettings = route?.params?.fromSettings;
 
   const [userName, setUserName] = useState(user?.name || '');
@@ -129,7 +132,11 @@ export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupSc
   const selectedLanguageData = LANGUAGES.find((lang) => lang.code === selectedLanguage);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={styles.flex}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       {/* Header */}
       <View style={styles.header}>
         {fromSettings && (
@@ -268,10 +275,15 @@ export function UserProfileSetupScreen({ navigation, route }: UserProfileSetupSc
         )}
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+    backgroundColor: darkColors.background,
+  },
   container: {
     flex: 1,
     backgroundColor: darkColors.background,

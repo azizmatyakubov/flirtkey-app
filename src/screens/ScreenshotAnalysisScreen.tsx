@@ -73,7 +73,10 @@ interface AnalysisHistory {
 // ==========================================
 
 export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalysisScreenProps) {
-  const { apiKey, selectedGirl, girls, userCulture } = useStore();
+  const apiKey = useStore((s) => s.apiKey);
+  const selectedGirl = useStore((s) => s.selectedGirl);
+  const girls = useStore((s) => s.girls);
+  const userCulture = useStore((s) => s.userCulture);
 
   // State
   const [result, setResult] = useState<AnalysisResult | null>(null);

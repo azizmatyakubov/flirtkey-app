@@ -334,14 +334,20 @@ const persistConfig: PersistOptions<AppState, PersistedState> = {
     girls: state.girls,
     selectedGirl: state.selectedGirl,
     conversationHistory: state.conversationHistory,
-    suggestionsCache: state.suggestionsCache,
+    // suggestionsCache excluded — ephemeral, rebuilt on use
     userCulture: state.userCulture,
     apiKey: state.apiKey,
   }),
   onRehydrateStorage: () => (state) => {
+    if (!state) return;
     // If persisted apiKey is empty but env has one, use env key
-    if (state && !state.apiKey && ENV_API_KEY) {
+    if (!state.apiKey && ENV_API_KEY) {
       state.apiKey = ENV_API_KEY;
+    }
+    // Clean expired cache entries on startup
+    const now = Date.now();
+    if (state.suggestionsCache?.length) {
+      state.suggestionsCache = state.suggestionsCache.filter((c) => c.expiresAt > now);
     }
   },
 };

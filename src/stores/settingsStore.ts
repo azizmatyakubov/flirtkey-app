@@ -318,6 +318,18 @@ export const useSettingsStore = create<SettingsState>()(
     {
       name: 'flirtkey-settings',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        themeMode: state.themeMode,
+        language: state.language,
+        notifications: state.notifications,
+        privacy: state.privacy,
+        preferences: state.preferences,
+        accessibility: state.accessibility,
+        stats: state.stats,
+        hasCompletedOnboarding: state.hasCompletedOnboarding,
+        hasRatedApp: state.hasRatedApp,
+        ratePromptDismissed: state.ratePromptDismissed,
+      }),
     }
   )
 );

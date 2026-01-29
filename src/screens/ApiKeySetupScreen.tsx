@@ -9,6 +9,8 @@ import {
   ScrollView,
   Linking,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -24,7 +26,7 @@ type KeyStatus = 'missing' | 'validating' | 'valid' | 'invalid' | 'rate_limited'
 import type { ApiKeySetupScreenProps } from '../types/navigation';
 
 export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps) {
-  const { setApiKey } = useStore();
+  const setApiKey = useStore((s) => s.setApiKey);
   const { theme } = useTheme();
   const [inputKey, setInputKey] = useState('');
   const [keyStatus, setKeyStatus] = useState<KeyStatus>('missing');
@@ -218,7 +220,11 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       {/* Header */}
       <View style={styles.header}>
         {fromSettings && (
@@ -368,6 +374,7 @@ export function ApiKeySetupScreen({ navigation, route }: ApiKeySetupScreenProps)
         </TouchableOpacity>
       )}
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -84,7 +84,8 @@ const SLIDES: OnboardingSlide[] = [
 
 export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
   const { theme } = useTheme();
-  const { setOnboardingComplete, accessibility } = useSettingsStore();
+  const setOnboardingComplete = useSettingsStore((s) => s.setOnboardingComplete);
+  const accessibility = useSettingsStore((s) => s.accessibility);
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;

@@ -52,17 +52,15 @@ const BOLDNESS_OPTIONS: {
 // ==========================================
 
 export function PreferencesScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const {
-    preferences,
-    setPreferences,
-    addBlockedPhrase,
-    removeBlockedPhrase,
-    addFavoritePhrase,
-    removeFavoritePhrase,
-    addQuickReply,
-    removeQuickReply,
-    accessibility,
-  } = useSettingsStore();
+  const preferences = useSettingsStore((s) => s.preferences);
+  const setPreferences = useSettingsStore((s) => s.setPreferences);
+  const addBlockedPhrase = useSettingsStore((s) => s.addBlockedPhrase);
+  const removeBlockedPhrase = useSettingsStore((s) => s.removeBlockedPhrase);
+  const addFavoritePhrase = useSettingsStore((s) => s.addFavoritePhrase);
+  const removeFavoritePhrase = useSettingsStore((s) => s.removeFavoritePhrase);
+  const addQuickReply = useSettingsStore((s) => s.addQuickReply);
+  const removeQuickReply = useSettingsStore((s) => s.removeQuickReply);
+  const accessibility = useSettingsStore((s) => s.accessibility);
   const { theme } = useTheme();
 
   const [showAddBlockedModal, setShowAddBlockedModal] = useState(false);

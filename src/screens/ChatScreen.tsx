@@ -68,16 +68,14 @@ interface FavoriteSuggestion {
 }
 
 export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const {
-    selectedGirl,
-    apiKey,
-    updateGirl,
-    userCulture,
-    addConversation,
-    getConversationsForGirl,
-    selectSuggestion,
-    getLastConversationForGirl,
-  } = useStore();
+  const selectedGirl = useStore((s) => s.selectedGirl);
+  const apiKey = useStore((s) => s.apiKey);
+  const updateGirl = useStore((s) => s.updateGirl);
+  const userCulture = useStore((s) => s.userCulture);
+  const addConversation = useStore((s) => s.addConversation);
+  const getConversationsForGirl = useStore((s) => s.getConversationsForGirl);
+  const selectSuggestion = useStore((s) => s.selectSuggestion);
+  const getLastConversationForGirl = useStore((s) => s.getLastConversationForGirl);
 
   // Orientation support (6.1.19, 6.1.20)
   const { isLandscape, isSplitScreen } = useOrientation();

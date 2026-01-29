@@ -19,7 +19,6 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStore } from '../stores/useStore';
 import { Girl } from '../types';
 import { Avatar } from '../components/Avatar';
@@ -56,7 +55,10 @@ const STAGE_ORDER: Record<Girl['relationshipStage'], number> = {
 };
 
 export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const { girls, selectGirl, deleteGirl, apiKey } = useStore();
+  const girls = useStore((s) => s.girls);
+  const selectGirl = useStore((s) => s.selectGirl);
+  const deleteGirl = useStore((s) => s.deleteGirl);
+  const apiKey = useStore((s) => s.apiKey);
   const { showToast } = useToast();
 
   // UI State
@@ -268,7 +270,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       {/* Gradient Header */}
       <LinearGradient
         colors={[accentColors.gradientStart, accentColors.gradientEnd]}
@@ -366,7 +368,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
         onConfirm={confirmDelete}
         itemName={deleteTarget?.name || ''}
       />
-    </GestureHandlerRootView>
+    </View>
   );
 }
 

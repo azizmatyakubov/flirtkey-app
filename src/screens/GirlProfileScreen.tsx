@@ -57,7 +57,10 @@ interface FormState {
 }
 
 export function GirlProfileScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const { selectedGirl, updateGirl, deleteGirl, getConversationsForGirl } = useStore();
+  const selectedGirl = useStore((s) => s.selectedGirl);
+  const updateGirl = useStore((s) => s.updateGirl);
+  const deleteGirl = useStore((s) => s.deleteGirl);
+  const getConversationsForGirl = useStore((s) => s.getConversationsForGirl);
   const { showToast } = useToast();
   const { pickFromLibrary } = useImagePicker({
     allowsEditing: true,

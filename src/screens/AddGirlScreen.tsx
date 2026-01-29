@@ -53,7 +53,7 @@ interface FormErrors {
 }
 
 export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const { addGirl } = useStore();
+  const addGirl = useStore((s) => s.addGirl);
   const { showToast } = useToast();
   const { pickFromLibrary, image: selectedImage, clear: clearImage } = useImagePicker({
     allowsEditing: true,

@@ -65,23 +65,25 @@ const AUTO_LOCK_OPTIONS = [
 // ==========================================
 
 export function SettingsScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const { apiKey, userCulture, setUserCulture, clearAllData, clearSuggestionsCache } = useStore();
-  const {
-    themeMode,
-    setThemeMode,
-    language,
-    setLanguage,
-    notifications,
-    setNotifications,
-    privacy,
-    setPrivacy,
-    accessibility,
-    setAccessibility,
-    stats,
-    hasRatedApp,
-    setHasRatedApp,
-    resetSettings,
-  } = useSettingsStore();
+  const apiKey = useStore((s) => s.apiKey);
+  const userCulture = useStore((s) => s.userCulture);
+  const setUserCulture = useStore((s) => s.setUserCulture);
+  const clearAllData = useStore((s) => s.clearAllData);
+  const clearSuggestionsCache = useStore((s) => s.clearSuggestionsCache);
+  const themeMode = useSettingsStore((s) => s.themeMode);
+  const setThemeMode = useSettingsStore((s) => s.setThemeMode);
+  const language = useSettingsStore((s) => s.language);
+  const setLanguage = useSettingsStore((s) => s.setLanguage);
+  const notifications = useSettingsStore((s) => s.notifications);
+  const setNotifications = useSettingsStore((s) => s.setNotifications);
+  const privacy = useSettingsStore((s) => s.privacy);
+  const setPrivacy = useSettingsStore((s) => s.setPrivacy);
+  const accessibility = useSettingsStore((s) => s.accessibility);
+  const setAccessibility = useSettingsStore((s) => s.setAccessibility);
+  const stats = useSettingsStore((s) => s.stats);
+  const hasRatedApp = useSettingsStore((s) => s.hasRatedApp);
+  const setHasRatedApp = useSettingsStore((s) => s.setHasRatedApp);
+  const resetSettings = useSettingsStore((s) => s.resetSettings);
   const { theme } = useTheme();
 
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
