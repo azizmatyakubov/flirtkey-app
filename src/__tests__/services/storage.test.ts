@@ -47,8 +47,8 @@ describe('Storage Service', () => {
       };
 
       expect(exportData.contacts).toHaveLength(2);
-      expect(exportData.contacts[0].name).toBe('Emma');
-      expect(exportData.contacts[1].name).toBe('Sophie');
+      expect(exportData.contacts[0]!.name).toBe('Emma');
+      expect(exportData.contacts[1]!.name).toBe('Sophie');
     });
 
     it('exports conversation history', () => {
@@ -56,7 +56,7 @@ describe('Storage Service', () => {
         name: 'Test',
         relationshipStage: 'talking',
       });
-      const contactId = useStore.getState().contacts[0].id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().addConversation({
         contactId,
@@ -66,7 +66,7 @@ describe('Storage Service', () => {
 
       const state = useStore.getState();
       expect(state.conversationHistory).toHaveLength(1);
-      expect(state.conversationHistory[0].theirMessage).toBe('Hello!');
+      expect(state.conversationHistory[0]!.theirMessage).toBe('Hello!');
     });
   });
 
@@ -128,7 +128,7 @@ describe('Storage Service', () => {
 
     it('clears only suggestions cache', () => {
       useStore.getState().addContact({ name: 'Test', relationshipStage: 'talking' });
-      const contactId = useStore.getState().contacts[0].id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().cacheSuggestions(contactId, 'Message', [
         { type: 'safe', text: 'Hi', reason: '' },
@@ -144,10 +144,10 @@ describe('Storage Service', () => {
 
     it('clears conversation history selectively', () => {
       useStore.getState().addContact({ name: 'Girl1', relationshipStage: 'talking' });
-      const contact1Id = useStore.getState().contacts[0].id;
+      const contact1Id = useStore.getState().contacts[0]!.id;
       
       useStore.getState().addContact({ name: 'Girl2', relationshipStage: 'talking' });
-      const contact2Id = useStore.getState().contacts[1].id;
+      const contact2Id = useStore.getState().contacts[1]!.id;
 
       useStore.getState().addConversation({
         contactId: contact1Id,

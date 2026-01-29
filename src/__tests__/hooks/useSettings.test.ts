@@ -3,7 +3,7 @@
  * Phase 9.1.8: Test custom hooks
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 import { useSettings } from '../../hooks/useSettings';
 import { useStore } from '../../stores/useStore';
 

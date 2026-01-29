@@ -50,14 +50,14 @@ describe('useContacts', () => {
       const { result } = renderHook(() => useContacts({ filter: { search: 'emma' } }));
       
       expect(result.current.contacts).toHaveLength(1);
-      expect(result.current.contacts[0].name).toBe('Emma');
+      expect(result.current.contacts[0]!.name).toBe('Emma');
     });
 
     it('filters case-insensitively', () => {
       const { result } = renderHook(() => useContacts({ filter: { search: 'ANNA' } }));
       
       expect(result.current.contacts).toHaveLength(1);
-      expect(result.current.contacts[0].name).toBe('Anna');
+      expect(result.current.contacts[0]!.name).toBe('Anna');
     });
 
     it('returns all for empty search', () => {
@@ -76,7 +76,7 @@ describe('useContacts', () => {
       });
 
       expect(result.current.contacts).toHaveLength(1);
-      expect(result.current.contacts[0].name).toBe('Maria');
+      expect(result.current.contacts[0]!.name).toBe('Maria');
     });
 
     it('can clear filter', () => {
@@ -102,16 +102,16 @@ describe('useContacts', () => {
     it('sorts by name ascending', () => {
       const { result } = renderHook(() => useContacts({ sort: 'name', sortDirection: 'asc' }));
       
-      expect(result.current.contacts[0].name).toBe('Alpha');
-      expect(result.current.contacts[1].name).toBe('Bravo');
-      expect(result.current.contacts[2].name).toBe('Charlie');
+      expect(result.current.contacts[0]!.name).toBe('Alpha');
+      expect(result.current.contacts[1]!.name).toBe('Bravo');
+      expect(result.current.contacts[2]!.name).toBe('Charlie');
     });
 
     it('sorts by name descending', () => {
       const { result } = renderHook(() => useContacts({ sort: 'name', sortDirection: 'desc' }));
       
-      expect(result.current.contacts[0].name).toBe('Charlie');
-      expect(result.current.contacts[2].name).toBe('Alpha');
+      expect(result.current.contacts[0]!.name).toBe('Charlie');
+      expect(result.current.contacts[2]!.name).toBe('Alpha');
     });
 
     it('can change sort dynamically', () => {
@@ -121,7 +121,7 @@ describe('useContacts', () => {
         result.current.setSort('name', 'asc');
       });
 
-      expect(result.current.contacts[0].name).toBe('Alpha');
+      expect(result.current.contacts[0]!.name).toBe('Alpha');
     });
   });
 
@@ -159,7 +159,7 @@ describe('useContacts', () => {
       useStore.getState().addContact({ name: 'To Delete', relationshipStage: 'talking' });
       
       const { result } = renderHook(() => useContacts());
-      const contactId = result.current.contacts[0].id;
+      const contactId = result.current.contacts[0]!.id;
 
       expect(result.current.contacts).toHaveLength(1);
 

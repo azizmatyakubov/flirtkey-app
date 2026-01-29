@@ -367,9 +367,9 @@ describe('Prompt Builder', () => {
       const result = buildInterestLevelPrompt({
         contact: mockContact,
         messages: [
-          { from: 'her', text: 'Hey!' },
+          { from: 'them', text: 'Hey!' },
           { from: 'me', text: 'Hi, how are you?' },
-          { from: 'her', text: 'Good, thanks for asking!' },
+          { from: 'them', text: 'Good, thanks for asking!' },
         ],
       });
 
@@ -381,7 +381,7 @@ describe('Prompt Builder', () => {
       const result = buildInterestLevelPrompt({
         contact: mockContact,
         messages: [
-          { from: 'her', text: 'I love your photos!' },
+          { from: 'them', text: 'I love your photos!' },
           { from: 'me', text: 'Thanks! Which one?' },
         ],
       });
@@ -405,7 +405,7 @@ describe('Prompt Builder', () => {
     it('builds red flag detection prompt', () => {
       const result = buildRedFlagPrompt({
         contact: mockContact,
-        messages: [{ from: 'her', text: 'I always cancel plans last minute' }],
+        messages: [{ from: 'them', text: 'I always cancel plans last minute' }],
       });
 
       expect(result.prompt).toBeDefined();
@@ -415,7 +415,7 @@ describe('Prompt Builder', () => {
     it('includes message context', () => {
       const result = buildRedFlagPrompt({
         contact: mockContact,
-        messages: [{ from: 'her', text: 'I have had 5 ex-boyfriends in the last month' }],
+        messages: [{ from: 'them', text: 'I have had 5 ex-boyfriends in the last month' }],
       });
 
       expect(result.prompt).toContain('ex-boyfriends');

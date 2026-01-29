@@ -38,9 +38,9 @@ describe('Chat Flow Integration', () => {
 
       const conversations = useStore.getState().getConversationsForContact(contactId);
       expect(conversations).toHaveLength(1);
-      expect(conversations[0].theirMessage).toBe('Hey you!');
-      expect(conversations[0].suggestions).toHaveLength(3);
-      expect(conversations[0].proTip).toBe('Keep it light and fun');
+      expect(conversations[0]!.theirMessage).toBe('Hey you!');
+      expect(conversations[0]!.suggestions).toHaveLength(3);
+      expect(conversations[0]!.proTip).toBe('Keep it light and fun');
     });
 
     it('tracks message count on contact profile', () => {
@@ -52,14 +52,14 @@ describe('Chat Flow Integration', () => {
         theirMessage: 'Message 1',
         suggestions: mockSuggestions,
       });
-      expect(useStore.getState().contacts[0].messageCount).toBe(1);
+      expect(useStore.getState().contacts[0]!.messageCount).toBe(1);
 
       useStore.getState().addConversation({
         contactId,
         theirMessage: 'Message 2',
         suggestions: mockSuggestions,
       });
-      expect(useStore.getState().contacts[0].messageCount).toBe(2);
+      expect(useStore.getState().contacts[0]!.messageCount).toBe(2);
     });
 
     it('maintains conversation order', () => {
@@ -109,7 +109,7 @@ describe('Chat Flow Integration', () => {
 
       expect(useStore.getState().getConversationsForContact(contact1Id)).toHaveLength(1);
       expect(useStore.getState().getConversationsForContact(contact2Id)).toHaveLength(1);
-      expect(useStore.getState().getConversationsForContact(contact1Id)[0].theirMessage).toBe('Emma message');
+      expect(useStore.getState().getConversationsForContact(contact1Id)[0]!.theirMessage).toBe('Emma message');
     });
   });
 
@@ -151,8 +151,8 @@ describe('Chat Flow Integration', () => {
       useStore.getState().cacheSuggestions(contact1Id, message, contact1Suggestions);
       useStore.getState().cacheSuggestions(contact2Id, message, contact2Suggestions);
 
-      expect(useStore.getState().getCachedSuggestions(contact1Id, message)?.suggestions[0].text).toBe('For Emma');
-      expect(useStore.getState().getCachedSuggestions(contact2Id, message)?.suggestions[0].text).toBe('For Sophie');
+      expect(useStore.getState().getCachedSuggestions(contact1Id, message)?.suggestions[0]?.text).toBe('For Emma');
+      expect(useStore.getState().getCachedSuggestions(contact2Id, message)?.suggestions[0]?.text).toBe('For Sophie');
     });
 
     it('clears all cache', () => {
@@ -219,7 +219,7 @@ describe('Chat Flow Integration', () => {
       });
 
       const after = Date.now();
-      const conversation = useStore.getState().getConversationsForContact(contactId)[0];
+      const conversation = useStore.getState().getConversationsForContact(contactId)[0]!;
       const timestamp = new Date(conversation.timestamp).getTime();
 
       expect(timestamp).toBeGreaterThanOrEqual(before);
@@ -250,7 +250,7 @@ describe('Chat Flow Integration', () => {
       expect(contact.name).toBe('Emma');
       expect(contact.interests).toBe('Movies, coffee, hiking');
       expect(history).toHaveLength(2);
-      expect(history[0].theirMessage).toContain('hike');
+      expect(history[0]!.theirMessage).toContain('hike');
     });
   });
 });
