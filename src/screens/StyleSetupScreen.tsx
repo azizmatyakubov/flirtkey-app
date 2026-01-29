@@ -48,7 +48,7 @@ export function StyleSetupScreen({ navigation, route }: StyleSetupScreenProps) {
   const [formality, setFormality] = useState(userStyle?.formality ?? 0.5);
   const [emojiUsage, setEmojiUsage] = useState(0.5); // 0-1
   const [humorStyle, setHumorStyle] = useState<'dry' | 'silly' | 'sarcastic' | 'none'>(
-    userStyle?.humorStyle ?? 'none'
+    (userStyle?.humorStyle as 'dry' | 'silly' | 'sarcastic' | 'none') ?? 'none'
   );
 
   const handlePasteFromClipboard = useCallback(async () => {
@@ -88,10 +88,10 @@ export function StyleSetupScreen({ navigation, route }: StyleSetupScreenProps) {
       const result = await analyzeMessages(lines, apiKey);
       setAnalysisResult(result);
       setFormality(result.formality);
-      setHumorStyle(result.humorStyle);
+      setHumorStyle(result.humorStyle as 'dry' | 'silly' | 'sarcastic' | 'none');
 
       // Calculate emoji usage from pattern
-      const emojiCount = Object.values(result.emojiPattern).reduce((a, b) => a + b, 0);
+      const emojiCount = Object.values(result.emojiPattern).reduce((a: number, b: number) => a + b, 0);
       setEmojiUsage(Math.min(1, emojiCount / (lines.length * 2)));
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -239,7 +239,7 @@ export function StyleSetupScreen({ navigation, route }: StyleSetupScreenProps) {
                   <ResultRow
                     label="Top emojis"
                     value={Object.entries(analysisResult.emojiPattern)
-                      .sort(([, a], [, b]) => b - a)
+                      .sort(([, a], [, b]) => (b as number) - (a as number))
                       .slice(0, 5)
                       .map(([e]) => e)
                       .join(' ')}

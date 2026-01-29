@@ -41,7 +41,7 @@ export function PremiumCard({
   style,
   elevation = 'raised',
   gradientBorder = false,
-  borderGradient = PREMIUM_COLORS.gradientPrimary,
+  borderGradient = [PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd],
   noPadding = false,
   disabled = false,
 }: PremiumCardProps) {

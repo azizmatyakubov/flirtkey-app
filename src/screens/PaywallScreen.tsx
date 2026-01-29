@@ -187,7 +187,7 @@ export function PaywallScreen({ navigation }: any) {
       >
         {isSelected ? (
           <LinearGradient
-            colors={isBest ? [PREMIUM_COLORS.gold, PREMIUM_COLORS.goldDark] : [...PREMIUM_COLORS.gradientPrimary] as [string, string, ...string[]]}
+            colors={isBest ? [PREMIUM_COLORS.gold, PREMIUM_COLORS.goldDark] : [PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.pricingCardGradientBorder}
@@ -338,7 +338,7 @@ export function PaywallScreen({ navigation }: any) {
               title="Start 3-Day Free Trial"
               subtitle="No payment required • Then subscribe"
               onPress={handleStartTrial}
-              gradient={PREMIUM_COLORS.gradientPro}
+              gradient={[PREMIUM_COLORS.gradientPurple, PREMIUM_COLORS.gradientEnd]}
               glow
               glowColor={PREMIUM_COLORS.gold}
               loading={loading}
@@ -348,7 +348,7 @@ export function PaywallScreen({ navigation }: any) {
             <GradientButton
               title={`Subscribe — ${PRICING[selectedPlan].label}`}
               onPress={handleSubscribe}
-              gradient={PREMIUM_COLORS.gradientPrimary}
+              gradient={[PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd]}
               glow
               loading={loading}
               size="lg"
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
     backgroundColor: PREMIUM_COLORS.gold,
   },
   pricingBadgeLifetime: {
-    backgroundColor: PREMIUM_COLORS.accent,
+    backgroundColor: PREMIUM_COLORS.primary,
   },
   pricingBadgeText: {
     color: '#fff',
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     color: PREMIUM_COLORS.gold,
   },
   pricingSavings: {
-    color: PREMIUM_COLORS.healthThriving,
+    color: PREMIUM_COLORS.gold,
     ...TYPOGRAPHY.small,
     fontWeight: '600',
     marginTop: 2,

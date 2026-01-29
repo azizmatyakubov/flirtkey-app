@@ -44,6 +44,27 @@ export interface AnalysisResult {
 }
 
 export type Culture = 'uzbek' | 'russian' | 'western' | 'asian' | 'universal';
+
+// Style Analysis types
+export interface StyleAnalysisResult {
+  vocabulary: Record<string, number>;
+  emojiPattern: Record<string, number>;
+  avgLength: number;
+  formality: number;
+  humorStyle: string;
+  useAbbreviations: boolean;
+  summary: string;
+}
+
+export interface UserStyle {
+  sampleMessages: string[];
+  vocabulary: Record<string, number>;
+  emojiPattern: Record<string, number>;
+  avgLength: number;
+  formality: number;
+  humorStyle: string;
+  useAbbreviations: boolean;
+}
 export type RelationshipStage = 'just_met' | 'talking' | 'flirting' | 'dating' | 'serious';
 
 // 1.3.7: API Error types
@@ -84,6 +105,15 @@ export type RootStackParamList = {
   About: undefined;
   // Chat History Timeline
   ChatHistory: { contactId: number };
+  // Additional screens
+  Paywall: undefined;
+  QuickReply: undefined;
+  PrivacyPolicy: undefined;
+  Terms: undefined;
+  StyleSetup: undefined;
+  BioGenerator: undefined;
+  OpenerGenerator: undefined;
+  OnboardingFlow: undefined;
 };
 
 // Navigation prop types for screens

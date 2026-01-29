@@ -234,7 +234,7 @@ export function analyzeConversationHealth(
   // === Who sent last ===
   if (signals.whoSentLast === 'you' && signals.timeSinceLastMessage > 12) {
     score -= 10;
-    detectedSignals.push('You sent last — they haven't replied');
+    detectedSignals.push('You sent last — they haven\'t replied');
   }
 
   // Clamp score

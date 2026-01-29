@@ -49,7 +49,7 @@ export function ProgressBar({
   });
 
   const resolvedTrack = trackColor || darkColors.border;
-  const resolvedGradient = gradient || PREMIUM_COLORS.gradientPrimary;
+  const resolvedGradient = gradient || [PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd];
   const resolvedColor = color || darkColors.primary;
 
   return (

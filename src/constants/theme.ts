@@ -273,3 +273,45 @@ export const componentStyles = {
     fontFamily: fonts.medium,
   },
 };
+
+// ========================================
+// Premium Color Palette (used by Paywall, UI components)
+// ========================================
+export const PREMIUM_COLORS = {
+  gold: accentColors.gold,
+  goldLight: accentColors.goldLight,
+  goldDark: '#B8960F',
+  gradientStart: accentColors.gradientStart,
+  gradientEnd: accentColors.gradientEnd,
+  gradientPurple: accentColors.gradientPurple,
+  gradientPrimary: darkColors.primary,
+  gradientPro: accentColors.gradientPurple,
+  surface: darkColors.surface,
+  surfaceElevated: '#252640',
+  surfaceHighlight: accentColors.surfaceHighlight,
+  background: darkColors.background,
+  text: darkColors.text,
+  textSecondary: darkColors.textSecondary,
+  border: darkColors.border,
+  primary: darkColors.primary,
+};
+
+// ========================================
+// Typography presets (shorthand)
+// ========================================
+export const TYPOGRAPHY = {
+  hero: { ...componentStyles.heading, fontSize: fontSizes.xxl },
+  h1: { ...componentStyles.heading, fontSize: fontSizes.xl },
+  h2: { ...componentStyles.subheading, fontSize: fontSizes.lg },
+  heading: componentStyles.heading,
+  subheading: componentStyles.subheading,
+  body: componentStyles.body,
+  bodyBold: { ...componentStyles.body, fontWeight: fontWeights.bold },
+  small: { ...componentStyles.caption, fontSize: fontSizes.xs },
+  caption: componentStyles.caption,
+  label: componentStyles.label,
+  buttonText: componentStyles.buttonText,
+  fontSizes,
+  fontWeights,
+  lineHeights,
+};

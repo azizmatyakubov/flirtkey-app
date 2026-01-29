@@ -536,6 +536,7 @@ export interface GenerateFlirtRequest {
   apiKey: string;
   model?: AIModel;
   useCache?: boolean;
+  tone?: string;
 }
 
 export interface AnalyzeScreenshotRequest {

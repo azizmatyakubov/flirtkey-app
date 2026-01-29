@@ -353,6 +353,7 @@ export function OnboardingFlowScreen({ navigation }: any) {
     const formalityMap = { casual: 0.2, balanced: 0.5, formal: 0.8 };
     const style: UserStyle = {
       sampleMessages: [],
+      vocabulary: {},
       formality: formalityMap[quizAnswers.formality],
       humorStyle: quizAnswers.humor,
       useAbbreviations: quizAnswers.formality === 'casual',
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 56,
     justifyContent: 'center',
-    ...shadows.glow(darkColors.primary),
+    ...shadows.glow, shadowColor: darkColors.primary,
   },
   primaryBtnDisabled: {
     opacity: 0.4,
@@ -637,7 +638,7 @@ const styles = StyleSheet.create({
   quizOptionSelected: {
     borderColor: darkColors.primary,
     backgroundColor: darkColors.primary + '15',
-    ...shadows.glow(darkColors.primary),
+    ...shadows.glow, shadowColor: darkColors.primary,
   },
   quizOptionEmoji: {
     fontSize: 28,

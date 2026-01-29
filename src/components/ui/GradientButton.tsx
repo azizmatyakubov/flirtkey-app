@@ -35,7 +35,7 @@ export interface GradientButtonProps {
 export const GradientButton = React.memo(function GradientButton({
   title,
   onPress,
-  gradient = PREMIUM_COLORS.gradientPrimary,
+  gradient = [PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd],
   disabled = false,
   loading = false,
   size = 'lg',
@@ -61,7 +61,7 @@ export const GradientButton = React.memo(function GradientButton({
       disabled={disabled || loading}
       activeOpacity={0.8}
       style={[
-        glow && !disabled && shadows.glow(resolvedGlowColor),
+        glow && !disabled && { ...shadows.glow, shadowColor: resolvedGlowColor },
         style,
       ]}
     >

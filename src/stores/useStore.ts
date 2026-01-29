@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { Contact, User, Culture, Suggestion } from '../types';
+import { Contact, User, Culture, Suggestion, UserStyle } from '../types';
 
 // Get API key from env config (falls back to empty string)
 const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | undefined)?.['openaiApiKey'] || '';
@@ -79,6 +79,10 @@ interface AppState {
   // API
   apiKey: string;
   setApiKey: (key: string) => void;
+
+  // User style (Sound Like Me)
+  userStyle: UserStyle | null;
+  setUserStyle: (style: UserStyle | null) => void;
 
   // Clear all data (2.1.13)
   clearAllData: () => void;
@@ -308,6 +312,10 @@ const storeCreator: AppStateCreator = (set, get) => ({
   apiKey: ENV_API_KEY,
   setApiKey: (key) => set({ apiKey: key }),
 
+  // User style (Sound Like Me)
+  userStyle: null,
+  setUserStyle: (style) => set({ userStyle: style }),
+
   // Clear all data (2.1.13)
   clearAllData: () => {
     set({
@@ -318,6 +326,7 @@ const storeCreator: AppStateCreator = (set, get) => ({
       suggestionsCache: [],
       userCulture: 'universal',
       apiKey: '',
+      userStyle: null,
     });
   },
 });
@@ -337,6 +346,7 @@ const persistConfig: PersistOptions<AppState, PersistedState> = {
     // suggestionsCache excluded — ephemeral, rebuilt on use
     userCulture: state.userCulture,
     apiKey: state.apiKey,
+    userStyle: state.userStyle,
   }),
   onRehydrateStorage: () => (state) => {
     if (!state) return;

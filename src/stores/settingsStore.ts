@@ -40,6 +40,8 @@ export interface UserPreferences {
   blockedPhrases: string[];
   favoritePhrases: string[];
   quickReplyTemplates: string[];
+  autoClipboard: boolean;
+  coachingMode: boolean;
 }
 
 export interface AccessibilitySettings {
@@ -149,6 +151,8 @@ const defaultPreferences: UserPreferences = {
     'Miss you 😊',
     'Let me think about it...',
   ],
+  autoClipboard: true,
+  coachingMode: true,
 };
 
 const defaultAccessibility: AccessibilitySettings = {
