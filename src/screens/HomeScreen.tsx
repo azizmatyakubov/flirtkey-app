@@ -286,14 +286,24 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
             <Text style={styles.title}>FlirtKey</Text>
             <Text style={styles.subtitle}>Your secret texting weapon</Text>
           </View>
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => navigation.navigate('Settings')}
-            accessibilityLabel="Settings"
-            accessibilityRole="button"
-          >
-            <Ionicons name="settings-outline" size={24} color="#fff" />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => navigation.navigate('History' as any)}
+              accessibilityLabel="History"
+              accessibilityRole="button"
+            >
+              <Ionicons name="time-outline" size={22} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => navigation.navigate('Settings')}
+              accessibilityLabel="Settings"
+              accessibilityRole="button"
+            >
+              <Ionicons name="settings-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
       </LinearGradient>
 
@@ -487,6 +497,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     letterSpacing: 0.3,
     fontFamily: fonts.regular,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 8,
   },
   settingsButton: {
     width: 44,
