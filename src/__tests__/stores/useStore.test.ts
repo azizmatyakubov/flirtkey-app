@@ -5,14 +5,14 @@
 
 import {
   useStore,
-  selectGirlById,
-  selectGirlsSortedByRecent,
-  selectGirlsByStage,
+  selectContactById,
+  selectContactsSortedByRecent,
+  selectContactsByStage,
   selectTotalMessageCount,
-  selectGirlsCount,
+  selectContactsCount,
   selectHasData,
   selectHasApiKey,
-  selectGirlsBySearch,
+  selectContactsBySearch,
   selectCacheStats,
 } from '../../stores/useStore';
 import { Suggestion } from '../../types';
@@ -48,11 +48,11 @@ describe('Zustand Store', () => {
   });
 
   // ==========================================
-  // Girls State Tests (9.1.3)
+  // Contacts State Tests (9.1.3)
   // ==========================================
 
-  describe('Girls State', () => {
-    const mockGirl = {
+  describe('Contacts State', () => {
+    const mockContact = {
       name: 'Anna',
       age: 25,
       culture: 'western',
@@ -61,89 +61,89 @@ describe('Zustand Store', () => {
       relationshipStage: 'talking' as const,
     };
 
-    it('initializes with empty girls array', () => {
-      const { girls } = useStore.getState();
-      expect(girls).toEqual([]);
+    it('initializes with empty contacts array', () => {
+      const { contacts } = useStore.getState();
+      expect(contacts).toEqual([]);
     });
 
-    it('adds a girl', () => {
-      useStore.getState().addGirl(mockGirl);
+    it('adds a contact', () => {
+      useStore.getState().addContact(mockContact);
 
-      const { girls, selectedGirl } = useStore.getState();
-      expect(girls).toHaveLength(1);
-      expect(girls[0]!.name).toBe('Anna');
-      expect(girls[0]!.messageCount).toBe(0);
-      expect(girls[0]!.id).toBeDefined();
-      expect(selectedGirl).toEqual(girls[0]);
+      const { contacts, selectedContact } = useStore.getState();
+      expect(contacts).toHaveLength(1);
+      expect(contacts[0]!.name).toBe('Anna');
+      expect(contacts[0]!.messageCount).toBe(0);
+      expect(contacts[0]!.id).toBeDefined();
+      expect(selectedContact).toEqual(contacts[0]);
     });
 
-    it('adds multiple girls', () => {
-      useStore.getState().addGirl({ ...mockGirl, name: 'Anna' });
-      useStore.getState().addGirl({ ...mockGirl, name: 'Maria' });
-      useStore.getState().addGirl({ ...mockGirl, name: 'Sofia' });
+    it('adds multiple contacts', () => {
+      useStore.getState().addContact({ ...mockContact, name: 'Anna' });
+      useStore.getState().addContact({ ...mockContact, name: 'Maria' });
+      useStore.getState().addContact({ ...mockContact, name: 'Sofia' });
 
-      const { girls } = useStore.getState();
-      expect(girls).toHaveLength(3);
+      const { contacts } = useStore.getState();
+      expect(contacts).toHaveLength(3);
     });
 
-    it('updates a girl', () => {
-      useStore.getState().addGirl(mockGirl);
+    it('updates a contact', () => {
+      useStore.getState().addContact(mockContact);
 
-      const { girls } = useStore.getState();
-      const girlId = girls[0]!.id;
+      const { contacts } = useStore.getState();
+      const contactId = contacts[0]!.id;
 
-      useStore.getState().updateGirl(girlId, { name: 'Anna Updated', age: 26 });
+      useStore.getState().updateContact(contactId, { name: 'Anna Updated', age: 26 });
 
-      const updatedGirl = useStore.getState().girls[0]!;
-      expect(updatedGirl.name).toBe('Anna Updated');
-      expect(updatedGirl.age).toBe(26);
+      const updatedContact = useStore.getState().contacts[0]!;
+      expect(updatedContact.name).toBe('Anna Updated');
+      expect(updatedContact.age).toBe(26);
     });
 
-    it('updates selected girl when updating current selection', () => {
-      useStore.getState().addGirl(mockGirl);
+    it('updates selected contact when updating current selection', () => {
+      useStore.getState().addContact(mockContact);
 
-      const { girls } = useStore.getState();
-      const girlId = girls[0]!.id;
+      const { contacts } = useStore.getState();
+      const contactId = contacts[0]!.id;
 
-      useStore.getState().updateGirl(girlId, { name: 'Updated' });
+      useStore.getState().updateContact(contactId, { name: 'Updated' });
 
-      expect(useStore.getState().selectedGirl?.name).toBe('Updated');
+      expect(useStore.getState().selectedContact?.name).toBe('Updated');
     });
 
-    it('deletes a girl', () => {
-      useStore.getState().addGirl(mockGirl);
+    it('deletes a contact', () => {
+      useStore.getState().addContact(mockContact);
 
-      const { girls } = useStore.getState();
-      const girlId = girls[0]!.id;
+      const { contacts } = useStore.getState();
+      const contactId = contacts[0]!.id;
 
-      useStore.getState().deleteGirl(girlId);
+      useStore.getState().deleteContact(contactId);
 
-      expect(useStore.getState().girls).toHaveLength(0);
-      expect(useStore.getState().selectedGirl).toBeNull();
+      expect(useStore.getState().contacts).toHaveLength(0);
+      expect(useStore.getState().selectedContact).toBeNull();
     });
 
-    it('clears selected girl when deleting her', () => {
-      useStore.getState().addGirl(mockGirl);
+    it('clears selected contact when deleting her', () => {
+      useStore.getState().addContact(mockContact);
 
-      const girlId = useStore.getState().girls[0]!.id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
-      useStore.getState().deleteGirl(girlId);
+      useStore.getState().deleteContact(contactId);
 
-      expect(useStore.getState().selectedGirl).toBeNull();
+      expect(useStore.getState().selectedContact).toBeNull();
     });
 
-    it('selects a girl', () => {
-      useStore.getState().addGirl(mockGirl);
+    it('selects a contact', () => {
+      useStore.getState().addContact(mockContact);
 
-      const girl = useStore.getState().girls[0]!;
+      const contact = useStore.getState().contacts[0]!;
 
-      useStore.getState().selectGirl(null);
+      useStore.getState().selectContact(null);
 
-      expect(useStore.getState().selectedGirl).toBeNull();
+      expect(useStore.getState().selectedContact).toBeNull();
 
-      useStore.getState().selectGirl(girl);
+      useStore.getState().selectContact(contact);
 
-      expect(useStore.getState().selectedGirl).toEqual(girl);
+      expect(useStore.getState().selectedContact).toEqual(contact);
     });
   });
 
@@ -159,89 +159,89 @@ describe('Zustand Store', () => {
     ];
 
     beforeEach(() => {
-      useStore.getState().addGirl({
+      useStore.getState().addContact({
         name: 'Anna',
         relationshipStage: 'talking',
       });
     });
 
     it('adds conversation entry', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Hey there!',
+        contactId,
+        theirMessage: 'Hey there!',
         suggestions: mockSuggestions,
         proTip: 'Be confident!',
       });
 
       const { conversationHistory } = useStore.getState();
       expect(conversationHistory).toHaveLength(1);
-      expect(conversationHistory[0]!.herMessage).toBe('Hey there!');
+      expect(conversationHistory[0]!.theirMessage).toBe('Hey there!');
       expect(conversationHistory[0]!.id).toBeDefined();
       expect(conversationHistory[0]!.timestamp).toBeDefined();
     });
 
-    it('increments girl message count', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+    it('increments contact message count', () => {
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Message 1',
+        contactId,
+        theirMessage: 'Message 1',
         suggestions: mockSuggestions,
       });
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Message 2',
+        contactId,
+        theirMessage: 'Message 2',
         suggestions: mockSuggestions,
       });
 
-      const girl = useStore.getState().girls[0]!;
-      expect(girl.messageCount).toBe(2);
+      const contact = useStore.getState().contacts[0]!;
+      expect(contact.messageCount).toBe(2);
     });
 
-    it('gets conversations for girl', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+    it('gets conversations for contact', () => {
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Message 1',
+        contactId,
+        theirMessage: 'Message 1',
         suggestions: mockSuggestions,
       });
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Message 2',
+        contactId,
+        theirMessage: 'Message 2',
         suggestions: mockSuggestions,
       });
 
-      const conversations = useStore.getState().getConversationsForGirl(girlId);
+      const conversations = useStore.getState().getConversationsForContact(contactId);
       expect(conversations).toHaveLength(2);
       // Verify both messages are present
-      const messages = conversations.map((c) => c.herMessage);
+      const messages = conversations.map((c) => c.theirMessage);
       expect(messages).toContain('Message 1');
       expect(messages).toContain('Message 2');
     });
 
-    it('clears conversation history for specific girl', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+    it('clears conversation history for specific contact', () => {
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Test message',
+        contactId,
+        theirMessage: 'Test message',
         suggestions: mockSuggestions,
       });
-      useStore.getState().clearConversationHistory(girlId);
+      useStore.getState().clearConversationHistory(contactId);
 
-      const conversations = useStore.getState().getConversationsForGirl(girlId);
+      const conversations = useStore.getState().getConversationsForContact(contactId);
       expect(conversations).toHaveLength(0);
     });
 
     it('clears all conversation history', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
       useStore.getState().addConversation({
-        girlId,
-        herMessage: 'Test message',
+        contactId,
+        theirMessage: 'Test message',
         suggestions: mockSuggestions,
       });
       useStore.getState().clearConversationHistory();
@@ -258,36 +258,36 @@ describe('Zustand Store', () => {
     const mockSuggestions: Suggestion[] = [{ type: 'safe', text: 'Hey!', reason: 'Safe' }];
 
     beforeEach(() => {
-      useStore.getState().addGirl({
+      useStore.getState().addContact({
         name: 'Anna',
         relationshipStage: 'talking',
       });
     });
 
     it('caches suggestions', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
-      useStore.getState().cacheSuggestions(girlId, 'Hello there', mockSuggestions, 'Pro tip');
+      useStore.getState().cacheSuggestions(contactId, 'Hello there', mockSuggestions, 'Pro tip');
 
-      const cached = useStore.getState().getCachedSuggestions(girlId, 'Hello there');
+      const cached = useStore.getState().getCachedSuggestions(contactId, 'Hello there');
       expect(cached).not.toBeNull();
       expect(cached?.suggestions).toEqual(mockSuggestions);
       expect(cached?.proTip).toBe('Pro tip');
     });
 
     it('returns null for non-existent cache', () => {
-      const girlId = useStore.getState().girls[0]!.id;
-      const cached = useStore.getState().getCachedSuggestions(girlId, 'Non-existent message');
+      const contactId = useStore.getState().contacts[0]!.id;
+      const cached = useStore.getState().getCachedSuggestions(contactId, 'Non-existent message');
       expect(cached).toBeNull();
     });
 
     it('clears suggestions cache', () => {
-      const girlId = useStore.getState().girls[0]!.id;
+      const contactId = useStore.getState().contacts[0]!.id;
 
-      useStore.getState().cacheSuggestions(girlId, 'Hello', mockSuggestions);
+      useStore.getState().cacheSuggestions(contactId, 'Hello', mockSuggestions);
       useStore.getState().clearSuggestionsCache();
 
-      const cached = useStore.getState().getCachedSuggestions(girlId, 'Hello');
+      const cached = useStore.getState().getCachedSuggestions(contactId, 'Hello');
       expect(cached).toBeNull();
     });
   });
@@ -327,15 +327,15 @@ describe('Zustand Store', () => {
   describe('clearAllData', () => {
     it('clears all data', () => {
       useStore.getState().setUser({ id: 1, name: 'Test', culture: 'western', language: 'en' });
-      useStore.getState().addGirl({ name: 'Anna', relationshipStage: 'talking' });
+      useStore.getState().addContact({ name: 'Anna', relationshipStage: 'talking' });
       useStore.getState().setApiKey('sk-test');
       useStore.getState().setUserCulture('russian');
       useStore.getState().clearAllData();
 
       const state = useStore.getState();
       expect(state.user).toBeNull();
-      expect(state.girls).toHaveLength(0);
-      expect(state.selectedGirl).toBeNull();
+      expect(state.contacts).toHaveLength(0);
+      expect(state.selectedContact).toBeNull();
       expect(state.conversationHistory).toHaveLength(0);
       expect(state.suggestionsCache).toHaveLength(0);
       expect(state.userCulture).toBe('universal');
@@ -349,65 +349,65 @@ describe('Zustand Store', () => {
 
   describe('Selectors', () => {
     beforeEach(() => {
-      useStore.getState().addGirl({ name: 'Anna', relationshipStage: 'talking' });
-      useStore.getState().addGirl({ name: 'Maria', relationshipStage: 'flirting' });
-      useStore.getState().addGirl({ name: 'Sofia', relationshipStage: 'talking' });
+      useStore.getState().addContact({ name: 'Anna', relationshipStage: 'talking' });
+      useStore.getState().addContact({ name: 'Maria', relationshipStage: 'flirting' });
+      useStore.getState().addContact({ name: 'Sofia', relationshipStage: 'talking' });
     });
 
-    describe('selectGirlById', () => {
-      it('finds girl by ID', () => {
+    describe('selectContactById', () => {
+      it('finds contact by ID', () => {
         const state = useStore.getState();
-        const girlId = state.girls[0]!.id;
-        const girl = selectGirlById(girlId)(state);
-        expect(girl?.name).toBe('Anna');
+        const contactId = state.contacts[0]!.id;
+        const contact = selectContactById(contactId)(state);
+        expect(contact?.name).toBe('Anna');
       });
 
       it('returns undefined for non-existent ID', () => {
         const state = useStore.getState();
-        const girl = selectGirlById(99999)(state);
-        expect(girl).toBeUndefined();
+        const contact = selectContactById(99999)(state);
+        expect(contact).toBeUndefined();
       });
     });
 
-    describe('selectGirlsSortedByRecent', () => {
-      it('sorts girls by recent activity', () => {
-        // Update one girl with recent date
+    describe('selectContactsSortedByRecent', () => {
+      it('sorts contacts by recent activity', () => {
+        // Update one contact with recent date
         const state = useStore.getState();
-        const mariaId = state.girls.find((g) => g.name === 'Maria')?.id;
+        const mariaId = state.contacts.find((g) => g.name === 'Maria')?.id;
         if (mariaId) {
-          useStore.getState().updateGirl(mariaId, {
+          useStore.getState().updateContact(mariaId, {
             lastMessageDate: new Date().toISOString(),
           });
         }
 
-        const sorted = selectGirlsSortedByRecent(useStore.getState());
+        const sorted = selectContactsSortedByRecent(useStore.getState());
         // The one with lastMessageDate should be first
         expect(sorted[0]!.lastMessageDate).toBeDefined();
       });
     });
 
-    describe('selectGirlsByStage', () => {
-      it('filters girls by stage', () => {
+    describe('selectContactsByStage', () => {
+      it('filters contacts by stage', () => {
         const state = useStore.getState();
-        const talkingGirls = selectGirlsByStage('talking')(state);
-        expect(talkingGirls).toHaveLength(2);
-        expect(talkingGirls.every((g) => g.relationshipStage === 'talking')).toBe(true);
+        const talkingContacts = selectContactsByStage('talking')(state);
+        expect(talkingContacts).toHaveLength(2);
+        expect(talkingContacts.every((g) => g.relationshipStage === 'talking')).toBe(true);
       });
     });
 
     describe('selectTotalMessageCount', () => {
       it('sums all message counts', () => {
-        // Clear and add fresh girl for this test
+        // Clear and add fresh contact for this test
         useStore.getState().clearAllData();
-        useStore.getState().addGirl({ name: 'Test', relationshipStage: 'talking' });
+        useStore.getState().addContact({ name: 'Test', relationshipStage: 'talking' });
 
         const initialCount = selectTotalMessageCount(useStore.getState());
         expect(initialCount).toBe(0);
 
-        const girlId = useStore.getState().girls[0]!.id;
+        const contactId = useStore.getState().contacts[0]!.id;
         useStore.getState().addConversation({
-          girlId,
-          herMessage: 'Test',
+          contactId,
+          theirMessage: 'Test',
           suggestions: [{ type: 'safe', text: 'Hi', reason: '' }],
         });
 
@@ -416,15 +416,15 @@ describe('Zustand Store', () => {
       });
     });
 
-    describe('selectGirlsCount', () => {
-      it('returns girls count', () => {
-        const count = selectGirlsCount(useStore.getState());
+    describe('selectContactsCount', () => {
+      it('returns contacts count', () => {
+        const count = selectContactsCount(useStore.getState());
         expect(count).toBe(3);
       });
     });
 
     describe('selectHasData', () => {
-      it('returns true when has girls', () => {
+      it('returns true when has contacts', () => {
         expect(selectHasData(useStore.getState())).toBe(true);
       });
 
@@ -445,20 +445,20 @@ describe('Zustand Store', () => {
       });
     });
 
-    describe('selectGirlsBySearch', () => {
+    describe('selectContactsBySearch', () => {
       it('searches by name', () => {
-        const results = selectGirlsBySearch('anna')(useStore.getState());
+        const results = selectContactsBySearch('anna')(useStore.getState());
         expect(results).toHaveLength(1);
         expect(results[0]!.name).toBe('Anna');
       });
 
       it('searches case-insensitively', () => {
-        const results = selectGirlsBySearch('MARIA')(useStore.getState());
+        const results = selectContactsBySearch('MARIA')(useStore.getState());
         expect(results).toHaveLength(1);
       });
 
       it('returns all for empty query', () => {
-        const results = selectGirlsBySearch('')(useStore.getState());
+        const results = selectContactsBySearch('')(useStore.getState());
         expect(results).toHaveLength(3);
       });
     });

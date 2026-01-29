@@ -56,7 +56,7 @@ describe('OfflineQueueService', () => {
 
   describe('addToQueue', () => {
     it('should add a request to the queue', async () => {
-      const id = await addToQueue('flirt', { message: 'hello' }, 'girl-1', 'Test Girl');
+      const id = await addToQueue('flirt', { message: 'hello' }, 'contact-1', 'Test Contact');
 
       expect(id).toBeTruthy();
       expect(typeof id).toBe('string');
@@ -64,9 +64,9 @@ describe('OfflineQueueService', () => {
     });
 
     it('should generate preview for different request types', async () => {
-      await addToQueue('flirt', { herMessage: 'hi there!' }, 'girl-1', 'Test');
-      await addToQueue('screenshot', {}, 'girl-1', 'Test');
-      await addToQueue('starter', {}, 'girl-1', 'Test');
+      await addToQueue('flirt', { theirMessage: 'hi there!' }, 'contact-1', 'Test');
+      await addToQueue('screenshot', {}, 'contact-1', 'Test');
+      await addToQueue('starter', {}, 'contact-1', 'Test');
 
       const requests = getQueuedRequests();
       expect(requests.length).toBe(3);
@@ -78,7 +78,7 @@ describe('OfflineQueueService', () => {
     it('should enforce max queue size', async () => {
       // Add 51 requests (max is 50)
       for (let i = 0; i < 51; i++) {
-        await addToQueue('flirt', { index: i }, `girl-${i}`, `Girl ${i}`);
+        await addToQueue('flirt', { index: i }, `contact-${i}`, `Contact ${i}`);
       }
 
       expect(getPendingCount()).toBeLessThanOrEqual(50);
@@ -87,7 +87,7 @@ describe('OfflineQueueService', () => {
 
   describe('removeFromQueue', () => {
     it('should remove a request by id', async () => {
-      const id = await addToQueue('flirt', { message: 'test' }, 'girl-1');
+      const id = await addToQueue('flirt', { message: 'test' }, 'contact-1');
       expect(getPendingCount()).toBe(1);
 
       const removed = await removeFromQueue(id);
@@ -103,9 +103,9 @@ describe('OfflineQueueService', () => {
 
   describe('clearQueue', () => {
     it('should clear all requests', async () => {
-      await addToQueue('flirt', { message: '1' }, 'girl-1');
-      await addToQueue('flirt', { message: '2' }, 'girl-2');
-      await addToQueue('flirt', { message: '3' }, 'girl-3');
+      await addToQueue('flirt', { message: '1' }, 'contact-1');
+      await addToQueue('flirt', { message: '2' }, 'contact-2');
+      await addToQueue('flirt', { message: '3' }, 'contact-3');
 
       expect(getPendingCount()).toBe(3);
 
@@ -116,9 +116,9 @@ describe('OfflineQueueService', () => {
 
   describe('getQueueStats', () => {
     it('should return correct statistics', async () => {
-      await addToQueue('flirt', {}, 'girl-1');
-      await addToQueue('flirt', {}, 'girl-1');
-      await addToQueue('screenshot', {}, 'girl-2');
+      await addToQueue('flirt', {}, 'contact-1');
+      await addToQueue('flirt', {}, 'contact-1');
+      await addToQueue('screenshot', {}, 'contact-2');
 
       const stats = getQueueStats();
 
@@ -134,7 +134,7 @@ describe('OfflineQueueService', () => {
       const processCallback = jest.fn().mockResolvedValue(true);
       OfflineQueueService.setProcessCallback(processCallback);
 
-      await addToQueue('flirt', { message: 'test' }, 'girl-1');
+      await addToQueue('flirt', { message: 'test' }, 'contact-1');
 
       const result = await OfflineQueueService.processQueue();
 
@@ -151,7 +151,7 @@ describe('OfflineQueueService', () => {
       });
       OfflineQueueService.setProcessCallback(processCallback);
 
-      await addToQueue('flirt', { message: 'test' }, 'girl-1');
+      await addToQueue('flirt', { message: 'test' }, 'contact-1');
 
       await OfflineQueueService.processQueue();
 
@@ -167,14 +167,14 @@ describe('OfflineQueueService', () => {
       // Should be called immediately with current state
       expect(listener).toHaveBeenCalledTimes(1);
 
-      await addToQueue('flirt', { message: 'test' }, 'girl-1');
+      await addToQueue('flirt', { message: 'test' }, 'contact-1');
 
       // Should be called again after adding
       expect(listener).toHaveBeenCalledTimes(2);
 
       unsubscribe();
 
-      await addToQueue('flirt', { message: 'test2' }, 'girl-2');
+      await addToQueue('flirt', { message: 'test2' }, 'contact-2');
 
       // Should not be called after unsubscribe
       expect(listener).toHaveBeenCalledTimes(2);

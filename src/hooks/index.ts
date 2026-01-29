@@ -7,9 +7,9 @@
 export { useNavigationPersistence } from './useNavigationPersistence';
 
 // Data hooks
-export { useGirl } from './useGirl';
-export { useGirls } from './useGirls';
-export type { SortOption, SortDirection, GirlsFilter } from './useGirls';
+export { useContact } from './useContact';
+export { useContacts } from './useContacts';
+export type { SortOption, SortDirection, ContactsFilter } from './useContacts';
 export { useSettings } from './useSettings';
 export { useAI } from './useAI';
 

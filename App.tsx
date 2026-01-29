@@ -16,8 +16,8 @@ import {
 
 import { HomeScreen } from './src/screens/HomeScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
-import { AddGirlScreen } from './src/screens/AddGirlScreen';
-import { GirlProfileScreen } from './src/screens/GirlProfileScreen';
+import { AddContactScreen } from './src/screens/AddContactScreen';
+import { ContactProfileScreen } from './src/screens/ContactProfileScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
@@ -105,11 +105,11 @@ function AppContent() {
         {/* Main App Flow */}
         <Stack.Screen name="Home" component={HomeScreen} options={screenOptions.Home} />
         <Stack.Screen name="Chat" component={ChatScreen} options={screenOptions.Chat} />
-        <Stack.Screen name="AddGirl" component={AddGirlScreen} options={screenOptions.AddGirl} />
+        <Stack.Screen name="AddContact" component={AddContactScreen} options={screenOptions.AddContact} />
         <Stack.Screen
-          name="GirlProfile"
-          component={GirlProfileScreen}
-          options={screenOptions.GirlProfile}
+          name="ContactProfile"
+          component={ContactProfileScreen}
+          options={screenOptions.ContactProfile}
         />
         <Stack.Screen name="Settings" component={SettingsScreen} options={screenOptions.Settings} />
         <Stack.Screen

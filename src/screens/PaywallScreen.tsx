@@ -45,7 +45,7 @@ interface FeatureRow {
 
 const FEATURES: FeatureRow[] = [
   { name: 'Daily Suggestions', icon: '💬', free: '5/day', pro: '∞' },
-  { name: 'Girl Profiles', icon: '👩', free: '1', pro: '∞' },
+  { name: 'Contact Profiles', icon: '👩', free: '1', pro: '∞' },
   { name: 'Bio Generator', icon: '✍️', free: true, pro: true },
   { name: 'Sound Like Me™', icon: '🎤', free: false, pro: true },
   { name: 'Rescue Alerts', icon: '🚨', free: false, pro: true },

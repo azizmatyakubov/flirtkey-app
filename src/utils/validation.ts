@@ -30,10 +30,10 @@ export const RelationshipStageSchema = z.enum([
 ]);
 
 // ==========================================
-// Girl Schema (2.3.2)
+// Contact Schema (2.3.2)
 // ==========================================
 
-export const GirlSchema = z.object({
+export const ContactSchema = z.object({
   id: z.number().int().positive(),
   name: z
     .string()
@@ -53,7 +53,7 @@ export const GirlSchema = z.object({
   occupation: z.string().max(200, 'Occupation too long').optional(),
   howMet: z.string().max(500, 'How met description too long').optional(),
   relationshipStage: RelationshipStageSchema,
-  herTextingStyle: z.string().max(500).optional(),
+  theirTextingStyle: z.string().max(500).optional(),
   responseTime: z.string().max(100).optional(),
   importantDates: z.string().max(500).optional(),
   topics: z.string().max(BIO_MAX_LENGTH).optional(),
@@ -66,11 +66,11 @@ export const GirlSchema = z.object({
   avatar: z.string().url().optional(),
 });
 
-export const CreateGirlSchema = GirlSchema.omit({ id: true, messageCount: true }).partial({
+export const CreateContactSchema = ContactSchema.omit({ id: true, messageCount: true }).partial({
   relationshipStage: true,
 });
 
-export const UpdateGirlSchema = GirlSchema.partial().omit({ id: true });
+export const UpdateContactSchema = ContactSchema.partial().omit({ id: true });
 
 // ==========================================
 // User Schema (2.3.3)
@@ -159,7 +159,7 @@ export const ExportDataSchema = z.object({
   exportedAt: z.string().datetime(),
   data: z.object({
     user: UserSchema.nullable(),
-    girls: z.array(GirlSchema),
+    contacts: z.array(ContactSchema),
     conversationHistory: z.array(z.unknown()), // Flexible for now
     userCulture: CultureSchema,
   }),
@@ -319,14 +319,14 @@ export type ValidationResult<T> =
   | { success: true; data: T }
   | { success: false; error: z.ZodError };
 
-export const validateGirl = (data: unknown): ValidationResult<z.infer<typeof GirlSchema>> => {
-  return GirlSchema.safeParse(data);
+export const validateContact = (data: unknown): ValidationResult<z.infer<typeof ContactSchema>> => {
+  return ContactSchema.safeParse(data);
 };
 
-export const validateCreateGirl = (
+export const validateCreateContact = (
   data: unknown
-): ValidationResult<z.infer<typeof CreateGirlSchema>> => {
-  return CreateGirlSchema.safeParse(data);
+): ValidationResult<z.infer<typeof CreateContactSchema>> => {
+  return CreateContactSchema.safeParse(data);
 };
 
 export const validateUser = (data: unknown): ValidationResult<z.infer<typeof UserSchema>> => {
@@ -361,8 +361,8 @@ export const validateExportData = (
 // Type Exports
 // ==========================================
 
-export type ValidatedGirl = z.infer<typeof GirlSchema>;
-export type ValidatedCreateGirl = z.infer<typeof CreateGirlSchema>;
+export type ValidatedContact = z.infer<typeof ContactSchema>;
+export type ValidatedCreateContact = z.infer<typeof CreateContactSchema>;
 export type ValidatedUser = z.infer<typeof UserSchema>;
 export type ValidatedSuggestion = z.infer<typeof SuggestionSchema>;
 export type ValidatedAnalysisResult = z.infer<typeof AnalysisResultSchema>;
@@ -371,9 +371,9 @@ export type ValidatedExportData = z.infer<typeof ExportDataSchema>;
 
 export default {
   // Schemas
-  GirlSchema,
-  CreateGirlSchema,
-  UpdateGirlSchema,
+  ContactSchema,
+  CreateContactSchema,
+  UpdateContactSchema,
   UserSchema,
   SuggestionSchema,
   AnalysisResultSchema,
@@ -384,8 +384,8 @@ export default {
   AgeSchema,
   NameSchema,
   // Validators
-  validateGirl,
-  validateCreateGirl,
+  validateContact,
+  validateCreateContact,
   validateUser,
   validateSuggestion,
   validateAnalysisResult,

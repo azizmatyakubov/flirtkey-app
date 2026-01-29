@@ -1,6 +1,6 @@
 /**
- * AddGirlScreen
- * Form to add a new girl profile with photo, validation, and confirmations
+ * AddContactScreen
+ * Form to add a new contact profile with photo, validation, and confirmations
  * Tasks: 4.1.9-4.1.15
  */
 
@@ -54,9 +54,9 @@ interface FormErrors {
   age?: string;
 }
 
-export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const addGirl = useStore((s) => s.addGirl);
-  const girlsCount = useStore((s) => s.girls.length);
+export function AddContactScreen({ navigation }: { navigation: RootNavigationProp }) {
+  const addContact = useStore((s) => s.addContact);
+  const contactsCount = useStore((s) => s.contacts.length);
   const { showToast } = useToast();
   const { pickFromLibrary, image: selectedImage, clear: clearImage } = useImagePicker({
     allowsEditing: true,
@@ -149,10 +149,10 @@ export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }
   const handleSavePress = () => {
     dismissKeyboard();
 
-    // Enforce free tier maxGirls limit
+    // Enforce free tier maxContacts limit
     const tier = useSubscriptionStore.getState().getEffectiveTier();
     const limits = PLAN_LIMITS[tier as keyof typeof PLAN_LIMITS];
-    if (limits && girlsCount >= limits.maxGirls) {
+    if (limits && contactsCount >= limits.maxContacts) {
       navigation.navigate('Paywall');
       return;
     }
@@ -170,7 +170,7 @@ export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }
   const handleConfirmSave = async () => {
     setIsSaving(true);
     try {
-      addGirl({
+      addContact({
         name: name.trim(),
         age: age ? parseInt(age, 10) : undefined,
         culture,
@@ -347,7 +347,7 @@ export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }
           label="Her Interests"
           value={interests}
           onChangeText={setInterests}
-          placeholder="What does she like?"
+          placeholder="What do they like?"
           multiline
           maxLength={500}
           showCharCount
@@ -458,4 +458,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddGirlScreen;
+export default AddContactScreen;

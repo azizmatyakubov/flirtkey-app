@@ -8,14 +8,14 @@ import * as Clipboard from 'expo-clipboard';
 import { Suggestion } from '../types';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
-export async function shareSuggestion(suggestion: Suggestion, girlName?: string): Promise<void> {
+export async function shareSuggestion(suggestion: Suggestion, contactName?: string): Promise<void> {
   await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 
   const suggestionType = suggestion.type.charAt(0).toUpperCase() + suggestion.type.slice(1);
 
   // Format the share text
-  const shareText = girlName
-    ? `💘 FlirtKey Suggestion for ${girlName}\n\n${suggestionType} Reply:\n"${suggestion.text}"\n\n💡 ${suggestion.reason}\n\n- Generated with FlirtKey`
+  const shareText = contactName
+    ? `💘 FlirtKey Suggestion for ${contactName}\n\n${suggestionType} Reply:\n"${suggestion.text}"\n\n💡 ${suggestion.reason}\n\n- Generated with FlirtKey`
     : `💘 FlirtKey Suggestion\n\n${suggestionType} Reply:\n"${suggestion.text}"\n\n💡 ${suggestion.reason}\n\n- Generated with FlirtKey`;
 
   try {
@@ -48,12 +48,12 @@ export async function shareSuggestion(suggestion: Suggestion, girlName?: string)
 // Share button component
 interface ShareButtonProps {
   suggestion: Suggestion;
-  girlName?: string;
+  contactName?: string;
   compact?: boolean;
 }
 
-export function ShareButton({ suggestion, girlName, compact = false }: ShareButtonProps) {
-  const handleShare = () => shareSuggestion(suggestion, girlName);
+export function ShareButton({ suggestion, contactName, compact = false }: ShareButtonProps) {
+  const handleShare = () => shareSuggestion(suggestion, contactName);
 
   if (compact) {
     return (
@@ -75,11 +75,11 @@ export function ShareButton({ suggestion, girlName, compact = false }: ShareButt
 interface ShareMenuProps {
   visible: boolean;
   suggestion: Suggestion;
-  girlName?: string;
+  contactName?: string;
   onClose: () => void;
 }
 
-export function ShareMenu({ visible, suggestion, girlName, onClose }: ShareMenuProps) {
+export function ShareMenu({ visible, suggestion, contactName, onClose }: ShareMenuProps) {
   if (!visible) return null;
 
   const handleCopyText = async () => {
@@ -106,7 +106,7 @@ export function ShareMenu({ visible, suggestion, girlName, onClose }: ShareMenuP
   };
 
   const handleShare = async () => {
-    await shareSuggestion(suggestion, girlName);
+    await shareSuggestion(suggestion, contactName);
     onClose();
   };
 

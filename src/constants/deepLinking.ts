@@ -7,7 +7,7 @@ import type { RootStackParamList } from '../types';
  * - flirtkey://home
  * - flirtkey://chat
  * - flirtkey://settings
- * - flirtkey://girl/123
+ * - flirtkey://contact/123
  * - flirtkey://analyze (screenshot analysis)
  * - flirtkey://screenshot (screenshot analysis)
  */
@@ -18,11 +18,11 @@ export const linking: LinkingOptions<RootStackParamList> = {
       Main: 'main',
       Home: 'home',
       Chat: 'chat',
-      AddGirl: 'add',
-      GirlProfile: {
-        path: 'girl/:girlId?',
+      AddContact: 'add',
+      ContactProfile: {
+        path: 'contact/:contactId?',
         parse: {
-          girlId: (girlId: string) => parseInt(girlId, 10),
+          contactId: (contactId: string) => parseInt(contactId, 10),
         },
       },
       Settings: 'settings',
@@ -31,7 +31,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       ScreenshotAnalysis: {
         path: 'analyze',
         parse: {
-          girlId: (girlId: string) => parseInt(girlId, 10),
+          contactId: (contactId: string) => parseInt(contactId, 10),
         },
         alias: ['screenshot', 'share'],
       },
@@ -59,7 +59,7 @@ export function getScreenFromUrl(url: string): keyof RootStackParamList | null {
       '': 'Home',
       home: 'Home',
       chat: 'Chat',
-      add: 'AddGirl',
+      add: 'AddContact',
       settings: 'Settings',
       onboarding: 'Onboarding',
       analyze: 'ScreenshotAnalysis',
@@ -72,9 +72,9 @@ export function getScreenFromUrl(url: string): keyof RootStackParamList | null {
       return screenMap[path];
     }
 
-    // Check for girl profile path
-    if (path.startsWith('girl/')) {
-      return 'GirlProfile';
+    // Check for contact profile path
+    if (path.startsWith('contact/')) {
+      return 'ContactProfile';
     }
 
     return null;

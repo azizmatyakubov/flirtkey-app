@@ -85,12 +85,12 @@ const WeeklyBarChart = React.memo(function WeeklyBarChart({
 
 const ConvoHealthList = React.memo(function ConvoHealthList({
   healthScores,
-  girls,
+  contacts,
 }: {
   healthScores: Record<number, ConvoHealth>;
-  girls: { id: number; name: string }[];
+  contacts: { id: number; name: string }[];
 }) {
-  if (girls.length === 0) return null;
+  if (contacts.length === 0) return null;
 
   const getStatusEmoji = (status: string) => {
     switch (status) {
@@ -125,12 +125,12 @@ const ConvoHealthList = React.memo(function ConvoHealthList({
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>💬 Response Rates</Text>
-      {girls.map((girl) => {
-        const health = healthScores[girl.id];
+      {contacts.map((contact) => {
+        const health = healthScores[contact.id];
         if (!health) return null;
         return (
-          <View key={girl.id} style={styles.convoRow}>
-            <Text style={styles.convoName}>{girl.name}</Text>
+          <View key={contact.id} style={styles.convoRow}>
+            <Text style={styles.convoName}>{contact.name}</Text>
             <View style={styles.convoStatus}>
               <Text style={styles.convoStatusEmoji}>{getStatusEmoji(health.status)}</Text>
               <Text style={styles.convoStatusText}>{getStatusLabel(health.status)}</Text>
@@ -193,24 +193,24 @@ const ToneBreakdown = React.memo(function ToneBreakdown({
 // ==========================================
 
 export function AnalyticsScreen({ navigation }: any) {
-  const { girls } = useStore();
+  const { contacts } = useStore();
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStats | null>(null);
   const [analytics, setAnalytics] = useState<FlirtAnalytics | null>(null);
   const [healthScores, setHealthScores] = useState<Record<number, ConvoHealth>>({});
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
-    const activeGirls = girls.length;
-    const stats = await getWeeklyStats(activeGirls);
+    const activeContacts = contacts.length;
+    const stats = await getWeeklyStats(activeContacts);
     const full = await getFullAnalytics();
     // Use getState() to avoid dependency on the function reference
-    const getConvos = useStore.getState().getConversationsForGirl;
-    const scores = analyzeAllConversations(girls, getConvos);
+    const getConvos = useStore.getState().getConversationsForContact;
+    const scores = analyzeAllConversations(contacts, getConvos);
 
     setWeeklyStats(stats);
     setAnalytics(full);
     setHealthScores(scores);
-  }, [girls]);
+  }, [contacts]);
 
   useEffect(() => {
     loadData();
@@ -258,7 +258,7 @@ export function AnalyticsScreen({ navigation }: any) {
         }
       >
         {/* Empty State for new users */}
-        {(!analytics || (analytics.suggestionsGenerated === 0 && girls.length === 0)) && (
+        {(!analytics || (analytics.suggestionsGenerated === 0 && contacts.length === 0)) && (
           <Animated.View entering={FadeIn} style={styles.emptyState}>
             <Text style={styles.emptyStateEmoji}>📊</Text>
             <Text style={styles.emptyStateTitle}>No analytics yet</Text>
@@ -271,7 +271,7 @@ export function AnalyticsScreen({ navigation }: any) {
 
         {/* Stat Cards */}
         <Animated.View entering={FadeIn.delay(100)} style={styles.statsRow}>
-          <StatCard icon="💬" label="Active Convos" value={String(girls.length)} />
+          <StatCard icon="💬" label="Active Convos" value={String(contacts.length)} />
           <StatCard
             icon="✨"
             label="This Week"
@@ -301,7 +301,7 @@ export function AnalyticsScreen({ navigation }: any) {
 
         {/* Convo Health */}
         <Animated.View entering={FadeIn.delay(400)}>
-          <ConvoHealthList healthScores={healthScores} girls={girls} />
+          <ConvoHealthList healthScores={healthScores} contacts={contacts} />
         </Animated.View>
 
         {/* Tone Breakdown */}
@@ -316,7 +316,7 @@ export function AnalyticsScreen({ navigation }: any) {
           <Animated.View entering={FadeIn.delay(600)} style={styles.summaryCard}>
             <Text style={styles.summaryTitle}>📝 Weekly Summary</Text>
             <Text style={styles.summaryText}>
-              You had {girls.length} conversation{girls.length !== 1 ? 's' : ''} this week.{' '}
+              You had {contacts.length} conversation{contacts.length !== 1 ? 's' : ''} this week.{' '}
               {Object.values(healthScores).filter((h) => h.status !== 'dying').length} are still
               active.{' '}
               {weeklyStats.topTone

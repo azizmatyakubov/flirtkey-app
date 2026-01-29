@@ -6,7 +6,7 @@
  * across different input scenarios, edge cases, and cultures.
  */
 
-import type { Girl, Culture } from '../types';
+import type { Contact, Culture } from '../types';
 import {
   buildFlirtPrompt,
   sanitizeInput,
@@ -24,7 +24,7 @@ export interface TestInput {
   category: TestCategory;
   name: string;
   description: string;
-  girl: Girl;
+  contact: Contact;
   message?: string;
   culture: Culture;
   expectedBehavior: string;
@@ -61,10 +61,10 @@ export interface TestSuiteResult {
 }
 
 // ==========================================
-// Test Girls (Various Profiles)
+// Test Contacts (Various Profiles)
 // ==========================================
 
-const TEST_GIRLS: Record<string, Girl> = {
+const TEST_GIRLS: Record<string, Contact> = {
   basic: {
     id: 1,
     name: 'Sarah',
@@ -93,12 +93,12 @@ const TEST_GIRLS: Record<string, Girl> = {
     occupation: 'Marketing Manager',
     howMet: 'Through mutual friends at a party last month',
     relationshipStage: 'flirting',
-    herTextingStyle: 'Uses proper grammar, occasional emojis, responds thoughtfully',
+    theirTextingStyle: 'Uses proper grammar, occasional emojis, responds thoughtfully',
     responseTime: 'Usually within 2-3 hours',
     topics: 'Work stress, upcoming concert, book recommendations',
-    insideJokes: 'The terrible wine at the party, her cat Mr. Whiskers',
-    redFlags: 'Sensitive about her ex, avoid talking about money',
-    greenLights: 'Loves when I ask about her work, appreciates thoughtfulness',
+    insideJokes: 'The terrible wine at the party, their cat Mr. Whiskers',
+    redFlags: 'Sensitive about their ex, avoid talking about money',
+    greenLights: 'Loves when I ask about their work, appreciates thoughtfulness',
     lastTopic: 'Planning to see the new art exhibition',
     messageCount: 45,
   },
@@ -222,16 +222,16 @@ export function generateTestInputs(): TestInput[] {
   const inputs: TestInput[] = [];
   let id = 1;
 
-  // Helper function to get girl safely
-  const getGirl = (key: string): Girl => {
-    const girl = TEST_GIRLS[key];
-    if (!girl) throw new Error(`Test girl not found: ${key}`);
-    return girl;
+  // Helper function to get contact safely
+  const getContact = (key: string): Contact => {
+    const contact = TEST_GIRLS[key];
+    if (!contact) throw new Error(`Test contact not found: ${key}`);
+    return contact;
   };
 
   // Basic tests with all cultures
   const cultures: Culture[] = ['uzbek', 'russian', 'western', 'asian', 'universal'];
-  const basicGirl = getGirl('basic');
+  const basicContact = getContact('basic');
 
   for (const culture of cultures) {
     for (const msg of TEST_MESSAGES.basic) {
@@ -240,7 +240,7 @@ export function generateTestInputs(): TestInput[] {
         category: 'basic',
         name: `Basic - ${culture} - ${msg.scenario}`,
         description: `Test basic response generation for ${culture} culture`,
-        girl: { ...basicGirl, culture } as Girl,
+        contact: { ...basicContact, culture } as Contact,
         message: msg.text,
         culture,
         expectedBehavior: 'Should generate 3 culturally appropriate suggestions',
@@ -255,7 +255,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'edge_case',
       name: `Edge Case - ${msg.scenario}`,
       description: `Test handling of edge case input`,
-      girl: getGirl('basic'),
+      contact: getContact('basic'),
       message: msg.text,
       culture: 'universal',
       expectedBehavior: 'Should handle gracefully without errors',
@@ -269,7 +269,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'cultural',
       name: `Cultural - ${msg.scenario}`,
       description: 'Test cultural sensitivity',
-      girl: getGirl('uzbek'),
+      contact: getContact('uzbek'),
       message: msg.text,
       culture: 'uzbek',
       expectedBehavior: 'Should respect cultural context',
@@ -283,7 +283,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'emotional',
       name: `Emotional - ${msg.scenario}`,
       description: 'Test emotional intelligence',
-      girl: getGirl('detailed'),
+      contact: getContact('detailed'),
       message: msg.text,
       culture: 'russian',
       expectedBehavior: 'Should match emotional tone appropriately',
@@ -297,7 +297,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'security',
       name: `Security - ${msg.scenario}`,
       description: 'Test prompt injection protection',
-      girl: getGirl('basic'),
+      contact: getContact('basic'),
       message: msg.text,
       culture: 'universal',
       expectedBehavior: 'Should sanitize input and not follow injected instructions',
@@ -311,7 +311,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'length',
       name: `Length - ${msg.scenario}`,
       description: 'Test message length handling',
-      girl: getGirl('basic'),
+      contact: getContact('basic'),
       message: msg.text,
       culture: 'western',
       expectedBehavior: 'Should work within token limits',
@@ -325,7 +325,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'special_chars',
       name: `Special Chars - ${msg.scenario}`,
       description: 'Test special character handling',
-      girl: getGirl('asian'),
+      contact: getContact('asian'),
       message: msg.text,
       culture: 'asian',
       expectedBehavior: 'Should handle special characters correctly',
@@ -342,7 +342,7 @@ export function generateTestInputs(): TestInput[] {
       category: 'stage_specific',
       name: `Stage - ${stage} - ${msg.scenario}`,
       description: `Test ${stage} stage specific behavior`,
-      girl: { ...basicGirl, relationshipStage: stage } as Girl,
+      contact: { ...basicContact, relationshipStage: stage } as Contact,
       message: msg.text,
       culture: 'western',
       expectedBehavior: `Should match ${STAGES[stage].tone} tone`,
@@ -354,8 +354,8 @@ export function generateTestInputs(): TestInput[] {
     id: `profile_minimal_${id++}`,
     category: 'edge_case',
     name: 'Minimal Profile',
-    description: 'Test with minimal girl profile',
-    girl: getGirl('minimal'),
+    description: 'Test with minimal contact profile',
+    contact: getContact('minimal'),
     message: 'Hey!',
     culture: 'universal',
     expectedBehavior: 'Should work even with minimal info',
@@ -366,7 +366,7 @@ export function generateTestInputs(): TestInput[] {
     category: 'basic',
     name: 'Detailed Profile',
     description: 'Test with full detailed profile',
-    girl: getGirl('detailed'),
+    contact: getContact('detailed'),
     message: 'Want to see that art exhibition this weekend?',
     culture: 'russian',
     expectedBehavior: 'Should leverage all available context',
@@ -383,8 +383,8 @@ function validatePromptStructure(prompt: string): { valid: boolean; issues: stri
   const issues: string[] = [];
 
   // Check for required sections
-  if (!prompt.includes('HER') && !prompt.includes('Girl')) {
-    issues.push('Missing girl context section');
+  if (!prompt.includes('HER') && !prompt.includes('Contact')) {
+    issues.push('Missing contact context section');
   }
 
   if (!prompt.includes('JSON')) {
@@ -446,8 +446,8 @@ export function runPromptTest(input: TestInput): TestResult {
 
   // Build the prompt
   const { prompt } = buildFlirtPrompt({
-    girl: input.girl,
-    herMessage: input.message || '',
+    contact: input.contact,
+    theirMessage: input.message || '',
     userCulture: input.culture,
   });
 

@@ -152,26 +152,26 @@ describe('Response Formatter', () => {
 
   describe('matchMessageStyle', () => {
     it('keeps short response when her message is short', () => {
-      const herMessage = 'Hey!';
+      const theirMessage = 'Hey!';
       const suggestion = 'Great!';
-      const result = matchMessageStyle(suggestion, herMessage);
+      const result = matchMessageStyle(suggestion, theirMessage);
       expect(result).toBe('Great!');
     });
 
     it('keeps response as is when within tolerance', () => {
-      const herMessage = 'Hey, how are you doing today?';
+      const theirMessage = 'Hey, how are you doing today?';
       const suggestion = 'Great!';
-      const result = matchMessageStyle(suggestion, herMessage);
+      const result = matchMessageStyle(suggestion, theirMessage);
       expect(result).toBe('Great!');
     });
 
     it('truncates only when her message is substantial', () => {
-      const herMessage = 'This is a longer message from her that provides context';
+      const theirMessage = 'This is a longer message from her that provides context';
       const suggestion =
         'This is a very long response that goes way beyond the original message length and should be truncated somewhere reasonable to match better.';
-      const result = matchMessageStyle(suggestion, herMessage, { lengthTolerance: 0.5 });
+      const result = matchMessageStyle(suggestion, theirMessage, { lengthTolerance: 0.5 });
       // Should truncate to roughly 1.5x her message length
-      expect(result.length).toBeLessThanOrEqual(herMessage.length * 1.5 + 10);
+      expect(result.length).toBeLessThanOrEqual(theirMessage.length * 1.5 + 10);
     });
   });
 
@@ -235,7 +235,7 @@ describe('Response Formatter', () => {
 
     it('matches her message style', () => {
       const result = formatSuggestion(baseSuggestion, {
-        herMessage: 'hey whats up',
+        theirMessage: 'hey whats up',
         matchStyle: true,
       });
       // Should be lowkey style

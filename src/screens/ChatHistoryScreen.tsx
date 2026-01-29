@@ -187,15 +187,15 @@ function EmptyState() {
 // ==========================================
 
 export function ChatHistoryScreen({ navigation, route }: Props) {
-  const { girlId } = route.params;
-  const girls = useStore((s) => s.girls);
-  const getConversationsForGirl = useStore((s) => s.getConversationsForGirl);
+  const { contactId } = route.params;
+  const contacts = useStore((s) => s.contacts);
+  const getConversationsForContact = useStore((s) => s.getConversationsForContact);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const girl = girls.find((g) => g.id === girlId);
+  const contact = contacts.find((g) => g.id === contactId);
   const conversations = useMemo(() => {
-    return getConversationsForGirl(girlId).sort((a, b) => a.timestamp - b.timestamp);
-  }, [girlId, getConversationsForGirl]);
+    return getConversationsForContact(contactId).sort((a, b) => a.timestamp - b.timestamp);
+  }, [contactId, getConversationsForContact]);
 
   // Auto-scroll to bottom on mount
   useEffect(() => {
@@ -204,10 +204,10 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
     }, 500);
   }, []);
 
-  if (!girl) {
+  if (!contact) {
     return (
       <View style={styles.container}>
-        <Text style={styles.emptyTitle}>Girl not found</Text>
+        <Text style={styles.emptyTitle}>Contact not found</Text>
       </View>
     );
   }
@@ -234,8 +234,8 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
       // Her message (left side)
       items.push(
         <HerBubble
-          key={`her-${entry.id}`}
-          text={entry.herMessage}
+          key={`their-${entry.id}`}
+          text={entry.theirMessage}
           time={formatTime(entry.timestamp)}
           index={itemIndex++}
         />
@@ -284,7 +284,7 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
   };
 
   // Get initials for avatar
-  const initials = girl.name
+  const initials = contact.name
     .split(' ')
     .map((n) => n[0])
     .join('')
@@ -312,10 +312,10 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
           <Ionicons name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View style={styles.headerAvatar}>
-          {girl.avatar ? (
+          {contact.avatar ? (
             <Animated.Image
               entering={FadeIn}
-              source={{ uri: girl.avatar }}
+              source={{ uri: contact.avatar }}
               style={styles.avatarImage}
             />
           ) : (
@@ -328,7 +328,7 @@ export function ChatHistoryScreen({ navigation, route }: Props) {
           )}
         </View>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerName}>{girl.name}</Text>
+          <Text style={styles.headerName}>{contact.name}</Text>
           <Text style={styles.headerSubtitle}>
             {conversations.length} exchange{conversations.length !== 1 ? 's' : ''}
           </Text>

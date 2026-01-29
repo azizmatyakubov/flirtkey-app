@@ -64,8 +64,8 @@ export function useShareIntent(): UseShareIntentResult {
         if (parsed.path === DEEP_LINK_PATHS.analyze || parsed.path === DEEP_LINK_PATHS.screenshot) {
           const imageUri = parsed.params['imageUri'];
           const imageBase64 = parsed.params['imageBase64'];
-          const girlIdParam = parsed.params['girlId'];
-          const girlId = girlIdParam ? parseInt(girlIdParam, 10) : undefined;
+          const contactIdParam = parsed.params['contactId'];
+          const contactId = contactIdParam ? parseInt(contactIdParam, 10) : undefined;
 
           // If we have image data, process it
           if (imageUri || imageBase64) {
@@ -78,7 +78,7 @@ export function useShareIntent(): UseShareIntentResult {
               navigation.navigate('ScreenshotAnalysis', {
                 imageUri: result.content.uri,
                 imageBase64: result.content.data,
-                girlId,
+                contactId,
               });
             } else {
               setError(result.error || 'Failed to process shared content');
@@ -86,7 +86,7 @@ export function useShareIntent(): UseShareIntentResult {
           } else {
             // Just navigate to the screen
             navigation.navigate('ScreenshotAnalysis', {
-              girlId,
+              contactId,
             });
           }
         }

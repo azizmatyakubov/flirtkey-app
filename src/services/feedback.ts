@@ -14,8 +14,8 @@ export interface ResponseLog {
   id: string;
   timestamp: number;
   requestType: 'flirt_response' | 'screenshot_analysis' | 'conversation_starter' | 'other';
-  girlId?: number;
-  herMessage?: string;
+  contactId?: number;
+  theirMessage?: string;
   response: AnalysisResult;
   qualityScore: number;
   usedSuggestionIndex?: number;
@@ -65,7 +65,7 @@ class ResponseLogger {
     requestType: ResponseLog['requestType'],
     response: AnalysisResult,
     qualityScore: number,
-    context?: { girlId?: number; herMessage?: string }
+    context?: { contactId?: number; theirMessage?: string }
   ): Promise<string> {
     await this.load();
     
@@ -77,8 +77,8 @@ class ResponseLogger {
       requestType,
       response,
       qualityScore,
-      girlId: context?.girlId,
-      herMessage: context?.herMessage,
+      contactId: context?.contactId,
+      theirMessage: context?.theirMessage,
     };
     
     this.logs.push(logEntry);

@@ -1,7 +1,7 @@
 export { HomeScreen } from './HomeScreen';
 export { ChatScreen } from './ChatScreen';
-export { AddGirlScreen } from './AddGirlScreen';
-export { GirlProfileScreen } from './GirlProfileScreen';
+export { AddContactScreen } from './AddContactScreen';
+export { ContactProfileScreen } from './ContactProfileScreen';
 export { SettingsScreen } from './SettingsScreen';
 export { WelcomeScreen } from './WelcomeScreen';
 export { OnboardingScreen, isOnboardingComplete, resetOnboarding } from './OnboardingScreen';

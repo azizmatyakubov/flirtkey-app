@@ -12,7 +12,7 @@ import { AnalysisResult } from '../types';
 
 export interface CachedResponse {
   id: string;
-  girlId: string;
+  contactId: string;
   messageHash: string;
   response: AnalysisResult;
   timestamp: number;
@@ -23,7 +23,7 @@ export interface CachedResponse {
 interface CacheIndex {
   entries: Array<{
     id: string;
-    girlId: string;
+    contactId: string;
     messageHash: string;
     timestamp: number;
   }>;
@@ -58,8 +58,8 @@ function hashMessage(message: string): string {
   return Math.abs(hash).toString(36);
 }
 
-function generateCacheId(girlId: string, messageHash: string): string {
-  return `${girlId}_${messageHash}`;
+function generateCacheId(contactId: string, messageHash: string): string {
+  return `${contactId}_${messageHash}`;
 }
 
 // ==========================================
@@ -94,14 +94,14 @@ async function saveIndex(index: CacheIndex): Promise<void> {
 // ==========================================
 
 /**
- * Get a cached response by girl ID and message
+ * Get a cached response by contact ID and message
  */
 export async function getCachedResponse(
-  girlId: string,
+  contactId: string,
   message: string
 ): Promise<AnalysisResult | null> {
   const messageHash = hashMessage(message);
-  const cacheId = generateCacheId(girlId, messageHash);
+  const cacheId = generateCacheId(contactId, messageHash);
   const key = `${CACHE_ENTRY_PREFIX}${cacheId}`;
 
   try {
@@ -122,7 +122,7 @@ export async function getCachedResponse(
     entry.lastAccessed = Date.now();
     await AsyncStorage.setItem(key, JSON.stringify(entry));
 
-    if (__DEV__) console.log(`[ResponseCache] Cache hit for ${girlId}/${messageHash}`);
+    if (__DEV__) console.log(`[ResponseCache] Cache hit for ${contactId}/${messageHash}`);
     return entry.response;
   } catch (error) {
     if (__DEV__) console.warn('[ResponseCache] Failed to get cached response:', error);
@@ -134,12 +134,12 @@ export async function getCachedResponse(
  * Cache an AI response
  */
 export async function cacheResponse(
-  girlId: string,
+  contactId: string,
   message: string,
   response: AnalysisResult
 ): Promise<void> {
   const messageHash = hashMessage(message);
-  const cacheId = generateCacheId(girlId, messageHash);
+  const cacheId = generateCacheId(contactId, messageHash);
   const key = `${CACHE_ENTRY_PREFIX}${cacheId}`;
 
   try {
@@ -150,7 +150,7 @@ export async function cacheResponse(
 
     const entry: CachedResponse = {
       id: cacheId,
-      girlId,
+      contactId,
       messageHash,
       response,
       timestamp: Date.now(),
@@ -166,7 +166,7 @@ export async function cacheResponse(
       // Update existing entry
       index.entries[existingIndex] = {
         id: cacheId,
-        girlId,
+        contactId,
         messageHash,
         timestamp: Date.now(),
       };
@@ -174,7 +174,7 @@ export async function cacheResponse(
       // Add new entry
       index.entries.push({
         id: cacheId,
-        girlId,
+        contactId,
         messageHash,
         timestamp: Date.now(),
       });
@@ -186,7 +186,7 @@ export async function cacheResponse(
     }
 
     await saveIndex(index);
-    if (__DEV__) console.log(`[ResponseCache] Cached response for ${girlId}/${messageHash}`);
+    if (__DEV__) console.log(`[ResponseCache] Cached response for ${contactId}/${messageHash}`);
   } catch (error) {
     if (__DEV__) console.warn('[ResponseCache] Failed to cache response:', error);
   }
@@ -247,15 +247,15 @@ async function enforceMaxSize(index: CacheIndex): Promise<void> {
 }
 
 /**
- * Get all cached responses for a girl
+ * Get all cached responses for a contact
  */
-export async function getCachedResponsesForGirl(girlId: string): Promise<CachedResponse[]> {
+export async function getCachedResponsesForContact(contactId: string): Promise<CachedResponse[]> {
   const index = await loadIndex();
-  const girlEntries = index.entries.filter((e) => e.girlId === girlId);
+  const contactEntries = index.entries.filter((e) => e.contactId === contactId);
 
   const responses: CachedResponse[] = [];
 
-  for (const entry of girlEntries) {
+  for (const entry of contactEntries) {
     const key = `${CACHE_ENTRY_PREFIX}${entry.id}`;
     try {
       const stored = await AsyncStorage.getItem(key);
@@ -275,20 +275,20 @@ export async function getCachedResponsesForGirl(girlId: string): Promise<CachedR
  */
 export async function getCacheStats(): Promise<{
   totalEntries: number;
-  entriesByGirl: Record<string, number>;
+  entriesByContact: Record<string, number>;
   oldestEntry: number | null;
   newestEntry: number | null;
   totalSizeEstimate: number;
 }> {
   const index = await loadIndex();
 
-  const entriesByGirl: Record<string, number> = {};
+  const entriesByContact: Record<string, number> = {};
   let totalSize = 0;
   let oldest: number | null = null;
   let newest: number | null = null;
 
   for (const entry of index.entries) {
-    entriesByGirl[entry.girlId] = (entriesByGirl[entry.girlId] || 0) + 1;
+    entriesByContact[entry.contactId] = (entriesByContact[entry.contactId] || 0) + 1;
 
     if (oldest === null || entry.timestamp < oldest) {
       oldest = entry.timestamp;
@@ -311,7 +311,7 @@ export async function getCacheStats(): Promise<{
 
   return {
     totalEntries: index.entries.length,
-    entriesByGirl,
+    entriesByContact,
     oldestEntry: oldest,
     newestEntry: newest,
     totalSizeEstimate: totalSize,
@@ -336,22 +336,22 @@ export async function clearCache(): Promise<void> {
 }
 
 /**
- * Clear cached responses for a specific girl
+ * Clear cached responses for a specific contact
  */
-export async function clearCacheForGirl(girlId: string): Promise<number> {
+export async function clearCacheForContact(contactId: string): Promise<number> {
   const index = await loadIndex();
-  const girlEntries = index.entries.filter((e) => e.girlId === girlId);
+  const contactEntries = index.entries.filter((e) => e.contactId === contactId);
 
-  const keysToRemove = girlEntries.map((e) => `${CACHE_ENTRY_PREFIX}${e.id}`);
+  const keysToRemove = contactEntries.map((e) => `${CACHE_ENTRY_PREFIX}${e.id}`);
 
   try {
     await AsyncStorage.multiRemove(keysToRemove);
-    index.entries = index.entries.filter((e) => e.girlId !== girlId);
+    index.entries = index.entries.filter((e) => e.contactId !== contactId);
     await saveIndex(index);
-    if (__DEV__) console.log(`[ResponseCache] Cleared ${girlEntries.length} cached responses for ${girlId}`);
-    return girlEntries.length;
+    if (__DEV__) console.log(`[ResponseCache] Cleared ${contactEntries.length} cached responses for ${contactId}`);
+    return contactEntries.length;
   } catch (error) {
-    if (__DEV__) console.warn('[ResponseCache] Failed to clear cache for girl:', error);
+    if (__DEV__) console.warn('[ResponseCache] Failed to clear cache for contact:', error);
     return 0;
   }
 }
@@ -392,14 +392,14 @@ export const ResponseCacheService = {
   // Core operations
   getCachedResponse,
   cacheResponse,
-  getCachedResponsesForGirl,
+  getCachedResponsesForContact,
 
   // Stats
   getCacheStats,
 
   // Cleanup
   clearCache,
-  clearCacheForGirl,
+  clearCacheForContact,
   cleanupExpired,
 };
 

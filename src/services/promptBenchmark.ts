@@ -6,7 +6,7 @@
  * prompt performance across multiple dimensions.
  */
 
-import type { Girl, Culture, AnalysisResult, Suggestion } from '../types';
+import type { Contact, Culture, AnalysisResult, Suggestion } from '../types';
 import { AIService, scoreResponseQuality } from './ai';
 import { PromptTestingService, generateTestInputs } from './promptTesting';
 import type { TestInput } from './promptTesting';
@@ -126,8 +126,8 @@ function scoreSuggestionDiversity(suggestions: Suggestion[]): number {
 /**
  * Score tone accuracy based on relationship stage
  */
-function scoreToneAccuracy(response: AnalysisResult, girl: Girl): number {
-  const stage = girl.relationshipStage || 'just_met';
+function scoreToneAccuracy(response: AnalysisResult, contact: Contact): number {
+  const stage = contact.relationshipStage || 'just_met';
   let score = 50; // Start neutral
 
   // Get suggestion texts
@@ -216,9 +216,9 @@ function scoreCulturalAppropriateness(response: AnalysisResult, culture: Culture
 }
 
 /**
- * Score context utilization (uses girl's info effectively)
+ * Score context utilization (uses contact's info effectively)
  */
-function scoreContextUtilization(response: AnalysisResult, girl: Girl): number {
+function scoreContextUtilization(response: AnalysisResult, contact: Contact): number {
   let score = 50;
   let possibleContextItems = 0;
   let usedItems = 0;
@@ -230,12 +230,12 @@ function scoreContextUtilization(response: AnalysisResult, girl: Girl): number {
 
   // Check if context is utilized
   const contextChecks = [
-    { field: girl.name, weight: 2 },
-    { field: girl.interests, weight: 3 },
-    { field: girl.personality, weight: 2 },
-    { field: girl.insideJokes, weight: 4 },
-    { field: girl.greenLights, weight: 3 },
-    { field: girl.lastTopic, weight: 3 },
+    { field: contact.name, weight: 2 },
+    { field: contact.interests, weight: 3 },
+    { field: contact.personality, weight: 2 },
+    { field: contact.insideJokes, weight: 4 },
+    { field: contact.greenLights, weight: 3 },
+    { field: contact.lastTopic, weight: 3 },
   ];
 
   for (const check of contextChecks) {
@@ -284,8 +284,8 @@ async function runSingleBenchmark(
   measureLatency: boolean
 ): Promise<BenchmarkDetail> {
   const { prompt } = buildFlirtPrompt({
-    girl: input.girl,
-    herMessage: input.message || '',
+    contact: input.contact,
+    theirMessage: input.message || '',
     userCulture: input.culture,
   });
 
@@ -294,8 +294,8 @@ async function runSingleBenchmark(
 
   try {
     const response = await AIService.generateFlirtResponse({
-      girl: input.girl,
-      herMessage: input.message || '',
+      contact: input.contact,
+      theirMessage: input.message || '',
       userCulture: input.culture,
       apiKey,
       useCache: false,
@@ -368,9 +368,9 @@ function calculateMetrics(details: BenchmarkDetail[], inputs: TestInput[]): Benc
     qualityScores.push(detail.metrics.quality);
 
     totalDiversity += scoreSuggestionDiversity(response.suggestions);
-    totalToneAccuracy += scoreToneAccuracy(response, input.girl);
+    totalToneAccuracy += scoreToneAccuracy(response, input.contact);
     totalCultural += scoreCulturalAppropriateness(response, input.culture);
-    totalContext += scoreContextUtilization(response, input.girl);
+    totalContext += scoreContextUtilization(response, input.contact);
 
     totalTokens += detail.metrics.tokens;
     maxTokens = Math.max(maxTokens, detail.metrics.tokens);

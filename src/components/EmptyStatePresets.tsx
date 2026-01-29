@@ -79,15 +79,15 @@ export function EmptyState({
 // Preset Empty States
 // ==========================================
 
-// No Girls Added
-export function NoGirlsEmpty({ onAddGirl }: { onAddGirl: () => void }) {
+// No Contacts Added
+export function NoContactsEmpty({ onAddContact }: { onAddContact: () => void }) {
   return (
     <EmptyState
       emoji="💘"
       title="No profiles yet"
-      message="Add your first girl profile to start getting personalized suggestions!"
-      actionText="Add Girl Profile"
-      onAction={onAddGirl}
+      message="Add your first contact profile to start getting personalized suggestions!"
+      actionText="Add Contact Profile"
+      onAction={onAddContact}
     />
   );
 }
@@ -98,7 +98,7 @@ export function NoSuggestionsEmpty({ onGenerate }: { onGenerate?: () => void }) 
     <EmptyState
       emoji="💭"
       title="Ready to help!"
-      message="Paste her message and tap Generate to get tailored suggestions."
+      message="Paste their message and tap Generate to get tailored suggestions."
       actionText={onGenerate ? 'Generate Suggestions' : undefined}
       onAction={onGenerate}
     />

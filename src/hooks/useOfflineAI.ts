@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AnalysisResult, Girl, Culture } from '../types';
+import { AnalysisResult, Contact, Culture } from '../types';
 import {
   OfflineQueueService,
   addToQueue,
@@ -16,7 +16,7 @@ import {
 import {
   getCachedResponse,
   cacheResponse,
-  getCachedResponsesForGirl,
+  getCachedResponsesForContact,
 } from '../services/responseCache';
 import { generateFlirtResponse } from '../services/ai';
 import { useNetworkStatus } from './useNetworkStatus';
@@ -34,13 +34,13 @@ export interface UseOfflineAIResult {
 
   // Actions
   generateResponse: (
-    girl: Girl,
+    contact: Contact,
     message: string,
     culture: Culture,
     apiKey: string
   ) => Promise<{ result: AnalysisResult | null; source: 'api' | 'cache' | 'queued' }>;
 
-  getCachedResponses: (girlId: string) => Promise<AnalysisResult[]>;
+  getCachedResponses: (contactId: string) => Promise<AnalysisResult[]>;
   refreshQueueStats: () => void;
 
   // Queue management
@@ -72,22 +72,22 @@ export function useOfflineAI(): UseOfflineAIResult {
     OfflineQueueService.setProcessCallback(async (request: QueuedRequest) => {
       try {
         // Extract params and make the API call
-        const { girl, herMessage, userCulture, apiKey } = request.params as {
-          girl: Girl;
-          herMessage: string;
+        const { contact, theirMessage, userCulture, apiKey } = request.params as {
+          contact: Contact;
+          theirMessage: string;
           userCulture: Culture;
           apiKey: string;
         };
 
         const result = await generateFlirtResponse({
-          girl,
-          herMessage,
+          contact,
+          theirMessage,
           userCulture,
           apiKey,
         });
 
         // Cache the result
-        await cacheResponse(String(girl.id), herMessage, result);
+        await cacheResponse(String(contact.id), theirMessage, result);
 
         return true;
       } catch (error) {
@@ -130,16 +130,16 @@ export function useOfflineAI(): UseOfflineAIResult {
   // Generate response with offline support
   const generateResponseWithOfflineSupport = useCallback(
     async (
-      girl: Girl,
+      contact: Contact,
       message: string,
       culture: Culture,
       apiKey: string
     ): Promise<{ result: AnalysisResult | null; source: 'api' | 'cache' | 'queued' }> => {
-      const girlIdStr = String(girl.id);
+      const contactIdStr = String(contact.id);
 
       // If offline, try cache first
       if (isOffline) {
-        const cached = await getCachedResponse(girlIdStr, message);
+        const cached = await getCachedResponse(contactIdStr, message);
         if (cached) {
           return { result: cached, source: 'cache' };
         }
@@ -147,9 +147,9 @@ export function useOfflineAI(): UseOfflineAIResult {
         // Queue for later
         await addToQueue(
           'flirt',
-          { girl, herMessage: message, userCulture: culture, apiKey },
-          girlIdStr,
-          girl.name
+          { contact, theirMessage: message, userCulture: culture, apiKey },
+          contactIdStr,
+          contact.name
         );
         refreshQueueStats();
 
@@ -159,19 +159,19 @@ export function useOfflineAI(): UseOfflineAIResult {
       // Online - try API first
       try {
         const result = await generateFlirtResponse({
-          girl,
-          herMessage: message,
+          contact,
+          theirMessage: message,
           userCulture: culture,
           apiKey,
         });
 
         // Cache the result
-        await cacheResponse(girlIdStr, message, result);
+        await cacheResponse(contactIdStr, message, result);
 
         return { result, source: 'api' };
       } catch (error) {
         // On API error, try cache
-        const cached = await getCachedResponse(girlIdStr, message);
+        const cached = await getCachedResponse(contactIdStr, message);
         if (cached) {
           return { result: cached, source: 'cache' };
         }
@@ -179,9 +179,9 @@ export function useOfflineAI(): UseOfflineAIResult {
         // Queue for retry
         await addToQueue(
           'flirt',
-          { girl, herMessage: message, userCulture: culture, apiKey },
-          girlIdStr,
-          girl.name
+          { contact, theirMessage: message, userCulture: culture, apiKey },
+          contactIdStr,
+          contact.name
         );
         refreshQueueStats();
 
@@ -191,9 +191,9 @@ export function useOfflineAI(): UseOfflineAIResult {
     [isOffline, refreshQueueStats]
   );
 
-  // Get cached responses for a girl
-  const getCachedResponses = useCallback(async (girlId: string): Promise<AnalysisResult[]> => {
-    const cached = await getCachedResponsesForGirl(girlId);
+  // Get cached responses for a contact
+  const getCachedResponses = useCallback(async (contactId: string): Promise<AnalysisResult[]> => {
+    const cached = await getCachedResponsesForContact(contactId);
     return cached.map((c) => c.response);
   }, []);
 

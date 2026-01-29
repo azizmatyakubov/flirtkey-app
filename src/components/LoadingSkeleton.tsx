@@ -129,7 +129,7 @@ export function SkeletonCard({ height = 120 }: { height?: number }) {
 // Screen Skeletons
 // ==========================================
 
-export function GirlListSkeleton({ count = 3 }: SkeletonListProps) {
+export function ContactListSkeleton({ count = 3 }: SkeletonListProps) {
   const { theme } = useTheme();
 
   return (
@@ -140,12 +140,12 @@ export function GirlListSkeleton({ count = 3 }: SkeletonListProps) {
           <View
             key={i}
             style={[
-              styles.girlCard,
+              styles.contactCard,
               { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
             ]}
           >
             <SkeletonAvatar size={56} />
-            <View style={styles.girlInfo}>
+            <View style={styles.contactInfo}>
               <Skeleton width="60%" height={18} />
               <Skeleton width="40%" height={14} style={{ marginTop: 8 }} />
             </View>
@@ -345,14 +345,14 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
   },
-  girlCard: {
+  contactCard: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
   },
-  girlInfo: {
+  contactInfo: {
     flex: 1,
     marginLeft: 12,
   },

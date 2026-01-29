@@ -1,4 +1,4 @@
-export interface Girl {
+export interface Contact {
   id: number;
   name: string;
   nickname?: string;
@@ -9,7 +9,7 @@ export interface Girl {
   occupation?: string;
   howMet?: string;
   relationshipStage: 'just_met' | 'talking' | 'flirting' | 'dating' | 'serious';
-  herTextingStyle?: string;
+  theirTextingStyle?: string;
   responseTime?: string;
   importantDates?: string;
   topics?: string;
@@ -70,20 +70,20 @@ export type RootStackParamList = {
   Main: undefined; // Bottom tab navigator
   Home: undefined;
   Chat: undefined;
-  AddGirl: undefined;
-  GirlProfile: { girlId?: number };
+  AddContact: undefined;
+  ContactProfile: { contactId?: number };
   Settings: undefined;
   Welcome: undefined;
   Onboarding: undefined;
   ApiKeySetup: { fromSettings?: boolean };
   Permissions: { fromSettings?: boolean };
   UserProfileSetup: { fromSettings?: boolean };
-  ScreenshotAnalysis: { imageUri?: string; imageBase64?: string; girlId?: number };
+  ScreenshotAnalysis: { imageUri?: string; imageBase64?: string; contactId?: number };
   // Phase 8: Settings screens
   Preferences: undefined;
   About: undefined;
   // Chat History Timeline
-  ChatHistory: { girlId: number };
+  ChatHistory: { contactId: number };
 };
 
 // Navigation prop types for screens

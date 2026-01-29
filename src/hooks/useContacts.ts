@@ -1,16 +1,16 @@
 /**
- * useGirls Hook (2.4.2)
- * Get girls list with filtering and sorting
+ * useContacts Hook (2.4.2)
+ * Get contacts list with filtering and sorting
  */
 
 import { useMemo, useState, useCallback } from 'react';
 import { useStore } from '../stores/useStore';
-import { Girl, RelationshipStage } from '../types';
+import { Contact, RelationshipStage } from '../types';
 
 export type SortOption = 'name' | 'recent' | 'stage' | 'messageCount';
 export type SortDirection = 'asc' | 'desc';
 
-export interface GirlsFilter {
+export interface ContactsFilter {
   search?: string;
   stage?: RelationshipStage | RelationshipStage[];
   minMessages?: number;
@@ -18,19 +18,19 @@ export interface GirlsFilter {
 }
 
 interface UseGirlsOptions {
-  filter?: GirlsFilter;
+  filter?: ContactsFilter;
   sort?: SortOption;
   sortDirection?: SortDirection;
   limit?: number;
 }
 
 interface UseGirlsResult {
-  girls: Girl[];
+  contacts: Contact[];
   total: number;
   filtered: number;
   // Filter controls
-  filter: GirlsFilter;
-  setFilter: (filter: GirlsFilter) => void;
+  filter: ContactsFilter;
+  setFilter: (filter: ContactsFilter) => void;
   clearFilter: () => void;
   // Sort controls
   sort: SortOption;
@@ -48,17 +48,17 @@ const stageOrder: Record<RelationshipStage, number> = {
   serious: 4,
 };
 
-export const useGirls = (options: UseGirlsOptions = {}): UseGirlsResult => {
-  const allGirls = useStore((state) => state.girls);
+export const useContacts = (options: UseGirlsOptions = {}): UseGirlsResult => {
+  const allGirls = useStore((state) => state.contacts);
 
-  const [filter, setFilter] = useState<GirlsFilter>(options.filter || {});
+  const [filter, setFilter] = useState<ContactsFilter>(options.filter || {});
   const [sort, setSort] = useState<SortOption>(options.sort || 'recent');
   const [sortDirection, setSortDirection] = useState<SortDirection>(
     options.sortDirection || 'desc'
   );
 
-  // Filter girls
-  const filteredGirls = useMemo(() => {
+  // Filter contacts
+  const filteredContacts = useMemo(() => {
     let result = [...allGirls];
 
     // Search filter
@@ -92,9 +92,9 @@ export const useGirls = (options: UseGirlsOptions = {}): UseGirlsResult => {
     return result;
   }, [allGirls, filter]);
 
-  // Sort girls
+  // Sort contacts
   const sortedGirls = useMemo(() => {
-    const result = [...filteredGirls];
+    const result = [...filteredContacts];
     const dir = sortDirection === 'asc' ? 1 : -1;
 
     result.sort((a, b) => {
@@ -120,7 +120,7 @@ export const useGirls = (options: UseGirlsOptions = {}): UseGirlsResult => {
     });
 
     return result;
-  }, [filteredGirls, sort, sortDirection]);
+  }, [filteredContacts, sort, sortDirection]);
 
   // Apply limit
   const limitedGirls = useMemo(() => {
@@ -147,9 +147,9 @@ export const useGirls = (options: UseGirlsOptions = {}): UseGirlsResult => {
   }, []);
 
   return {
-    girls: limitedGirls,
+    contacts: limitedGirls,
     total: allGirls.length,
-    filtered: filteredGirls.length,
+    filtered: filteredContacts.length,
     filter,
     setFilter,
     clearFilter,
@@ -160,4 +160,4 @@ export const useGirls = (options: UseGirlsOptions = {}): UseGirlsResult => {
   };
 };
 
-export default useGirls;
+export default useContacts;

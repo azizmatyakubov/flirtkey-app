@@ -7,8 +7,8 @@ import type { RootStackParamList } from './index';
 // Screen props type for each screen
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ChatScreenProps = NativeStackScreenProps<RootStackParamList, 'Chat'>;
-export type AddGirlScreenProps = NativeStackScreenProps<RootStackParamList, 'AddGirl'>;
-export type GirlProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'GirlProfile'>;
+export type AddContactScreenProps = NativeStackScreenProps<RootStackParamList, 'AddContact'>;
+export type ContactProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'ContactProfile'>;
 export type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 export type WelcomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 export type OnboardingScreenProps = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;

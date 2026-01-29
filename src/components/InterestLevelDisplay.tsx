@@ -42,10 +42,10 @@ const getVibeCheck = (level: number): { emoji: string; text: string; color: stri
 
 const getLowInterestWarning = (level: number): string | null => {
   if (level <= 2) {
-    return "⚠️ Interest is very low. Consider switching topics or giving her space.";
+    return "⚠️ Interest is very low. Consider switching topics or giving them space.";
   }
   if (level <= 3) {
-    return "💡 Tip: Try asking about something she's passionate about.";
+    return "💡 Tip: Try asking about something they're passionate about.";
   }
   return null;
 };

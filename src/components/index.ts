@@ -137,7 +137,7 @@ export {
   SkeletonAvatar,
   SkeletonButton,
   SkeletonCard,
-  GirlListSkeleton,
+  ContactListSkeleton,
   ChatSkeleton,
   SuggestionSkeleton,
   ProfileSkeleton,
@@ -151,7 +151,7 @@ export { ErrorBoundary, ScreenErrorBoundary } from './ErrorBoundary';
 // 8.5.2 Empty States
 export {
   EmptyState as EmptyStateBase,
-  NoGirlsEmpty,
+  NoContactsEmpty,
   NoSuggestionsEmpty,
   NoConversationHistoryEmpty,
   NoAnalysisEmpty,
@@ -177,7 +177,7 @@ export { CelebrationAnimation } from './CelebrationAnimation';
 export { OfflineIndicator, useNetworkStatus } from './OfflineIndicator';
 
 // Optimized List Components
-export { GirlCard } from './GirlCard';
+export { ContactCard } from './ContactCard';
 
 // Chat Components
 export { ChatBubble } from './ChatBubble';

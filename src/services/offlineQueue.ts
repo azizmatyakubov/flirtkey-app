@@ -16,8 +16,8 @@ export interface QueuedRequest {
   params: Record<string, unknown>;
   timestamp: number;
   retryCount: number;
-  girlId?: string;
-  girlName?: string;
+  contactId?: string;
+  contactName?: string;
   preview?: string; // Short preview of what was requested
 }
 
@@ -116,8 +116,8 @@ function generateId(): string {
 function createPreview(type: string, params: Record<string, unknown>): string {
   switch (type) {
     case 'flirt':
-      return params['herMessage']
-        ? `Reply to: "${String(params['herMessage']).slice(0, 30)}..."`
+      return params['theirMessage']
+        ? `Reply to: "${String(params['theirMessage']).slice(0, 30)}..."`
         : 'Generate reply';
     case 'screenshot':
       return 'Analyze screenshot';
@@ -139,8 +139,8 @@ function createPreview(type: string, params: Record<string, unknown>): string {
 export async function addToQueue(
   type: QueuedRequest['type'],
   params: Record<string, unknown>,
-  girlId?: string,
-  girlName?: string
+  contactId?: string,
+  contactName?: string
 ): Promise<string> {
   // Enforce max queue size
   if (state.queue.length >= MAX_QUEUE_SIZE) {
@@ -154,8 +154,8 @@ export async function addToQueue(
     params,
     timestamp: Date.now(),
     retryCount: 0,
-    girlId,
-    girlName,
+    contactId,
+    contactName,
     preview: createPreview(type, params),
   };
 

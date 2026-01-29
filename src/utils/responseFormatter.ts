@@ -54,8 +54,8 @@ export function detectLanguage(text: string): SupportedLanguage {
 }
 
 // Match response language to input
-export function shouldMatchLanguage(herMessage: string): SupportedLanguage {
-  return detectLanguage(herMessage);
+export function shouldMatchLanguage(theirMessage: string): SupportedLanguage {
+  return detectLanguage(theirMessage);
 }
 
 // Language-specific adjustments
@@ -163,12 +163,12 @@ export function normalizeEmojis(text: string, maxEmojis: number = 3): string {
 // Match message length/style
 export function matchMessageStyle(
   suggestion: string,
-  herMessage: string,
+  theirMessage: string,
   options: { lengthTolerance?: number } = {}
 ): string {
   const { lengthTolerance = 0.5 } = options;
 
-  const herLength = herMessage.length;
+  const herLength = theirMessage.length;
   const suggestionLength = suggestion.length;
 
   // If suggestion is way longer, truncate smartly
@@ -252,7 +252,7 @@ export function matchTextingStyle(text: string, style: TextingStyle): string {
 
 export interface FormatOptions {
   language?: SupportedLanguage;
-  herMessage?: string;
+  theirMessage?: string;
   addEmojis?: boolean;
   matchLength?: boolean;
   matchStyle?: boolean;
@@ -263,21 +263,21 @@ export function formatSuggestion(suggestion: Suggestion, options: FormatOptions 
   let text = suggestion.text;
 
   const {
-    herMessage,
+    theirMessage,
     addEmojis = true,
     matchLength = true,
     matchStyle = true,
     maxEmojis = 2,
   } = options;
 
-  // Match length if her message provided
-  if (matchLength && herMessage) {
-    text = matchMessageStyle(text, herMessage);
+  // Match length if their message provided
+  if (matchLength && theirMessage) {
+    text = matchMessageStyle(text, theirMessage);
   }
 
   // Match texting style
-  if (matchStyle && herMessage) {
-    const style = detectTextingStyle(herMessage);
+  if (matchStyle && theirMessage) {
+    const style = detectTextingStyle(theirMessage);
     text = matchTextingStyle(text, style);
   }
 

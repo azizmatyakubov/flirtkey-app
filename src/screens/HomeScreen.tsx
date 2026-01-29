@@ -1,6 +1,6 @@
 /**
  * HomeScreen
- * Girls list with search, sort, swipe-to-delete, and animations
+ * Contacts list with search, sort, swipe-to-delete, and animations
  * Tasks: 4.2.5-4.2.12
  */
 
@@ -20,7 +20,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '../stores/useStore';
-import { Girl } from '../types';
+import { Contact } from '../types';
 import { Avatar } from '../components/Avatar';
 import { StageBadge } from '../components/Badge';
 import { SearchBar } from '../components/SearchBar';
@@ -46,7 +46,7 @@ const SORT_OPTIONS = [
   { key: 'messages', label: 'Message Count', icon: 'chatbubble-outline' },
 ];
 
-const STAGE_ORDER: Record<Girl['relationshipStage'], number> = {
+const STAGE_ORDER: Record<Contact['relationshipStage'], number> = {
   just_met: 1,
   talking: 2,
   flirting: 3,
@@ -55,9 +55,9 @@ const STAGE_ORDER: Record<Girl['relationshipStage'], number> = {
 };
 
 export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const girls = useStore((s) => s.girls);
-  const selectGirl = useStore((s) => s.selectGirl);
-  const deleteGirl = useStore((s) => s.deleteGirl);
+  const contacts = useStore((s) => s.contacts);
+  const selectContact = useStore((s) => s.selectContact);
+  const deleteContact = useStore((s) => s.deleteContact);
   const apiKey = useStore((s) => s.apiKey);
   const { showToast } = useToast();
 
@@ -65,7 +65,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState('recent');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<Girl | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
 
   // Animation values for list items
   const animatedValues = useRef<Map<number, Animated.Value>>(new Map()).current;
@@ -77,9 +77,9 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
     return animatedValues.get(id)!;
   };
 
-  // Filter and sort girls
-  const filteredGirls = useMemo(() => {
-    let result = [...girls];
+  // Filter and sort contacts
+  const filteredContacts = useMemo(() => {
+    let result = [...contacts];
 
     // Search filter (4.2.5)
     if (searchQuery.trim()) {
@@ -114,29 +114,29 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
     });
 
     return result;
-  }, [girls, searchQuery, sortKey]);
+  }, [contacts, searchQuery, sortKey]);
 
-  // Handle girl selection
-  const handleSelectGirl = useCallback(
-    (girl: Girl) => {
-      selectGirl(girl);
+  // Handle contact selection
+  const handleSelectContact = useCallback(
+    (contact: Contact) => {
+      selectContact(contact);
       navigation.navigate('Chat');
     },
-    [selectGirl, navigation]
+    [selectContact, navigation]
   );
 
   // Handle edit (long press or swipe)
-  const handleEditGirl = useCallback(
-    (girl: Girl) => {
-      selectGirl(girl);
-      navigation.navigate({ name: 'GirlProfile', params: {} });
+  const handleEditContact = useCallback(
+    (contact: Contact) => {
+      selectContact(contact);
+      navigation.navigate({ name: 'ContactProfile', params: {} });
     },
-    [selectGirl, navigation]
+    [selectContact, navigation]
   );
 
   // Handle delete confirmation
-  const handleDeleteGirl = useCallback((girl: Girl) => {
-    setDeleteTarget(girl);
+  const handleDeleteContact = useCallback((contact: Contact) => {
+    setDeleteTarget(contact);
   }, []);
 
   // Confirm delete with animation (4.2.7)
@@ -152,7 +152,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
       useNativeDriver: true,
     }).start(() => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      deleteGirl(deleteTarget.id);
+      deleteContact(deleteTarget.id);
       animatedValues.delete(deleteTarget.id);
       showToast({
         message: `${deleteTarget.name} removed`,
@@ -160,7 +160,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
       });
       setDeleteTarget(null);
     });
-  }, [deleteTarget, deleteGirl, showToast]);
+  }, [deleteTarget, deleteContact, showToast]);
 
   // Pull to refresh (4.2.10)
   const handleRefresh = useCallback(async () => {
@@ -170,9 +170,9 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
     setIsRefreshing(false);
   }, []);
 
-  // Render girl card with animations (4.2.11)
-  const renderGirl = useCallback(
-    ({ item }: { item: Girl }) => {
+  // Render contact card with animations (4.2.11)
+  const renderContact = useCallback(
+    ({ item }: { item: Contact }) => {
       const animValue = getAnimatedValue(item.id);
 
       return (
@@ -192,22 +192,22 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
             },
           ]}
         >
-          <SwipeableRow onDelete={() => handleDeleteGirl(item)} onEdit={() => handleEditGirl(item)}>
+          <SwipeableRow onDelete={() => handleDeleteContact(item)} onEdit={() => handleEditContact(item)}>
             <TouchableOpacity
-              style={styles.girlCard}
-              onPress={() => handleSelectGirl(item)}
-              onLongPress={() => handleEditGirl(item)}
+              style={styles.contactCard}
+              onPress={() => handleSelectContact(item)}
+              onLongPress={() => handleEditContact(item)}
               activeOpacity={0.7}
               accessibilityLabel={`${item.name}, ${item.relationshipStage.replace('_', ' ')}, ${item.messageCount} messages`}
               accessibilityRole="button"
               accessibilityHint="Tap to open chat, long press to edit"
             >
               <Avatar name={item.name} imageUri={item.avatar} size="md" />
-              <View style={styles.girlInfo}>
-                <Text style={styles.girlName}>{item.name}</Text>
+              <View style={styles.contactInfo}>
+                <Text style={styles.contactName}>{item.name}</Text>
                 <StageBadge stage={item.relationshipStage} size="sm" />
               </View>
-              <View style={styles.girlMeta}>
+              <View style={styles.contactMeta}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                   <Text style={styles.messageCount}>{item.messageCount}</Text>
                   <Ionicons name="chatbubble-outline" size={14} color={darkColors.textSecondary} />
@@ -218,7 +218,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
         </Animated.View>
       );
     },
-    [handleSelectGirl, handleEditGirl, handleDeleteGirl]
+    [handleSelectContact, handleEditContact, handleDeleteContact]
   );
 
   // Empty state component (4.2.9)
@@ -251,7 +251,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
         <Text style={styles.emptyTitle}>Add your first connection</Text>
         <Text style={styles.emptySubtext}>Get AI-powered replies tailored just for them</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('AddGirl')}
+          onPress={() => navigation.navigate('AddContact')}
           activeOpacity={0.85}
           style={styles.emptyCTAWrapper}
         >
@@ -303,7 +303,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
       )}
 
       {/* Search and Sort Bar (4.2.5, 4.2.6) */}
-      {girls.length > 0 && (
+      {contacts.length > 0 && (
         <View style={styles.toolbar}>
           <SearchBar
             value={searchQuery}
@@ -315,12 +315,12 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
         </View>
       )}
 
-      {/* Girls List */}
+      {/* Contacts List */}
       <FlatList
-        data={filteredGirls}
-        renderItem={renderGirl}
+        data={filteredContacts}
+        renderItem={renderContact}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={[styles.list, filteredGirls.length === 0 && styles.listEmpty]}
+        contentContainerStyle={[styles.list, filteredContacts.length === 0 && styles.listEmpty]}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
           <RefreshControl
@@ -346,7 +346,7 @@ export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
       {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddGirl')}
+        onPress={() => navigation.navigate('AddContact')}
         activeOpacity={0.85}
         accessibilityLabel="Add new connection"
         accessibilityRole="button"
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginBottom: 12,
   },
-  girlCard: {
+  contactCard: {
     backgroundColor: darkColors.surface,
     borderRadius: borderRadius.lg,
     padding: 16,
@@ -457,18 +457,18 @@ const styles = StyleSheet.create({
     borderColor: darkColors.border,
     ...shadows.md,
   },
-  girlInfo: {
+  contactInfo: {
     flex: 1,
     marginLeft: 16,
     gap: spacing.xs,
   },
-  girlName: {
+  contactName: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '700',
     fontFamily: fonts.bold,
   },
-  girlMeta: {
+  contactMeta: {
     alignItems: 'flex-end',
   },
   messageCount: {

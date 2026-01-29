@@ -3,7 +3,7 @@
  * Phase 5.2: Prompt Engineering
  */
 
-import { Girl, Culture } from '../types';
+import { Contact, Culture } from '../types';
 
 // ==========================================
 // 5.2.5: Prompt Versioning
@@ -73,7 +73,7 @@ export const CULTURE_STYLES: Record<Culture, { traits: string[]; avoid: string[]
     traits: [
       'Be genuine and authentic',
       'Listen more than talk',
-      'Match her energy',
+      'Match their energy',
       'Show consistent interest',
     ],
     avoid: ['Generic pickup lines', 'Being desperate', 'Inconsistent behavior'],
@@ -104,7 +104,7 @@ export const STAGES = {
   serious: { 
     name: 'Serious', 
     tone: 'Loving, supportive, playful',
-    tips: ['Maintain excitement', 'Communicate openly', 'Support her goals'],
+    tips: ['Maintain excitement', 'Communicate openly', 'Support their goals'],
   },
 };
 
@@ -134,35 +134,35 @@ export function sanitizeInput(input: string): string {
 // ==========================================
 
 export interface FlirtPromptParams {
-  girl: Girl;
-  herMessage: string;
+  contact: Contact;
+  theirMessage: string;
   userCulture: Culture;
   context?: string;
 }
 
 export function buildFlirtPrompt(params: FlirtPromptParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, herMessage, userCulture, context } = params;
-  const culture = CULTURE_STYLES[girl.culture as Culture || userCulture || 'universal'];
-  const stage = STAGES[girl.relationshipStage || 'just_met'];
+  const { contact, theirMessage, userCulture, context } = params;
+  const culture = CULTURE_STYLES[contact.culture as Culture || userCulture || 'universal'];
+  const stage = STAGES[contact.relationshipStage || 'just_met'];
   
   // Sanitize all user inputs
-  const safeName = sanitizeInput(girl.name);
-  const safeMessage = sanitizeInput(herMessage);
+  const safeName = sanitizeInput(contact.name);
+  const safeMessage = sanitizeInput(theirMessage);
   const safeContext = context ? sanitizeInput(context) : '';
   
   const prompt = `You are FlirtKey, an expert dating assistant.
 
-## ABOUT HER (${safeName}):
-- Age: ${girl.age || 'Unknown'}
-- Personality: ${sanitizeInput(girl.personality || 'Unknown')}
-- Interests: ${sanitizeInput(girl.interests || 'Unknown')}
-- How they met: ${sanitizeInput(girl.howMet || 'Unknown')}
+## ABOUT THEM (${safeName}):
+- Age: ${contact.age || 'Unknown'}
+- Personality: ${sanitizeInput(contact.personality || 'Unknown')}
+- Interests: ${sanitizeInput(contact.interests || 'Unknown')}
+- How they met: ${sanitizeInput(contact.howMet || 'Unknown')}
 - Relationship Stage: ${stage.name}
-- Things she loves: ${sanitizeInput(girl.greenLights || 'Unknown')}
-- Things to AVOID: ${sanitizeInput(girl.redFlags || 'Unknown')}
-- Inside jokes: ${sanitizeInput(girl.insideJokes || 'None yet')}
-- Her texting style: ${sanitizeInput(girl.herTextingStyle || 'Unknown')}
-- Last topic: ${sanitizeInput(girl.lastTopic || 'Unknown')}
+- Things they love: ${sanitizeInput(contact.greenLights || 'Unknown')}
+- Things to AVOID: ${sanitizeInput(contact.redFlags || 'Unknown')}
+- Inside jokes: ${sanitizeInput(contact.insideJokes || 'None yet')}
+- Their texting style: ${sanitizeInput(contact.theirTextingStyle || 'Unknown')}
+- Last topic: ${sanitizeInput(contact.lastTopic || 'Unknown')}
 
 ## CULTURAL GUIDELINES:
 ${culture.traits.map((t) => `- ${t}`).join('\n')}
@@ -191,10 +191,10 @@ Generate 3 response options in JSON format:
 RULES:
 1. Keep ${stage.tone} tone
 2. Be specific and actionable
-3. Match the length and energy of her messages
-4. Include her interests/inside jokes when relevant
-5. interestLevel should be 1-10 based on her message enthusiasm
-6. mood should describe her current vibe (playful, serious, flirty, distant, etc.)`;
+3. Match the length and energy of their messages
+4. Include their interests/inside jokes when relevant
+5. interestLevel should be 1-10 based on their message enthusiasm
+6. mood should describe their current vibe (playful, serious, flirty, distant, etc.)`;
 
   return {
     prompt,
@@ -212,26 +212,26 @@ RULES:
 // ==========================================
 
 export interface ScreenshotPromptParams {
-  girl: Girl | null;
+  contact: Contact | null;
   userCulture: Culture;
 }
 
 export function buildScreenshotPrompt(params: ScreenshotPromptParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, userCulture } = params;
-  const culture = CULTURE_STYLES[girl?.culture as Culture || userCulture || 'universal'];
+  const { contact, userCulture } = params;
+  const culture = CULTURE_STYLES[contact?.culture as Culture || userCulture || 'universal'];
   
-  const girlContext = girl
-    ? `## CONTEXT ABOUT HER (${sanitizeInput(girl.name)}):
-- Relationship Stage: ${STAGES[girl.relationshipStage]?.name || 'Unknown'}
-- Her interests: ${sanitizeInput(girl.interests || 'Unknown')}
-- Things to avoid: ${sanitizeInput(girl.redFlags || 'Unknown')}
-- Inside jokes: ${sanitizeInput(girl.insideJokes || 'None')}
-- Her texting style: ${sanitizeInput(girl.herTextingStyle || 'Unknown')}`
+  const contactContext = contact
+    ? `## CONTEXT ABOUT THEM (${sanitizeInput(contact.name)}):
+- Relationship Stage: ${STAGES[contact.relationshipStage]?.name || 'Unknown'}
+- Their interests: ${sanitizeInput(contact.interests || 'Unknown')}
+- Things to avoid: ${sanitizeInput(contact.redFlags || 'Unknown')}
+- Inside jokes: ${sanitizeInput(contact.insideJokes || 'None')}
+- Their texting style: ${sanitizeInput(contact.theirTextingStyle || 'Unknown')}`
     : 'No prior context about this person.';
 
   const prompt = `You are FlirtKey analyzing a chat screenshot.
 
-${girlContext}
+${contactContext}
 
 ## CULTURAL GUIDELINES:
 ${culture.traits.map((t) => `- ${t}`).join('\n')}
@@ -241,7 +241,7 @@ AVOID: ${culture.avoid.join(', ')}
 1. Read all visible messages carefully
 2. Identify the conversation flow and energy
 3. Note topics, questions, or hooks to build on
-4. Assess her interest level (1-10) and mood
+4. Assess their interest level (1-10) and mood
 5. Look for any red flags or positive signals
 
 Respond with JSON only:
@@ -253,7 +253,7 @@ Respond with JSON only:
   ],
   "proTip": "specific advice about this conversation",
   "interestLevel": 1-10,
-  "mood": "her current mood/vibe",
+  "mood": "their current mood/vibe",
   "conversationSummary": "brief summary of visible conversation"
 }`;
 
@@ -273,18 +273,18 @@ Respond with JSON only:
 // ==========================================
 
 export interface ConversationStarterParams {
-  girl: Girl;
+  contact: Contact;
   userCulture: Culture;
   scenario?: 'first_message' | 'revive_conversation' | 'after_date' | 'morning' | 'night';
 }
 
 export function buildConversationStarterPrompt(params: ConversationStarterParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, userCulture, scenario = 'first_message' } = params;
-  const culture = CULTURE_STYLES[girl.culture as Culture || userCulture || 'universal'];
-  const stage = STAGES[girl.relationshipStage || 'just_met'];
+  const { contact, userCulture, scenario = 'first_message' } = params;
+  const culture = CULTURE_STYLES[contact.culture as Culture || userCulture || 'universal'];
+  const stage = STAGES[contact.relationshipStage || 'just_met'];
   
   const scenarioContext: Record<string, string> = {
-    first_message: 'This is the FIRST message ever to her. Make it memorable but not overwhelming.',
+    first_message: 'This is the FIRST message ever to them. Make it memorable but not overwhelming.',
     revive_conversation: 'The conversation went quiet for a while. Revive it naturally without being needy.',
     after_date: 'You just had a date. Follow up appropriately based on how it went.',
     morning: 'Morning message - keep it light and sweet, not too demanding.',
@@ -293,14 +293,14 @@ export function buildConversationStarterPrompt(params: ConversationStarterParams
   
   const prompt = `You are FlirtKey helping start/continue a conversation.
 
-## ABOUT HER (${sanitizeInput(girl.name)}):
-- Age: ${girl.age || 'Unknown'}
-- Personality: ${sanitizeInput(girl.personality || 'Unknown')}
-- Interests: ${sanitizeInput(girl.interests || 'Unknown')}
-- How they met: ${sanitizeInput(girl.howMet || 'Unknown')}
+## ABOUT THEM (${sanitizeInput(contact.name)}):
+- Age: ${contact.age || 'Unknown'}
+- Personality: ${sanitizeInput(contact.personality || 'Unknown')}
+- Interests: ${sanitizeInput(contact.interests || 'Unknown')}
+- How they met: ${sanitizeInput(contact.howMet || 'Unknown')}
 - Relationship Stage: ${stage.name}
-- Inside jokes: ${sanitizeInput(girl.insideJokes || 'None yet')}
-- Last topic: ${sanitizeInput(girl.lastTopic || 'Unknown')}
+- Inside jokes: ${sanitizeInput(contact.insideJokes || 'None yet')}
+- Last topic: ${sanitizeInput(contact.lastTopic || 'Unknown')}
 
 ## CULTURAL GUIDELINES:
 ${culture.traits.map((t) => `- ${t}`).join('\n')}
@@ -322,7 +322,7 @@ Generate 3 conversation starter options:
 
 RULES:
 1. Be ${stage.tone}
-2. Reference her interests or inside jokes when possible
+2. Reference their interests or inside jokes when possible
 3. Don't ask "how are you" - be more creative
 4. Keep it natural, not scripted`;
 
@@ -342,7 +342,7 @@ RULES:
 // ==========================================
 
 export interface DateIdeaParams {
-  girl: Girl;
+  contact: Contact;
   userCulture: Culture;
   dateNumber?: number;
   budget?: 'low' | 'medium' | 'high';
@@ -350,17 +350,17 @@ export interface DateIdeaParams {
 }
 
 export function buildDateIdeaPrompt(params: DateIdeaParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, userCulture, dateNumber = 1, budget = 'medium', location } = params;
-  const culture = CULTURE_STYLES[girl.culture as Culture || userCulture || 'universal'];
+  const { contact, userCulture, dateNumber = 1, budget = 'medium', location } = params;
+  const culture = CULTURE_STYLES[contact.culture as Culture || userCulture || 'universal'];
   
   const prompt = `You are FlirtKey suggesting date ideas.
 
-## ABOUT HER (${sanitizeInput(girl.name)}):
-- Age: ${girl.age || 'Unknown'}
-- Personality: ${sanitizeInput(girl.personality || 'Unknown')}
-- Interests: ${sanitizeInput(girl.interests || 'Unknown')}
-- Things she loves: ${sanitizeInput(girl.greenLights || 'Unknown')}
-- Things to AVOID: ${sanitizeInput(girl.redFlags || 'Unknown')}
+## ABOUT THEM (${sanitizeInput(contact.name)}):
+- Age: ${contact.age || 'Unknown'}
+- Personality: ${sanitizeInput(contact.personality || 'Unknown')}
+- Interests: ${sanitizeInput(contact.interests || 'Unknown')}
+- Things they love: ${sanitizeInput(contact.greenLights || 'Unknown')}
+- Things to AVOID: ${sanitizeInput(contact.redFlags || 'Unknown')}
 
 ## CULTURAL CONTEXT:
 ${culture.traits.map((t) => `- ${t}`).join('\n')}
@@ -377,7 +377,7 @@ Generate 3 date ideas:
     {
       "type": "safe",
       "idea": "...",
-      "why": "why this fits her",
+      "why": "why this fits them",
       "howToAsk": "how to suggest this date",
       "tips": ["tip1", "tip2"]
     },
@@ -402,24 +402,24 @@ Generate 3 date ideas:
 // ==========================================
 
 export interface WhatToAvoidParams {
-  girl: Girl;
+  contact: Contact;
   userCulture: Culture;
   recentMessages?: string[];
 }
 
 export function buildWhatToAvoidPrompt(params: WhatToAvoidParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, userCulture, recentMessages } = params;
-  const culture = CULTURE_STYLES[girl.culture as Culture || userCulture || 'universal'];
+  const { contact, userCulture, recentMessages } = params;
+  const culture = CULTURE_STYLES[contact.culture as Culture || userCulture || 'universal'];
   
   const prompt = `You are FlirtKey analyzing what to AVOID with this person.
 
-## ABOUT HER (${sanitizeInput(girl.name)}):
-- Personality: ${sanitizeInput(girl.personality || 'Unknown')}
-- Known red flags: ${sanitizeInput(girl.redFlags || 'None specified')}
-- Her texting style: ${sanitizeInput(girl.herTextingStyle || 'Unknown')}
+## ABOUT THEM (${sanitizeInput(contact.name)}):
+- Personality: ${sanitizeInput(contact.personality || 'Unknown')}
+- Known red flags: ${sanitizeInput(contact.redFlags || 'None specified')}
+- Their texting style: ${sanitizeInput(contact.theirTextingStyle || 'Unknown')}
 
 ## CULTURAL CONTEXT:
-Things to avoid in ${girl.culture || userCulture || 'universal'} culture:
+Things to avoid in ${contact.culture || userCulture || 'universal'} culture:
 ${culture.avoid.map((a) => `- ${a}`).join('\n')}
 
 ${recentMessages?.length ? `## RECENT MESSAGES:\n${recentMessages.map(m => `- "${sanitizeInput(m)}"`).join('\n')}` : ''}
@@ -450,29 +450,29 @@ Analyze and list things to avoid:
 // ==========================================
 
 export interface InterestLevelParams {
-  girl: Girl;
-  messages: Array<{ from: 'her' | 'me'; text: string }>;
+  contact: Contact;
+  messages: Array<{ from: 'them' | 'me'; text: string }>;
 }
 
 export function buildInterestLevelPrompt(params: InterestLevelParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, messages } = params;
+  const { contact, messages } = params;
   
   const messagesText = messages
     .slice(-10) // Last 10 messages
-    .map((m) => `${m.from === 'her' ? girl.name : 'You'}: "${sanitizeInput(m.text)}"`)
+    .map((m) => `${m.from === 'them' ? contact.name : 'You'}: "${sanitizeInput(m.text)}"`)
     .join('\n');
   
   const prompt = `You are FlirtKey analyzing interest levels.
 
-## ABOUT HER (${sanitizeInput(girl.name)}):
-- Relationship Stage: ${STAGES[girl.relationshipStage]?.name || 'Unknown'}
-- Her texting style: ${sanitizeInput(girl.herTextingStyle || 'Unknown')}
+## ABOUT THEM (${sanitizeInput(contact.name)}):
+- Relationship Stage: ${STAGES[contact.relationshipStage]?.name || 'Unknown'}
+- Their texting style: ${sanitizeInput(contact.theirTextingStyle || 'Unknown')}
 
 ## RECENT MESSAGES:
 ${messagesText}
 
 ## YOUR TASK:
-Analyze her interest level:
+Analyze their interest level:
 {
   "interestLevel": 1-10,
   "trend": "increasing" | "stable" | "decreasing",
@@ -491,7 +491,7 @@ Consider:
 - Question asking (shows curiosity)
 - Emoji usage
 - Response enthusiasm
-- Initiative (does she start conversations?)`;
+- Initiative (do they start conversations?)`;
 
   return {
     prompt,
@@ -509,16 +509,16 @@ Consider:
 // ==========================================
 
 export interface RedFlagParams {
-  girl: Girl;
-  messages: Array<{ from: 'her' | 'me'; text: string }>;
+  contact: Contact;
+  messages: Array<{ from: 'them' | 'me'; text: string }>;
 }
 
 export function buildRedFlagPrompt(params: RedFlagParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, messages } = params;
+  const { contact, messages } = params;
   
   const messagesText = messages
     .slice(-15)
-    .map((m) => `${m.from === 'her' ? girl.name : 'You'}: "${sanitizeInput(m.text)}"`)
+    .map((m) => `${m.from === 'them' ? contact.name : 'You'}: "${sanitizeInput(m.text)}"`)
     .join('\n');
   
   const prompt = `You are FlirtKey detecting red flags in conversations.
@@ -579,21 +579,21 @@ GREEN FLAGS TO LOOK FOR:
 // ==========================================
 
 export interface TimingParams {
-  girl: Girl;
+  contact: Contact;
   messageType: 'text' | 'ask_out' | 'follow_up' | 'morning' | 'night';
   lastMessageTime?: Date;
   timezone?: string;
 }
 
 export function buildTimingPrompt(params: TimingParams): { prompt: string; metadata: PromptMetadata } {
-  const { girl, messageType, lastMessageTime, timezone } = params;
+  const { contact, messageType, lastMessageTime, timezone } = params;
   
   const prompt = `You are FlirtKey advising on message timing.
 
-## ABOUT HER:
-- Her texting style: ${sanitizeInput(girl.herTextingStyle || 'Unknown')}
-- Response time pattern: ${sanitizeInput(girl.responseTime || 'Unknown')}
-- Relationship Stage: ${STAGES[girl.relationshipStage]?.name || 'Unknown'}
+## ABOUT THEM:
+- Their texting style: ${sanitizeInput(contact.theirTextingStyle || 'Unknown')}
+- Response time pattern: ${sanitizeInput(contact.responseTime || 'Unknown')}
+- Relationship Stage: ${STAGES[contact.relationshipStage]?.name || 'Unknown'}
 
 ## CONTEXT:
 - Message type: ${messageType}
@@ -613,8 +613,8 @@ Suggest optimal timing:
 
 TIMING PRINCIPLES:
 - Don't double text too quickly
-- Match her response patterns
-- Consider her schedule/lifestyle
+- Match their response patterns
+- Consider their schedule/lifestyle
 - Morning texts feel different than night texts
 - Weekends vs weekdays matter`;
 
@@ -664,7 +664,7 @@ export function isPromptWithinLimit(prompt: string, maxTokens: number = 4000): b
 
 export const PROMPT_STRATEGIES = {
   persona: 'Always introduce the AI as "FlirtKey" - a knowledgeable dating assistant',
-  context: 'Provide comprehensive context about the girl to enable personalized responses',
+  context: 'Provide comprehensive context about the contact to enable personalized responses',
   structure: 'Request JSON output for consistent parsing',
   tone: 'Adjust tone based on relationship stage',
   culture: 'Include cultural guidelines to respect differences',

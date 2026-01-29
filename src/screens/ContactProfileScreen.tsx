@@ -1,6 +1,6 @@
 /**
- * GirlProfileScreen
- * Edit girl profile with change detection, completeness indicator, and conversation history
+ * ContactProfileScreen
+ * Edit contact profile with change detection, completeness indicator, and conversation history
  * Tasks: 4.3.10-4.3.15
  */
 
@@ -56,11 +56,11 @@ interface FormState {
   avatar?: string;
 }
 
-export function GirlProfileScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const selectedGirl = useStore((s) => s.selectedGirl);
-  const updateGirl = useStore((s) => s.updateGirl);
-  const deleteGirl = useStore((s) => s.deleteGirl);
-  const getConversationsForGirl = useStore((s) => s.getConversationsForGirl);
+export function ContactProfileScreen({ navigation }: { navigation: RootNavigationProp }) {
+  const selectedContact = useStore((s) => s.selectedContact);
+  const updateContact = useStore((s) => s.updateContact);
+  const deleteContact = useStore((s) => s.deleteContact);
+  const getConversationsForContact = useStore((s) => s.getConversationsForContact);
   const { showToast } = useToast();
   const { pickFromLibrary } = useImagePicker({
     allowsEditing: true,
@@ -69,15 +69,15 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
 
   const originalValues = useMemo(
     () => ({
-      personality: selectedGirl?.personality || '',
-      interests: selectedGirl?.interests || '',
-      greenLights: selectedGirl?.greenLights || '',
-      redFlags: selectedGirl?.redFlags || '',
-      insideJokes: selectedGirl?.insideJokes || '',
-      stage: selectedGirl?.relationshipStage || 'just_met',
-      avatar: selectedGirl?.avatar,
+      personality: selectedContact?.personality || '',
+      interests: selectedContact?.interests || '',
+      greenLights: selectedContact?.greenLights || '',
+      redFlags: selectedContact?.redFlags || '',
+      insideJokes: selectedContact?.insideJokes || '',
+      stage: selectedContact?.relationshipStage || 'just_met',
+      avatar: selectedContact?.avatar,
     }),
-    [selectedGirl]
+    [selectedContact]
   );
 
   const [form, setForm] = useState<FormState>(originalValues);
@@ -87,9 +87,9 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
   const [isSaving, setIsSaving] = useState(false);
 
   const conversations = useMemo(() => {
-    if (!selectedGirl) return [];
-    return getConversationsForGirl(selectedGirl.id);
-  }, [selectedGirl, getConversationsForGirl]);
+    if (!selectedContact) return [];
+    return getConversationsForContact(selectedContact.id);
+  }, [selectedContact, getConversationsForContact]);
 
   const hasChanges = useMemo(() => {
     return (
@@ -104,7 +104,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
   }, [form, originalValues]);
 
   const completeness = useMemo(() => {
-    if (!selectedGirl) return { score: 0, fields: [] };
+    if (!selectedContact) return { score: 0, fields: [] };
 
     const fields = [
       { name: 'Personality', filled: !!form.personality },
@@ -118,7 +118,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
     const score = Math.round((filledCount / fields.length) * 100);
 
     return { score, fields, filledCount, totalFields: fields.length };
-  }, [form, selectedGirl]);
+  }, [form, selectedContact]);
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -139,11 +139,11 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
   };
 
   const handleSave = async () => {
-    if (!selectedGirl) return;
+    if (!selectedContact) return;
 
     setIsSaving(true);
     try {
-      updateGirl(selectedGirl.id, {
+      updateContact(selectedContact.id, {
         personality: form.personality || undefined,
         interests: form.interests || undefined,
         greenLights: form.greenLights || undefined,
@@ -178,10 +178,10 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
   };
 
   const handleDelete = () => {
-    if (!selectedGirl) return;
-    deleteGirl(selectedGirl.id);
+    if (!selectedContact) return;
+    deleteContact(selectedContact.id);
     showToast({
-      message: `${selectedGirl.name} removed`,
+      message: `${selectedContact.name} removed`,
       type: 'success',
     });
     navigation.navigate('Home');
@@ -193,10 +193,10 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
     updateField(field as keyof FormState, newValue);
   };
 
-  if (!selectedGirl) {
+  if (!selectedContact) {
     return (
       <View style={styles.container}>
-        <Text style={styles.noGirl}>No profile selected</Text>
+        <Text style={styles.noContact}>No profile selected</Text>
       </View>
     );
   }
@@ -216,7 +216,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
         <TouchableOpacity onPress={handleCancel} style={styles.headerButton} accessibilityLabel="Cancel" accessibilityRole="button">
           <Ionicons name="close" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.title} accessibilityRole="header">{selectedGirl.name}</Text>
+        <Text style={styles.title} accessibilityRole="header">{selectedContact.name}</Text>
         <TouchableOpacity onPress={handleSave} disabled={!hasChanges || isSaving} style={styles.headerButton} accessibilityLabel={isSaving ? 'Saving...' : 'Save changes'} accessibilityRole="button" accessibilityState={{ disabled: !hasChanges || isSaving }}>
           <Text style={[styles.save, (!hasChanges || isSaving) && styles.saveDisabled]}>
             {isSaving ? 'Saving...' : 'Save'}
@@ -232,7 +232,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
         {/* Profile Photo & Completeness */}
         <View style={styles.profileSection}>
           <Avatar
-            name={selectedGirl.name}
+            name={selectedContact.name}
             imageUri={form.avatar}
             size="xl"
             onPress={handleSelectPhoto}
@@ -304,7 +304,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
           label="Her Interests"
           value={form.interests}
           onChangeText={(value) => updateField('interests', value)}
-          placeholder="What does she like? Hobbies?"
+          placeholder="What do they like? Hobbies?"
           multiline
           maxLength={500}
           showCharCount
@@ -329,7 +329,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
           label="Things She Loves"
           value={form.greenLights}
           onChangeText={(value) => updateField('greenLights', value)}
-          placeholder="Topics that make her happy, things she responds well to..."
+          placeholder="Topics that make them happy, things they respond well to..."
           multiline
           maxLength={500}
           showCharCount
@@ -354,7 +354,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
           label="Things to Avoid"
           value={form.redFlags}
           onChangeText={(value) => updateField('redFlags', value)}
-          placeholder="Sensitive topics, things she doesn't like..."
+          placeholder="Sensitive topics, things they don't like..."
           multiline
           maxLength={500}
           showCharCount
@@ -393,11 +393,11 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Messages</Text>
-            <Text style={styles.statValue}>{selectedGirl.messageCount}</Text>
+            <Text style={styles.statValue}>{selectedContact.messageCount}</Text>
           </View>
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Last topic</Text>
-            <Text style={styles.statValue}>{selectedGirl.lastTopic || 'None'}</Text>
+            <Text style={styles.statValue}>{selectedContact.lastTopic || 'None'}</Text>
           </View>
           {conversations.length > 0 && (
             <Button
@@ -412,7 +412,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
 
         {/* Delete Button */}
         <Button
-          title={`Delete ${selectedGirl.name}`}
+          title={`Delete ${selectedContact.name}`}
           onPress={() => setShowDeleteConfirm(true)}
           variant="danger"
           fullWidth
@@ -428,7 +428,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
         visible={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
-        itemName={selectedGirl.name}
+        itemName={selectedContact.name}
       />
 
       {/* Discard Changes Confirmation */}
@@ -460,7 +460,7 @@ export function GirlProfileScreen({ navigation }: { navigation: RootNavigationPr
                   {new Date(conv.timestamp).toLocaleDateString()}
                 </Text>
                 <Text style={styles.historyMessage} numberOfLines={2}>
-                  {conv.herMessage}
+                  {conv.theirMessage}
                 </Text>
                 {conv.selectedSuggestion && (
                   <Badge
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: darkColors.background,
   },
-  noGirl: {
+  noContact: {
     color: darkColors.textSecondary,
     textAlign: 'center',
     marginTop: 100,
@@ -658,4 +658,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GirlProfileScreen;
+export default ContactProfileScreen;

@@ -28,7 +28,7 @@ const FAQ_ITEMS = [
   {
     question: 'How does FlirtKey generate suggestions?',
     answer:
-      "FlirtKey uses AI (GPT-4) to analyze conversation context, the girl's profile, and cultural nuances to generate personalized, context-aware suggestions.",
+      "FlirtKey uses AI (GPT-4) to analyze conversation context, the contact's profile, and cultural nuances to generate personalized, context-aware suggestions.",
   },
   {
     question: 'Is my data private?',
@@ -53,7 +53,7 @@ const FAQ_ITEMS = [
   {
     question: 'How do I get the best suggestions?',
     answer:
-      "The more details you add to a girl's profile (personality, interests, inside jokes), the more personalized and relevant the suggestions will be.",
+      "The more details you add to a contact's profile (personality, interests, inside jokes), the more personalized and relevant the suggestions will be.",
   },
 ];
 

@@ -69,20 +69,20 @@ interface FavoriteSuggestion {
 }
 
 export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const selectedGirl = useStore((s) => s.selectedGirl);
+  const selectedContact = useStore((s) => s.selectedContact);
   const apiKey = useStore((s) => s.apiKey);
-  const updateGirl = useStore((s) => s.updateGirl);
+  const updateContact = useStore((s) => s.updateContact);
   const userCulture = useStore((s) => s.userCulture);
   const addConversation = useStore((s) => s.addConversation);
-  const getConversationsForGirl = useStore((s) => s.getConversationsForGirl);
+  const getConversationsForContact = useStore((s) => s.getConversationsForContact);
   const selectSuggestion = useStore((s) => s.selectSuggestion);
-  const getLastConversationForGirl = useStore((s) => s.getLastConversationForGirl);
+  const getLastConversationForContact = useStore((s) => s.getLastConversationForContact);
 
   // Orientation support (6.1.19, 6.1.20)
   const { isLandscape, isSplitScreen } = useOrientation();
 
   // State
-  const [herMessage, setHerMessage] = useState('');
+  const [theirMessage, setHerMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -123,7 +123,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
   }));
 
   // Get conversation history
-  const conversationHistory = selectedGirl ? getConversationsForGirl(selectedGirl.id) : [];
+  const conversationHistory = selectedContact ? getConversationsForContact(selectedContact.id) : [];
 
   // Cleanup mounted ref on unmount (prevents state updates after unmount)
   useEffect(() => {
@@ -159,8 +159,8 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
 
   // Load previous interest level
   useEffect(() => {
-    if (selectedGirl) {
-      const history = getConversationsForGirl(selectedGirl.id);
+    if (selectedContact) {
+      const history = getConversationsForContact(selectedContact.id);
       if (history.length > 0) {
         const firstEntry = history[0];
         if (firstEntry?.interestLevel) {
@@ -168,20 +168,20 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         }
       }
     }
-  }, [selectedGirl, getConversationsForGirl]);
+  }, [selectedContact, getConversationsForContact]);
 
-  if (!selectedGirl) {
+  if (!selectedContact) {
     return (
-      <View style={[styles.container, styles.noGirlContainer]}>
+      <View style={[styles.container, styles.noContactContainer]}>
         <Ionicons name="person-outline" size={48} color={darkColors.textSecondary} />
-        <Text style={styles.noGirl}>Select someone first</Text>
+        <Text style={styles.noContact}>Select someone first</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('Home')}
-          style={styles.noGirlButton}
+          style={styles.noContactButton}
           accessibilityLabel="Go to home screen"
           accessibilityRole="button"
         >
-          <Text style={styles.noGirlButtonText}>Go to Home</Text>
+          <Text style={styles.noContactButtonText}>Go to Home</Text>
         </TouchableOpacity>
       </View>
     );
@@ -189,16 +189,16 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
 
   // Handle generate (with haptics - 6.1.13)
   const handleGenerate = useCallback(async () => {
-    if (!selectedGirl) return;
+    if (!selectedContact) return;
 
     // Debounce rapid taps (min 1s between generates)
     const now = Date.now();
     if (now - lastGenerateRef.current < 1000) return;
     lastGenerateRef.current = now;
 
-    if (!herMessage.trim()) {
+    if (!theirMessage.trim()) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
-      Alert.alert('Enter her message first!');
+      Alert.alert('Enter their message first!');
       return;
     }
     if (!apiKey) {
@@ -223,7 +223,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
     setLoading(true);
 
     try {
-      const response = await generateResponse(apiKey, selectedGirl, herMessage, userCulture);
+      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture);
 
       // Guard against state updates after unmount (e.g., rotation mid-generation)
       if (!isMountedRef.current) return;
@@ -240,14 +240,14 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setPreviousInterestLevel(response.interestLevel);
       }
 
-      updateGirl(selectedGirl.id, {
-        lastTopic: herMessage.substring(0, 100),
+      updateContact(selectedContact.id, {
+        lastTopic: theirMessage.substring(0, 100),
         lastMessageDate: new Date().toISOString(),
       });
 
       addConversation({
-        girlId: selectedGirl.id,
-        herMessage: herMessage,
+        contactId: selectedContact.id,
+        theirMessage: theirMessage,
         suggestions: response.suggestions,
         proTip: response.proTip,
         interestLevel: response.interestLevel,
@@ -299,15 +299,15 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setLoading(false);
       }
     }
-  }, [selectedGirl, herMessage, apiKey, userCulture, buttonScale, updateGirl, addConversation]);
+  }, [selectedContact, theirMessage, apiKey, userCulture, buttonScale, updateContact, addConversation]);
 
   // Handle regeneration (6.2.13)
   const handleRegenerate = useCallback(async (type?: Suggestion['type']) => {
-    if (!selectedGirl || !herMessage.trim() || !apiKey) return;
+    if (!selectedContact || !theirMessage.trim() || !apiKey) return;
     setLoading(true);
 
     try {
-      const response = await generateResponse(apiKey, selectedGirl, herMessage, userCulture);
+      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture);
 
       if (!isMountedRef.current) return;
 
@@ -331,19 +331,19 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setLoading(false);
       }
     }
-  }, [selectedGirl, herMessage, apiKey, userCulture, result]);
+  }, [selectedContact, theirMessage, apiKey, userCulture, result]);
 
   // Handle screenshot
   const handleScreenshot = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate('ScreenshotAnalysis', {
-      girlId: selectedGirl?.id,
+      contactId: selectedContact?.id,
     });
-  }, [navigation, selectedGirl?.id]);
+  }, [navigation, selectedContact?.id]);
 
   // Handle pull to refresh (6.1.15)
   const handleRefresh = useCallback(async () => {
-    if (!herMessage.trim() || !apiKey || loading) return;
+    if (!theirMessage.trim() || !apiKey || loading) return;
     setRefreshing(true);
     try {
       await handleGenerate();
@@ -354,7 +354,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setRefreshing(false);
       }
     }
-  }, [herMessage, apiKey, loading, handleGenerate]);
+  }, [theirMessage, apiKey, loading, handleGenerate]);
 
   // Handle quick phrase selection (6.1.9)
   const handleQuickPhrase = useCallback((phrase: string) => {
@@ -422,15 +422,15 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
 
   // Handle "Send This" — mark selected suggestion & copy to clipboard
   const handleSendThis = useCallback((suggestion: Suggestion) => {
-    if (!selectedGirl) return;
-    const lastConvo = getLastConversationForGirl(selectedGirl.id);
+    if (!selectedContact) return;
+    const lastConvo = getLastConversationForContact(selectedContact.id);
     if (lastConvo) {
       selectSuggestion(lastConvo.id, suggestion);
     }
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 300);
-  }, [selectedGirl, getLastConversationForGirl, selectSuggestion]);
+  }, [selectedContact, getLastConversationForContact, selectSuggestion]);
 
   // Save pro tip (6.4.5)
   const handleSaveTip = useCallback((tip: string) => {
@@ -466,7 +466,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
 
       {/* Paste Detection Prompt (6.1.11) */}
       <PasteDetector
-        currentValue={herMessage}
+        currentValue={theirMessage}
         onPasteDetected={handlePasteDetected}
         show={showPastePrompt}
         onDismiss={dismissPastePrompt}
@@ -492,20 +492,20 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
           <Ionicons name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerName}>{selectedGirl.name}</Text>
+          <Text style={styles.headerName}>{selectedContact.name}</Text>
           <View style={styles.headerActions}>
             <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-                navigation.navigate({ name: 'GirlProfile', params: {} });
+                navigation.navigate({ name: 'ContactProfile', params: {} });
               }}
-              accessibilityLabel={`Edit ${selectedGirl.name}'s profile`}
+              accessibilityLabel={`Edit ${selectedContact.name}'s profile`}
               accessibilityRole="button"
             >
               <Text style={styles.editProfile}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
-          <LastTopicIndicator topic={selectedGirl.lastTopic} />
+          <LastTopicIndicator topic={selectedContact.lastTopic} />
         </View>
         <TouchableOpacity
           onPress={() => setShowContextMenu(!showContextMenu)}
@@ -524,7 +524,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
             <Ionicons name="time-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>History</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate('ChatHistory', { girlId: selectedGirl.id }); setShowContextMenu(false); }}>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate('ChatHistory', { contactId: selectedContact.id }); setShowContextMenu(false); }}>
             <Ionicons name="chatbubbles-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>Chat Timeline</Text>
           </TouchableOpacity>
@@ -532,7 +532,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
             <Ionicons name="information-circle-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>{showContext ? 'Hide Context' : 'Show Context'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate({ name: 'GirlProfile', params: {} }); setShowContextMenu(false); }}>
+          <TouchableOpacity style={styles.contextMenuItem} onPress={() => { navigation.navigate({ name: 'ContactProfile', params: {} }); setShowContextMenu(false); }}>
             <Ionicons name="person-outline" size={18} color={darkColors.text} />
             <Text style={styles.contextMenuText}>Edit Profile</Text>
           </TouchableOpacity>
@@ -555,7 +555,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         {/* Conversation Context (toggled from menu) */}
         {showContext && (
           <Animated.View entering={FadeIn} exiting={FadeOut}>
-            <ConversationContext girl={selectedGirl} />
+            <ConversationContext contact={selectedContact} />
           </Animated.View>
         )}
 
@@ -565,27 +565,27 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
           <TextInput
             ref={inputRef}
             style={[styles.input, inputFocused && styles.inputFocused]}
-            placeholder="Paste her message here..."
+            placeholder="Paste their message here..."
             placeholderTextColor={darkColors.textTertiary}
-            value={herMessage}
+            value={theirMessage}
             onChangeText={setHerMessage}
             onFocus={() => setInputFocused(true)}
             onBlur={() => setInputFocused(false)}
             multiline
             maxLength={MAX_INPUT_LENGTH}
             inputAccessoryViewID={Platform.OS === 'ios' ? INPUT_ACCESSORY_ID : undefined}
-            accessibilityLabel="Enter her message"
-            accessibilityHint="Paste or type the message she sent you"
+            accessibilityLabel="Enter their message"
+            accessibilityHint="Paste or type the message they sent you"
           />
 
           {/* Character Count (6.1.8) */}
-          <CharacterCount current={herMessage.length} max={MAX_INPUT_LENGTH} />
+          <CharacterCount current={theirMessage.length} max={MAX_INPUT_LENGTH} />
 
           {/* Quick Phrases (6.1.9) */}
           {!keyboardVisible && (
             <QuickPhrases
               onSelect={handleQuickPhrase}
-              relationshipStage={selectedGirl.relationshipStage}
+              relationshipStage={selectedContact.relationshipStage}
             />
           )}
 
@@ -726,7 +726,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         onInsertEmoji={handleInsertEmoji}
         onInsertPhrase={handleInsertPhrase}
         onDismissKeyboard={() => Keyboard.dismiss()}
-        relationshipStage={selectedGirl.relationshipStage}
+        relationshipStage={selectedContact.relationshipStage}
         visible={keyboardVisible && Platform.OS === 'android'}
       />
 
@@ -767,12 +767,12 @@ const styles = StyleSheet.create({
   containerSplitScreen: {
     paddingHorizontal: spacing.sm,
   },
-  noGirlContainer: {
+  noContactContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
   },
-  noGirl: {
+  noContact: {
     color: darkColors.text,
     textAlign: 'center',
     marginTop: spacing.md,
@@ -780,14 +780,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: fonts.semiBold,
   },
-  noGirlButton: {
+  noContactButton: {
     marginTop: spacing.lg,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
     backgroundColor: darkColors.primary,
     borderRadius: borderRadius.lg,
   },
-  noGirlButtonText: {
+  noContactButtonText: {
     color: '#fff',
     fontSize: fontSizes.md,
     fontWeight: '600',

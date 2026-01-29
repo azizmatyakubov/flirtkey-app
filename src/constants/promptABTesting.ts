@@ -127,7 +127,7 @@ Generate 3 response options in JSON format:
     weight: 0.3,
     promptTemplate: `Hey FlirtKey! I need your help responding to {name}.
 
-Here's what I know about her: {context}
+Here's what I know about them: {context}
 
 She just sent me this: "{message}"
 
@@ -146,7 +146,7 @@ Remember: {rules}`,
     description: 'Token-efficient minimal prompt',
     weight: 0.2,
     promptTemplate: `FlirtKey: Dating assistant
-Girl: {name} | {context}
+Contact: {name} | {context}
 Her msg: "{message}"
 Task: 3 replies (safe/balanced/bold) as JSON
 Output: {"suggestions":[{"type":"...","text":"...","reason":"..."}],"proTip":"...","interestLevel":N,"mood":"..."}`,

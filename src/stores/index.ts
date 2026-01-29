@@ -6,16 +6,16 @@
 export { useStore } from './useStore';
 export type { ConversationEntry, CachedSuggestion } from './useStore';
 export {
-  selectGirlById,
-  selectGirlsSortedByRecent,
-  selectGirlsByStage,
+  selectContactById,
+  selectContactsSortedByRecent,
+  selectContactsByStage,
   selectTotalMessageCount,
-  selectGirlsCount,
+  selectContactsCount,
   selectHasData,
   selectHasApiKey,
   selectRecentConversations,
-  selectConversationCountForGirl,
-  selectGirlsBySearch,
+  selectConversationCountForContact,
+  selectContactsBySearch,
   selectCacheStats,
 } from './useStore';
 

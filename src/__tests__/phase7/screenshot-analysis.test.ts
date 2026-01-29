@@ -346,12 +346,12 @@ describe('7.2.14: WhatsApp Screenshots', () => {
 
   it('should extract WhatsApp message bubbles', () => {
     const mockExtraction = {
-      herMessages: ['Hey!', 'What are you up to?'],
+      theirMessages: ['Hey!', 'What are you up to?'],
       yourMessages: ['Not much, you?'],
       timestamps: ['10:30 AM', '10:31 AM', '10:32 AM'],
     };
 
-    expect(mockExtraction.herMessages).toHaveLength(2);
+    expect(mockExtraction.theirMessages).toHaveLength(2);
     expect(mockExtraction.yourMessages).toHaveLength(1);
   });
 
@@ -410,12 +410,12 @@ describe('7.2.15: iMessage Screenshots', () => {
 
   it('should extract iMessage bubbles', () => {
     const mockExtraction = {
-      herMessages: ["Hey! How's it going?"],
+      theirMessages: ["Hey! How's it going?"],
       yourMessages: ['Great! Just got back from the gym'],
       reactions: ['❤️'],
     };
 
-    expect(mockExtraction.herMessages.length).toBeGreaterThan(0);
+    expect(mockExtraction.theirMessages.length).toBeGreaterThan(0);
   });
 
   it('should detect iMessage reactions (Tapbacks)', () => {
@@ -565,10 +565,10 @@ describe('7.4.5: Share Integration Testing', () => {
         return { path, params };
       };
 
-      const result = parseDeepLink('flirtkey://analyze?imageUri=test.jpg&girlId=1');
+      const result = parseDeepLink('flirtkey://analyze?imageUri=test.jpg&contactId=1');
       expect(result?.path).toBe('analyze');
       expect(result?.params.imageUri).toBe('test.jpg');
-      expect(result?.params.girlId).toBe('1');
+      expect(result?.params.contactId).toBe('1');
     });
 
     it('should reject invalid URLs', () => {
@@ -638,21 +638,21 @@ describe('7.4.5: Share Integration Testing', () => {
         navigate: jest.fn(),
       };
 
-      const handleShare = (imageUri: string, girlId?: number) => {
+      const handleShare = (imageUri: string, contactId?: number) => {
         mockNavigation.navigate('ScreenshotAnalysis', {
           imageUri,
-          girlId,
+          contactId,
         });
       };
 
       handleShare('content://test.jpg', 1);
       expect(mockNavigation.navigate).toHaveBeenCalledWith('ScreenshotAnalysis', {
         imageUri: 'content://test.jpg',
-        girlId: 1,
+        contactId: 1,
       });
     });
 
-    it('should handle share without girl context', () => {
+    it('should handle share without contact context', () => {
       const mockNavigation = {
         navigate: jest.fn(),
       };

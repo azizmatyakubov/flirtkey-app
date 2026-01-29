@@ -6,7 +6,7 @@
  * - 7.3.2: Show uploaded image
  * - 7.3.3: Display analysis results
  * - 7.3.4: Show conversation breakdown
- * - 7.3.5: Show her message highlights
+ * - 7.3.5: Show their message highlights
  * - 7.3.6: Show potential responses
  * - 7.3.7: Add image annotation overlay
  * - 7.3.8: Add key points summary
@@ -51,7 +51,7 @@ import { ProTipCard } from '../components/ProTipCard';
 import { LoadingShimmer } from '../components/ShimmerEffect';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { OfflineIndicator } from '../components/OfflineIndicator';
-import type { AnalysisResult, Suggestion, Girl } from '../types';
+import type { AnalysisResult, Suggestion, Contact } from '../types';
 import { darkColors, accentColors, spacing, borderRadius, fontSizes, shadows } from '../constants/theme';
 
 // ==========================================
@@ -65,7 +65,7 @@ interface AnalysisHistory {
   imageUri: string;
   result: AnalysisResult;
   timestamp: number;
-  girlId?: number;
+  contactId?: number;
 }
 
 // ==========================================
@@ -74,14 +74,14 @@ interface AnalysisHistory {
 
 export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalysisScreenProps) {
   const apiKey = useStore((s) => s.apiKey);
-  const selectedGirl = useStore((s) => s.selectedGirl);
-  const girls = useStore((s) => s.girls);
+  const selectedContact = useStore((s) => s.selectedContact);
+  const contacts = useStore((s) => s.contacts);
   const userCulture = useStore((s) => s.userCulture);
 
   // State
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [selectedGirlForAnalysis, setSelectedGirlForAnalysis] = useState<Girl | null>(selectedGirl);
+  const [selectedContactForAnalysis, setSelectedContactForAnalysis] = useState<Contact | null>(selectedContact);
   const [analysisHistory, setAnalysisHistory] = useState<AnalysisHistory[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -101,13 +101,13 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
     if (route?.params?.imageUri || route?.params?.imageBase64) {
       // TODO: Handle shared image from route params
     }
-    if (route?.params?.girlId) {
-      const girl = girls.find((g) => g.id === route.params!.girlId);
-      if (girl) {
-        setSelectedGirlForAnalysis(girl);
+    if (route?.params?.contactId) {
+      const contact = contacts.find((g) => g.id === route.params!.contactId);
+      if (contact) {
+        setSelectedContactForAnalysis(contact);
       }
     }
-  }, [route?.params, girls]);
+  }, [route?.params, contacts]);
 
   // ==========================================
   // Handlers
@@ -140,7 +140,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 
     try {
       const analysisResult = await analyzeScreenshot({
-        girl: selectedGirlForAnalysis,
+        contact: selectedContactForAnalysis,
         imageBase64: imagePicker.image.base64,
         userCulture,
         apiKey,
@@ -156,7 +156,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
         imageUri: imagePicker.image.uri,
         result: analysisResult,
         timestamp: Date.now(),
-        girlId: selectedGirlForAnalysis?.id,
+        contactId: selectedContactForAnalysis?.id,
       };
       setAnalysisHistory((prev) => [historyEntry, ...prev.slice(0, 9)]); // Keep last 10
     } catch (error) {
@@ -166,7 +166,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
     } finally {
       setIsAnalyzing(false);
     }
-  }, [imagePicker.image, apiKey, selectedGirlForAnalysis, userCulture]);
+  }, [imagePicker.image, apiKey, selectedContactForAnalysis, userCulture]);
 
   const handleRetake = useCallback(() => {
     imagePicker.clear();
@@ -184,7 +184,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
   const handleExport = useCallback(async () => {
     if (!result) return;
 
-    const text = formatAnalysisForExport(result, selectedGirlForAnalysis);
+    const text = formatAnalysisForExport(result, selectedContactForAnalysis);
     try {
       await Clipboard.setStringAsync(text);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
@@ -192,7 +192,7 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
     } catch {
       Alert.alert('Error', 'Failed to copy to clipboard. Please try again.');
     }
-  }, [result, selectedGirlForAnalysis]);
+  }, [result, selectedContactForAnalysis]);
 
   // 7.3.12: Share analysis
   const handleShare = useCallback(async () => {
@@ -293,45 +293,45 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
         }
         keyboardShouldPersistTaps="handled"
       >
-        {/* Girl Selector */}
-        <View style={styles.girlSelector}>
+        {/* Contact Selector */}
+        <View style={styles.contactSelector}>
           <Text style={styles.sectionLabel}>Analyzing for:</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.girlList}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.contactList}>
             <TouchableOpacity
-              style={[styles.girlChip, !selectedGirlForAnalysis && styles.girlChipSelected]}
-              onPress={() => setSelectedGirlForAnalysis(null)}
+              style={[styles.contactChip, !selectedContactForAnalysis && styles.contactChipSelected]}
+              onPress={() => setSelectedContactForAnalysis(null)}
             >
               <Ionicons
                 name="person"
                 size={14}
-                color={!selectedGirlForAnalysis ? '#fff' : darkColors.text}
+                color={!selectedContactForAnalysis ? '#fff' : darkColors.text}
                 style={{ marginRight: 4 }}
               />
               <Text
                 style={[
-                  styles.girlChipText,
-                  !selectedGirlForAnalysis && styles.girlChipTextSelected,
+                  styles.contactChipText,
+                  !selectedContactForAnalysis && styles.contactChipTextSelected,
                 ]}
               >
                 Anyone
               </Text>
             </TouchableOpacity>
-            {girls.map((girl) => (
+            {contacts.map((contact) => (
               <TouchableOpacity
-                key={girl.id}
+                key={contact.id}
                 style={[
-                  styles.girlChip,
-                  selectedGirlForAnalysis?.id === girl.id && styles.girlChipSelected,
+                  styles.contactChip,
+                  selectedContactForAnalysis?.id === contact.id && styles.contactChipSelected,
                 ]}
-                onPress={() => setSelectedGirlForAnalysis(girl)}
+                onPress={() => setSelectedContactForAnalysis(contact)}
               >
                 <Text
                   style={[
-                    styles.girlChipText,
-                    selectedGirlForAnalysis?.id === girl.id && styles.girlChipTextSelected,
+                    styles.contactChipText,
+                    selectedContactForAnalysis?.id === contact.id && styles.contactChipTextSelected,
                   ]}
                 >
-                  {girl.name}
+                  {contact.name}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -597,9 +597,9 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
                     <Text style={styles.historyItemText}>
                       {new Date(entry.timestamp).toLocaleString()}
                     </Text>
-                    {entry.girlId && (
+                    {entry.contactId && (
                       <Text style={styles.historyItemSubtext}>
-                        {girls.find((g) => g.id === entry.girlId)?.name || 'Unknown'}
+                        {contacts.find((g) => g.id === entry.contactId)?.name || 'Unknown'}
                       </Text>
                     )}
                   </TouchableOpacity>
@@ -620,11 +620,11 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
 // Helper Functions
 // ==========================================
 
-function formatAnalysisForExport(result: AnalysisResult, girl: Girl | null): string {
+function formatAnalysisForExport(result: AnalysisResult, contact: Contact | null): string {
   let text = '=== FlirtKey Analysis ===\n\n';
 
-  if (girl) {
-    text += `For: ${girl.name}\n\n`;
+  if (contact) {
+    text += `For: ${contact.name}\n\n`;
   }
 
   if (result.interestLevel) {
@@ -722,8 +722,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
 
-  // Girl Selector
-  girlSelector: {
+  // Contact Selector
+  contactSelector: {
     marginBottom: spacing.lg,
   },
   sectionLabel: {
@@ -731,10 +731,10 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     marginBottom: spacing.sm,
   },
-  girlList: {
+  contactList: {
     flexDirection: 'row',
   },
-  girlChip: {
+  contactChip: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.full,
@@ -743,15 +743,15 @@ const styles = StyleSheet.create({
     borderColor: darkColors.border,
     marginRight: spacing.sm,
   },
-  girlChipSelected: {
+  contactChipSelected: {
     backgroundColor: accentColors.coral,
     borderColor: accentColors.coral,
   },
-  girlChipText: {
+  contactChipText: {
     color: darkColors.text,
     fontSize: fontSizes.sm,
   },
-  girlChipTextSelected: {
+  contactChipTextSelected: {
     color: '#fff',
     fontWeight: '600',
   },

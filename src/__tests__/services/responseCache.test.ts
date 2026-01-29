@@ -17,7 +17,7 @@ import {
   cacheResponse,
   getCacheStats,
   clearCache,
-  clearCacheForGirl,
+  clearCacheForContact,
   cleanupExpired,
 } from '../../services/responseCache';
 import { AnalysisResult } from '../../types';
@@ -43,14 +43,14 @@ describe('ResponseCacheService', () => {
 
   describe('cacheResponse', () => {
     it('should cache a response', async () => {
-      await cacheResponse('girl-1', 'hello there', mockResponse);
+      await cacheResponse('contact-1', 'hello there', mockResponse);
 
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
 
     it('should create consistent hashes for same messages', async () => {
-      await cacheResponse('girl-1', 'hello there', mockResponse);
-      await cacheResponse('girl-1', 'HELLO THERE', mockResponse); // Same after normalization
+      await cacheResponse('contact-1', 'hello there', mockResponse);
+      await cacheResponse('contact-1', 'HELLO THERE', mockResponse); // Same after normalization
 
       // Should update the same entry, not create two
       const calls = (AsyncStorage.setItem as jest.Mock).mock.calls;
@@ -65,14 +65,14 @@ describe('ResponseCacheService', () => {
 
   describe('getCachedResponse', () => {
     it('should return null for uncached response', async () => {
-      const result = await getCachedResponse('girl-1', 'uncached message');
+      const result = await getCachedResponse('contact-1', 'uncached message');
       expect(result).toBeNull();
     });
 
     it('should return cached response', async () => {
       const cachedEntry = {
-        id: 'girl-1_abc123',
-        girlId: 'girl-1',
+        id: 'contact-1_abc123',
+        contactId: 'contact-1',
         messageHash: 'abc123',
         response: mockResponse,
         timestamp: Date.now(),
@@ -94,7 +94,7 @@ describe('ResponseCacheService', () => {
     it('should update access count on cache hit', async () => {
       const cachedEntry = {
         id: 'test-id',
-        girlId: 'girl-1',
+        contactId: 'contact-1',
         messageHash: 'hash',
         response: mockResponse,
         timestamp: Date.now(),
@@ -110,7 +110,7 @@ describe('ResponseCacheService', () => {
     it('should return null for expired entries', async () => {
       const expiredEntry = {
         id: 'test-id',
-        girlId: 'girl-1',
+        contactId: 'contact-1',
         messageHash: 'hash',
         response: mockResponse,
         timestamp: Date.now() - 8 * 24 * 60 * 60 * 1000, // 8 days old (max is 7)
@@ -128,9 +128,9 @@ describe('ResponseCacheService', () => {
     it('should return correct statistics', async () => {
       const mockIndex = {
         entries: [
-          { id: 'g1-h1', girlId: 'girl-1', messageHash: 'h1', timestamp: Date.now() - 1000 },
-          { id: 'g1-h2', girlId: 'girl-1', messageHash: 'h2', timestamp: Date.now() - 500 },
-          { id: 'g2-h1', girlId: 'girl-2', messageHash: 'h1', timestamp: Date.now() },
+          { id: 'g1-h1', contactId: 'contact-1', messageHash: 'h1', timestamp: Date.now() - 1000 },
+          { id: 'g1-h2', contactId: 'contact-1', messageHash: 'h2', timestamp: Date.now() - 500 },
+          { id: 'g2-h1', contactId: 'contact-2', messageHash: 'h1', timestamp: Date.now() },
         ],
         version: 1,
       };
@@ -145,15 +145,15 @@ describe('ResponseCacheService', () => {
       const stats = await getCacheStats();
 
       expect(stats.totalEntries).toBe(3);
-      expect(stats.entriesByGirl['girl-1']).toBe(2);
-      expect(stats.entriesByGirl['girl-2']).toBe(1);
+      expect(stats.entriesByContact['contact-1']).toBe(2);
+      expect(stats.entriesByContact['contact-2']).toBe(1);
     });
   });
 
   describe('clearCache', () => {
     it('should clear all cached responses', async () => {
       const mockIndex = {
-        entries: [{ id: 'g1-h1', girlId: 'girl-1', messageHash: 'h1', timestamp: Date.now() }],
+        entries: [{ id: 'g1-h1', contactId: 'contact-1', messageHash: 'h1', timestamp: Date.now() }],
         version: 1,
       };
 
@@ -165,19 +165,19 @@ describe('ResponseCacheService', () => {
     });
   });
 
-  describe('clearCacheForGirl', () => {
-    it('should clear only specified girl cache', async () => {
+  describe('clearCacheForContact', () => {
+    it('should clear only specified contact cache', async () => {
       const mockIndex = {
         entries: [
-          { id: 'g1-h1', girlId: 'girl-1', messageHash: 'h1', timestamp: Date.now() },
-          { id: 'g2-h1', girlId: 'girl-2', messageHash: 'h1', timestamp: Date.now() },
+          { id: 'g1-h1', contactId: 'contact-1', messageHash: 'h1', timestamp: Date.now() },
+          { id: 'g2-h1', contactId: 'contact-2', messageHash: 'h1', timestamp: Date.now() },
         ],
         version: 1,
       };
 
       (AsyncStorage.getItem as jest.Mock).mockResolvedValue(JSON.stringify(mockIndex));
 
-      const removed = await clearCacheForGirl('girl-1');
+      const removed = await clearCacheForContact('contact-1');
 
       expect(removed).toBe(1);
       expect(AsyncStorage.multiRemove).toHaveBeenCalled();
@@ -188,10 +188,10 @@ describe('ResponseCacheService', () => {
     it('should remove expired entries', async () => {
       const mockIndex = {
         entries: [
-          { id: 'fresh', girlId: 'girl-1', messageHash: 'h1', timestamp: Date.now() },
+          { id: 'fresh', contactId: 'contact-1', messageHash: 'h1', timestamp: Date.now() },
           {
             id: 'expired',
-            girlId: 'girl-1',
+            contactId: 'contact-1',
             messageHash: 'h2',
             timestamp: Date.now() - 8 * 24 * 60 * 60 * 1000,
           },

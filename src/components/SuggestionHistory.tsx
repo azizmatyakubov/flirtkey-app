@@ -61,8 +61,8 @@ export function SuggestionHistory({ visible, onClose, history, onReuse }: Sugges
       >
         {/* Header */}
         <View style={styles.entryHeader}>
-          <Text style={styles.herMessage} numberOfLines={isExpanded ? undefined : 2}>
-            "{item.herMessage}"
+          <Text style={styles.theirMessage} numberOfLines={isExpanded ? undefined : 2}>
+            "{item.theirMessage}"
           </Text>
           <Text style={styles.timestamp}>{formatDate(item.timestamp)}</Text>
         </View>
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   entryHeader: {
     marginBottom: spacing.sm,
   },
-  herMessage: {
+  theirMessage: {
     color: darkColors.text,
     fontSize: fontSizes.md,
     fontStyle: 'italic',

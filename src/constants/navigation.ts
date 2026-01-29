@@ -64,12 +64,12 @@ export const screenOptions = {
     animation: 'slide_from_right' as const,
     animationDuration: 250,
   },
-  AddGirl: {
+  AddContact: {
     ...modalScreenOptions,
     animation: 'slide_from_bottom' as const,
     animationDuration: 300,
   },
-  GirlProfile: {
+  ContactProfile: {
     ...defaultScreenOptions,
     animation: 'slide_from_right' as const,
     animationDuration: 250,
@@ -124,8 +124,8 @@ export const screenOptions = {
 export const SCREENS = {
   HOME: 'Home',
   CHAT: 'Chat',
-  ADD_GIRL: 'AddGirl',
-  GIRL_PROFILE: 'GirlProfile',
+  ADD_GIRL: 'AddContact',
+  GIRL_PROFILE: 'ContactProfile',
   SETTINGS: 'Settings',
   WELCOME: 'Welcome',
   ONBOARDING: 'Onboarding',

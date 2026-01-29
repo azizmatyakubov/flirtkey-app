@@ -18,7 +18,7 @@
  */
 
 import axios, { AxiosError, CancelTokenSource } from 'axios';
-import { Girl, Culture, AnalysisResult, Suggestion, APIError, APIErrorCode } from '../types';
+import { Contact, Culture, AnalysisResult, Suggestion, APIError, APIErrorCode } from '../types';
 import {
   CULTURE_STYLES,
   STAGES,
@@ -529,8 +529,8 @@ async function withRetry<T>(
 // ==========================================
 
 export interface GenerateFlirtRequest {
-  girl: Girl;
-  herMessage: string;
+  contact: Contact;
+  theirMessage: string;
   userCulture: Culture;
   context?: string;
   apiKey: string;
@@ -539,7 +539,7 @@ export interface GenerateFlirtRequest {
 }
 
 export interface AnalyzeScreenshotRequest {
-  girl: Girl | null;
+  contact: Contact | null;
   imageBase64: string;
   userCulture: Culture;
   apiKey: string;
@@ -797,18 +797,18 @@ async function makeAPICall(
 export async function generateFlirtResponse(
   request: GenerateFlirtRequest
 ): Promise<AnalysisResult> {
-  const { girl, herMessage, userCulture, context, apiKey, model = 'gpt-4o-mini', useCache = true } = request;
+  const { contact, theirMessage, userCulture, context, apiKey, model = 'gpt-4o-mini', useCache = true } = request;
   
   // Check cache first
   if (useCache) {
-    const cacheKey = { girl: girl.id, message: herMessage, culture: userCulture };
+    const cacheKey = { contact: contact.id, message: theirMessage, culture: userCulture };
     const cached = responseCache.get<AnalysisResult>('flirt', cacheKey);
     if (cached) {
       return cached;
     }
   }
   
-  const { prompt } = buildFlirtPrompt({ girl, herMessage, userCulture, context });
+  const { prompt } = buildFlirtPrompt({ contact, theirMessage, userCulture, context });
   const requestId = `flirt-${Date.now()}`;
   
   return withRetry(async () => {
@@ -845,7 +845,7 @@ export async function generateFlirtResponse(
     
     // Cache successful response
     if (useCache) {
-      const cacheKey = { girl: girl.id, message: herMessage, culture: userCulture };
+      const cacheKey = { contact: contact.id, message: theirMessage, culture: userCulture };
       responseCache.set('flirt', cacheKey, parsed);
     }
     
@@ -857,9 +857,9 @@ export async function generateFlirtResponse(
 export async function analyzeScreenshot(
   request: AnalyzeScreenshotRequest
 ): Promise<AnalysisResult> {
-  const { girl, imageBase64, userCulture, apiKey, model = 'gpt-4o' } = request;
+  const { contact, imageBase64, userCulture, apiKey, model = 'gpt-4o' } = request;
   
-  const { prompt } = buildScreenshotPrompt({ girl, userCulture });
+  const { prompt } = buildScreenshotPrompt({ contact, userCulture });
   const requestId = `screenshot-${Date.now()}`;
   
   return withRetry(async () => {
@@ -1194,20 +1194,20 @@ export const AIService = {
 
 export async function generateResponse(
   apiKey: string,
-  girl: Girl,
-  herMessage: string,
+  contact: Contact,
+  theirMessage: string,
   userCulture: Culture
 ): Promise<AnalysisResult> {
-  return generateFlirtResponse({ girl, herMessage, userCulture, apiKey });
+  return generateFlirtResponse({ contact, theirMessage, userCulture, apiKey });
 }
 
 export async function analyzeScreenshotLegacy(
   apiKey: string,
   imageBase64: string,
-  girl: Girl | null,
+  contact: Contact | null,
   userCulture: Culture
 ): Promise<AnalysisResult> {
-  return analyzeScreenshot({ girl, imageBase64, userCulture, apiKey });
+  return analyzeScreenshot({ contact, imageBase64, userCulture, apiKey });
 }
 
 export default AIService;

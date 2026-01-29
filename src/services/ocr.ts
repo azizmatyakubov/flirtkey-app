@@ -28,7 +28,7 @@ export interface MessageExtraction {
 }
 
 export interface ExtractedMessage {
-  sender: 'her' | 'you' | 'unknown';
+  sender: 'them' | 'you' | 'unknown';
   text: string;
   timestamp?: string;
   order: number;
@@ -56,7 +56,7 @@ Return JSON with this structure:
   "participants": ["You", "Her Name"],
   "messages": [
     {
-      "sender": "her" | "you",
+      "sender": "them" | "you",
       "text": "message content",
       "timestamp": "if visible",
       "order": 1
@@ -65,7 +65,7 @@ Return JSON with this structure:
 }
 
 Extract messages in chronological order (oldest first).
-Identify "her" vs "you" based on message alignment/colors/indicators.
+Identify "them" vs "you" based on message alignment/colors/indicators.
 Include ONLY the JSON, no other text.`;
 
 // ==========================================

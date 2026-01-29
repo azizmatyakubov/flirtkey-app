@@ -90,10 +90,10 @@ export {
   ResponseCacheService,
   getCachedResponse,
   cacheResponse,
-  getCachedResponsesForGirl,
+  getCachedResponsesForContact,
   getCacheStats,
   clearCache,
-  clearCacheForGirl,
+  clearCacheForContact,
   cleanupExpired,
   type CachedResponse,
 } from './responseCache';

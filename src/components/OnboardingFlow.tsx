@@ -47,7 +47,7 @@ const SLIDES: OnboardingSlide[] = [
   {
     id: '2',
     emoji: '👥',
-    title: 'Create Girl Profiles',
+    title: 'Create Contact Profiles',
     description:
       "Add details about each person you're talking to. Personality, interests, inside jokes - the more context, the better suggestions!",
     color: '#FF8E53',
@@ -57,7 +57,7 @@ const SLIDES: OnboardingSlide[] = [
     emoji: '💬',
     title: 'Get Perfect Replies',
     description:
-      'Paste her message and get 3 tailored suggestions: Safe, Balanced, and Bold. Choose your vibe!',
+      'Paste their message and get 3 tailored suggestions: Safe, Balanced, and Bold. Choose your vibe!',
     color: '#ec4899',
   },
   {

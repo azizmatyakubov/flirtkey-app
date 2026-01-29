@@ -28,25 +28,25 @@ const CATEGORY_CONFIG: Record<TipCategory, { icon: keyof typeof Ionicons.glyphMa
 const TIPS_OF_THE_DAY: Record<TipCategory, string[]> = {
   general: [
     "Don't overthink it. She liked you enough to respond.",
-    "Match her energy - if she's playful, be playful back.",
+    "Match their energy - if they're playful, be playful back.",
     "A good conversation is like tennis, not a monologue.",
     "Quality over quantity - one great message beats five boring ones.",
   ],
   timing: [
-    "Don't double text. Wait for her reply.",
+    "Don't double text. Wait for their reply.",
     "Texting at night can feel more intimate.",
-    "If she takes hours to reply, don't respond instantly.",
+    "If they take hours to reply, don't respond instantly.",
     "Best times to text: lunch break and after 8pm.",
   ],
   conversation: [
-    "Ask open-ended questions to keep her engaged.",
-    "Reference something from her previous messages.",
+    "Ask open-ended questions to keep them engaged.",
+    "Reference something from their previous messages.",
     "Share a story instead of just answering questions.",
-    "Use her name occasionally - it creates connection.",
+    "Use their name occasionally - it creates connection.",
   ],
   psychology: [
     "Be a little unpredictable. Don't always be available.",
-    "End conversations on a high note - leave her wanting more.",
+    "End conversations on a high note - leave them wanting more.",
     "Show interest, but don't be desperate.",
     "Confidence is attractive. Own your personality.",
   ],

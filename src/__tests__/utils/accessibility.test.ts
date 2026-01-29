@@ -23,7 +23,7 @@ jest.mock('expo-haptics', () => ({
 import {
   getSuggestionAccessibilityLabel,
   getInterestLevelAccessibilityLabel,
-  getGirlCardAccessibilityLabel,
+  getContactCardAccessibilityLabel,
   formatNumberForAccessibility,
   getAnimationDuration,
   getAnimationConfig,
@@ -107,33 +107,33 @@ describe('Accessibility Utils', () => {
   });
 
   // ==========================================
-  // Girl Card Accessibility
+  // Contact Card Accessibility
   // ==========================================
 
-  describe('getGirlCardAccessibilityLabel', () => {
+  describe('getContactCardAccessibilityLabel', () => {
     it('includes name', () => {
-      const label = getGirlCardAccessibilityLabel('Anna', 'flirting', 10);
+      const label = getContactCardAccessibilityLabel('Anna', 'flirting', 10);
       expect(label).toContain('Anna');
     });
 
     it('includes relationship stage', () => {
-      const label = getGirlCardAccessibilityLabel('Anna', 'flirting', 10);
+      const label = getContactCardAccessibilityLabel('Anna', 'flirting', 10);
       expect(label.toLowerCase()).toContain('flirt');
     });
 
     it('includes message count', () => {
-      const label = getGirlCardAccessibilityLabel('Anna', 'talking', 10);
+      const label = getContactCardAccessibilityLabel('Anna', 'talking', 10);
       expect(label).toContain('10');
     });
 
     it('handles zero messages', () => {
-      const label = getGirlCardAccessibilityLabel('Maria', 'talking', 0);
+      const label = getContactCardAccessibilityLabel('Maria', 'talking', 0);
       expect(label).toContain('Maria');
       expect(label).toContain('0');
     });
 
     it('generates proper sentence', () => {
-      const label = getGirlCardAccessibilityLabel('Sofia', 'dating', 25);
+      const label = getContactCardAccessibilityLabel('Sofia', 'dating', 25);
       expect(label).toContain('Sofia');
       expect(label).toContain('dating');
       expect(label).toContain('25');

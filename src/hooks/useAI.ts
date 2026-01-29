@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useStore } from '../stores/useStore';
-import { Girl, Suggestion, AnalysisResult, AsyncStatus, APIError } from '../types';
+import { Contact, Suggestion, AnalysisResult, AsyncStatus, APIError } from '../types';
 import { generateFlirtResponse, analyzeScreenshot } from '../services/ai';
 import { validateAIResponse } from '../utils/validation';
 
@@ -20,7 +20,7 @@ interface UseAIState {
 
 interface UseAIResult extends UseAIState {
   // Actions
-  generateSuggestions: (herMessage: string, context?: string) => Promise<AnalysisResult | null>;
+  generateSuggestions: (theirMessage: string, context?: string) => Promise<AnalysisResult | null>;
   analyzeImage: (imageBase64: string) => Promise<AnalysisResult | null>;
   cancel: () => void;
   reset: () => void;
@@ -40,7 +40,7 @@ const initialState: UseAIState = {
   error: null,
 };
 
-export const useAI = (girl?: Girl | null): UseAIResult => {
+export const useAI = (contact?: Contact | null): UseAIResult => {
   const [state, setState] = useState<UseAIState>(initialState);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -51,7 +51,7 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
   const addConversation = useStore((s) => s.addConversation);
 
   const generateSuggestions = useCallback(
-    async (herMessage: string, context?: string): Promise<AnalysisResult | null> => {
+    async (theirMessage: string, context?: string): Promise<AnalysisResult | null> => {
       if (!apiKey) {
         setState({
           ...initialState,
@@ -65,13 +65,13 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
         return null;
       }
 
-      if (!girl) {
+      if (!contact) {
         setState({
           ...initialState,
           status: 'error',
           error: {
             code: 'UNKNOWN_ERROR',
-            message: 'No girl selected',
+            message: 'No contact selected',
             retryable: false,
           },
         });
@@ -79,7 +79,7 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
       }
 
       // Check cache first
-      const cached = getCachedSuggestions(girl.id, herMessage);
+      const cached = getCachedSuggestions(contact.id, theirMessage);
       if (cached) {
         const result: AnalysisResult = {
           suggestions: cached.suggestions,
@@ -106,8 +106,8 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
 
       try {
         const response = await generateFlirtResponse({
-          girl,
-          herMessage,
+          contact,
+          theirMessage,
           userCulture,
           context,
           apiKey,
@@ -127,12 +127,12 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
         };
 
         // Cache the result
-        cacheSuggestions(girl.id, herMessage, response.suggestions, response.proTip);
+        cacheSuggestions(contact.id, theirMessage, response.suggestions, response.proTip);
 
         // Add to conversation history
         addConversation({
-          girlId: girl.id,
-          herMessage,
+          contactId: contact.id,
+          theirMessage,
           suggestions: response.suggestions,
           proTip: response.proTip,
           interestLevel: response.interestLevel,
@@ -183,7 +183,7 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
         return null;
       }
     },
-    [apiKey, girl, userCulture, cacheSuggestions, getCachedSuggestions, addConversation]
+    [apiKey, contact, userCulture, cacheSuggestions, getCachedSuggestions, addConversation]
   );
 
   const analyzeImage = useCallback(
@@ -201,13 +201,13 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
         return null;
       }
 
-      if (!girl) {
+      if (!contact) {
         setState({
           ...initialState,
           status: 'error',
           error: {
             code: 'UNKNOWN_ERROR',
-            message: 'No girl selected',
+            message: 'No contact selected',
             retryable: false,
           },
         });
@@ -224,7 +224,7 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
 
       try {
         const response = await analyzeScreenshot({
-          girl,
+          contact,
           imageBase64,
           userCulture,
           apiKey,
@@ -239,8 +239,8 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
 
         // Add to conversation history
         addConversation({
-          girlId: girl.id,
-          herMessage: '[Screenshot Analysis]',
+          contactId: contact.id,
+          theirMessage: '[Screenshot Analysis]',
           suggestions: response.suggestions,
           proTip: response.proTip,
           interestLevel: response.interestLevel,
@@ -277,7 +277,7 @@ export const useAI = (girl?: Girl | null): UseAIResult => {
         return null;
       }
     },
-    [apiKey, girl, userCulture, addConversation]
+    [apiKey, contact, userCulture, addConversation]
   );
 
   const cancel = useCallback(() => {

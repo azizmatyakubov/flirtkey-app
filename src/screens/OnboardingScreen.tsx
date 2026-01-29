@@ -34,7 +34,7 @@ const SLIDES: OnboardingSlide[] = [
     icon: 'navigate-circle',
     title: 'How It Works',
     description:
-      'FlirtKey helps you craft the perfect response. Paste her message, and get three suggestion levels: Safe, Balanced, and Bold.',
+      'FlirtKey helps you craft the perfect response. Paste their message, and get three suggestion levels: Safe, Balanced, and Bold.',
     highlight: 'Your personal AI wingman',
   },
   {
@@ -42,7 +42,7 @@ const SLIDES: OnboardingSlide[] = [
     icon: 'person-circle',
     title: 'Create Profiles',
     description:
-      'Add details about each girl - her interests, personality, your inside jokes. The more context, the better the suggestions!',
+      'Add details about each contact - their interests, personality, your inside jokes. The more context, the better the suggestions!',
     highlight: 'Personalized for each match',
   },
   {
@@ -50,7 +50,7 @@ const SLIDES: OnboardingSlide[] = [
     icon: 'camera',
     title: 'Screenshot Analysis',
     description:
-      "Upload screenshots of your conversations. Our AI reads between the lines and helps you understand what she's really saying.",
+      "Upload screenshots of your conversations. Our AI reads between the lines and helps you understand what they're really saying.",
     highlight: 'Decode hidden signals',
   },
   {

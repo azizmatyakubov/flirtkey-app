@@ -54,7 +54,7 @@ export {
   setAccessibilityFocus,
   getSuggestionAccessibilityLabel,
   getInterestLevelAccessibilityLabel,
-  getGirlCardAccessibilityLabel,
+  getContactCardAccessibilityLabel,
   formatNumberForAccessibility,
   useAccessibilityState,
   useShouldReduceMotion,

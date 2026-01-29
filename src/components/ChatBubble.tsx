@@ -9,7 +9,7 @@ import * as Clipboard from 'expo-clipboard';
 import { darkColors, spacing, fontSizes, borderRadius } from '../constants/theme';
 import { hapticLight, hapticCopy } from '../utils/haptics';
 
-export type MessageSender = 'user' | 'her' | 'system';
+export type MessageSender = 'user' | 'them' | 'system';
 
 export interface ChatMessage {
   id: string;

@@ -189,8 +189,8 @@ describe('AI Service', () => {
         return `${type}:${JSON.stringify(params)}`;
       };
 
-      const key1 = generateKey('flirt', { message: 'hey', girlId: 1 });
-      const key2 = generateKey('flirt', { message: 'hey', girlId: 1 });
+      const key1 = generateKey('flirt', { message: 'hey', contactId: 1 });
+      const key2 = generateKey('flirt', { message: 'hey', contactId: 1 });
       expect(key1).toBe(key2);
     });
 

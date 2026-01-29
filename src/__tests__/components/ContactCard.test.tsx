@@ -1,5 +1,5 @@
 /**
- * GirlCard Component Tests
+ * ContactCard Component Tests
  */
 
 import React from 'react';
@@ -38,11 +38,11 @@ jest.mock('../../components/SwipeableRow', () => ({
   },
 }));
 
-import { GirlCard } from '../../components/GirlCard';
-import { Girl } from '../../types';
+import { ContactCard } from '../../components/ContactCard';
+import { Contact } from '../../types';
 
-describe('GirlCard', () => {
-  const mockGirl: Girl = {
+describe('ContactCard', () => {
+  const mockContact: Contact = {
     id: 1,
     name: 'Emma',
     nickname: 'Em',
@@ -57,7 +57,7 @@ describe('GirlCard', () => {
   };
 
   const defaultProps = {
-    girl: mockGirl,
+    contact: mockContact,
     animatedValue: new Animated.Value(1),
     onPress: jest.fn(),
     onLongPress: jest.fn(),
@@ -69,84 +69,84 @@ describe('GirlCard', () => {
     jest.clearAllMocks();
   });
 
-  it('renders girl name correctly', () => {
-    const { getAllByText } = render(<GirlCard {...defaultProps} />);
+  it('renders contact name correctly', () => {
+    const { getAllByText } = render(<ContactCard {...defaultProps} />);
     expect(getAllByText('Emma').length).toBeGreaterThan(0);
   });
 
   it('renders message count', () => {
-    const { getByText } = render(<GirlCard {...defaultProps} />);
+    const { getByText } = render(<ContactCard {...defaultProps} />);
     expect(getByText('25')).toBeTruthy();
   });
 
   it('renders avatar with correct name', () => {
-    const { getByTestId } = render(<GirlCard {...defaultProps} />);
+    const { getByTestId } = render(<ContactCard {...defaultProps} />);
     expect(getByTestId('avatar')).toBeTruthy();
   });
 
   it('renders stage badge', () => {
-    const { getByTestId } = render(<GirlCard {...defaultProps} />);
+    const { getByTestId } = render(<ContactCard {...defaultProps} />);
     expect(getByTestId('stage-badge')).toBeTruthy();
   });
 
   it('calls onPress when card is pressed', () => {
     const onPress = jest.fn();
-    const { getAllByText } = render(<GirlCard {...defaultProps} onPress={onPress} />);
+    const { getAllByText } = render(<ContactCard {...defaultProps} onPress={onPress} />);
 
     fireEvent.press(getAllByText('Emma')[0]!);
-    expect(onPress).toHaveBeenCalledWith(mockGirl);
+    expect(onPress).toHaveBeenCalledWith(mockContact);
   });
 
   it('calls onLongPress when card is long pressed', () => {
     const onLongPress = jest.fn();
-    const { getAllByText } = render(<GirlCard {...defaultProps} onLongPress={onLongPress} />);
+    const { getAllByText } = render(<ContactCard {...defaultProps} onLongPress={onLongPress} />);
 
     fireEvent(getAllByText('Emma')[0]!, 'longPress');
-    expect(onLongPress).toHaveBeenCalledWith(mockGirl);
+    expect(onLongPress).toHaveBeenCalledWith(mockContact);
   });
 
   it('calls onDelete from swipeable row', () => {
     const onDelete = jest.fn();
-    const { getByTestId } = render(<GirlCard {...defaultProps} onDelete={onDelete} />);
+    const { getByTestId } = render(<ContactCard {...defaultProps} onDelete={onDelete} />);
 
     fireEvent.press(getByTestId('delete-btn'));
-    expect(onDelete).toHaveBeenCalledWith(mockGirl);
+    expect(onDelete).toHaveBeenCalledWith(mockContact);
   });
 
   it('calls onEdit from swipeable row', () => {
     const onEdit = jest.fn();
-    const { getByTestId } = render(<GirlCard {...defaultProps} onEdit={onEdit} />);
+    const { getByTestId } = render(<ContactCard {...defaultProps} onEdit={onEdit} />);
 
     fireEvent.press(getByTestId('edit-btn'));
-    expect(onEdit).toHaveBeenCalledWith(mockGirl);
+    expect(onEdit).toHaveBeenCalledWith(mockContact);
   });
 
   it('shows relative time for last message', () => {
     const recentGirl = {
-      ...mockGirl,
+      ...mockContact,
       lastMessageDate: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 mins ago
     };
 
-    const { getByText } = render(<GirlCard {...defaultProps} girl={recentGirl} />);
+    const { getByText } = render(<ContactCard {...defaultProps} contact={recentGirl} />);
 
     // The formatRelativeTime function formats as "Xm ago"
     expect(getByText(/30m ago/)).toBeTruthy();
   });
 
   it('memoizes correctly - does not re-render for same props', () => {
-    const { rerender, getAllByText } = render(<GirlCard {...defaultProps} />);
+    const { rerender, getAllByText } = render(<ContactCard {...defaultProps} />);
 
     // Same props, should be memoized
-    rerender(<GirlCard {...defaultProps} />);
+    rerender(<ContactCard {...defaultProps} />);
 
     expect(getAllByText('Emma').length).toBeGreaterThan(0);
   });
 
-  it('re-renders when girl data changes', () => {
-    const { rerender, getAllByText } = render(<GirlCard {...defaultProps} />);
+  it('re-renders when contact data changes', () => {
+    const { rerender, getAllByText } = render(<ContactCard {...defaultProps} />);
 
-    const updatedGirl = { ...mockGirl, name: 'Sophie', messageCount: 30 };
-    rerender(<GirlCard {...defaultProps} girl={updatedGirl} />);
+    const updatedContact = { ...mockContact, name: 'Sophie', messageCount: 30 };
+    rerender(<ContactCard {...defaultProps} contact={updatedContact} />);
 
     expect(getAllByText('Sophie').length).toBeGreaterThan(0);
     expect(getAllByText('30').length).toBeGreaterThan(0);

@@ -1,12 +1,12 @@
 import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { Girl } from '../types';
+import { Contact } from '../types';
 import { Ionicons } from '@expo/vector-icons';
 import { darkColors, fontSizes, spacing, borderRadius } from '../constants/theme';
 
 interface ConversationContextProps {
-  girl: Girl;
+  contact: Contact;
   onViewHistory?: () => void;
 }
 
@@ -27,7 +27,7 @@ const getTimeAgo = (dateString?: string): string => {
   return date.toLocaleDateString();
 };
 
-const getStageEmoji = (stage: Girl['relationshipStage']): string => {
+const getStageEmoji = (stage: Contact['relationshipStage']): string => {
   const emojis: Record<string, string> = {
     just_met: '👋',
     talking: '💬',
@@ -38,24 +38,24 @@ const getStageEmoji = (stage: Girl['relationshipStage']): string => {
   return emojis[stage] || '👋';
 };
 
-export const ConversationContext = memo(function ConversationContext({ girl, onViewHistory }: ConversationContextProps) {
-  if (!girl) return null;
+export const ConversationContext = memo(function ConversationContext({ contact, onViewHistory }: ConversationContextProps) {
+  if (!contact) return null;
 
-  const lastMessageTime = getTimeAgo(girl.lastMessageDate);
-  const hasContext = girl.lastTopic || girl.insideJokes || girl.greenLights;
+  const lastMessageTime = getTimeAgo(contact.lastMessageDate);
+  const hasContext = contact.lastTopic || contact.insideJokes || contact.greenLights;
 
   return (
     <Animated.View entering={FadeIn} style={styles.container}>
       {/* Quick Stats */}
       <View style={styles.statsRow}>
         <View style={styles.stat}>
-          <Text style={styles.statValue}>{girl.messageCount}</Text>
+          <Text style={styles.statValue}>{contact.messageCount}</Text>
           <Text style={styles.statLabel}>Messages</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.stat}>
-          <Text style={styles.statValue}>{getStageEmoji(girl.relationshipStage)}</Text>
-          <Text style={styles.statLabel}>{girl.relationshipStage.replace('_', ' ')}</Text>
+          <Text style={styles.statValue}>{getStageEmoji(contact.relationshipStage)}</Text>
+          <Text style={styles.statLabel}>{contact.relationshipStage.replace('_', ' ')}</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.stat}>
@@ -65,34 +65,34 @@ export const ConversationContext = memo(function ConversationContext({ girl, onV
       </View>
 
       {/* Last Topic */}
-      {girl.lastTopic && (
+      {contact.lastTopic && (
         <View style={styles.section}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <Ionicons name="document-text-outline" size={12} color={darkColors.textSecondary} />
             <Text style={styles.sectionLabel}>Last topic:</Text>
           </View>
           <Text style={styles.sectionText} numberOfLines={2}>
-            "{girl.lastTopic}"
+            "{contact.lastTopic}"
           </Text>
         </View>
       )}
 
       {/* Inside Jokes */}
-      {girl.insideJokes && (
+      {contact.insideJokes && (
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>😂 Inside jokes:</Text>
           <Text style={styles.sectionText} numberOfLines={2}>
-            {girl.insideJokes}
+            {contact.insideJokes}
           </Text>
         </View>
       )}
 
       {/* Green Lights */}
-      {girl.greenLights && (
+      {contact.greenLights && (
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>🟢 What works:</Text>
           <Text style={styles.sectionText} numberOfLines={2}>
-            {girl.greenLights}
+            {contact.greenLights}
           </Text>
         </View>
       )}
@@ -101,13 +101,13 @@ export const ConversationContext = memo(function ConversationContext({ girl, onV
       {!hasContext && (
         <View style={styles.hintContainer}>
           <Text style={styles.hintText}>
-            💡 Add more details in her profile to get better suggestions!
+            💡 Add more details in their profile to get better suggestions!
           </Text>
         </View>
       )}
 
       {/* View History Button */}
-      {onViewHistory && girl.messageCount > 0 && (
+      {onViewHistory && contact.messageCount > 0 && (
         <TouchableOpacity onPress={onViewHistory} style={styles.historyButton}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
             <Text style={styles.historyButtonText}>View conversation history</Text>

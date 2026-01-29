@@ -1,7 +1,7 @@
 /**
  * QuickReplyScreen - Phase 4: Clipboard/Share Workflow MVP
  *
- * Fastest path: her message → suggestion → clipboard → paste back.
+ * Fastest path: their message → suggestion → clipboard → paste back.
  * Designed for under 10 seconds: paste → pick tone → get reply → copy → done.
  */
 
@@ -24,7 +24,7 @@ import { useStore } from '../stores/useStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { ToneSelector } from '../components/ToneSelector';
-import { Girl } from '../types';
+import { Contact } from '../types';
 import { generateFlirtResponse } from '../services/ai';
 import type { ToneKey } from '../constants/tones';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -34,14 +34,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'QuickReply'>;
 
 export function QuickReplyScreen({ navigation }: Props) {
   const { theme } = useTheme();
-  const { girls, selectedGirl, selectGirl, userCulture, apiKey } = useStore();
+  const { contacts, selectedContact, selectContact, userCulture, apiKey } = useStore();
   const { preferences, accessibility } = useSettingsStore();
 
-  const [herMessage, setHerMessage] = useState('');
+  const [theirMessage, setHerMessage] = useState('');
   const [selectedTone, setSelectedTone] = useState<ToneKey | undefined>(
     preferences.defaultTone as ToneKey
   );
-  const [pickedGirl, setPickedGirl] = useState<Girl | null>(selectedGirl);
+  const [pickedContact, setPickedContact] = useState<Contact | null>(selectedContact);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -77,7 +77,7 @@ export function QuickReplyScreen({ navigation }: Props) {
   };
 
   const handleGetReply = useCallback(async () => {
-    if (!herMessage.trim()) return;
+    if (!theirMessage.trim()) return;
     if (!apiKey) {
       setError('Set up your API key in Settings first');
       return;
@@ -95,8 +95,8 @@ export function QuickReplyScreen({ navigation }: Props) {
     setError(null);
     setSuggestions([]);
 
-    // Build a placeholder girl if none picked — include all fields downstream code may access
-    const girl: Girl = pickedGirl ?? {
+    // Build a placeholder contact if none picked — include all fields downstream code may access
+    const contact: Contact = pickedContact ?? {
       id: 0,
       name: 'Someone new',
       relationshipStage: 'just_met',
@@ -112,8 +112,8 @@ export function QuickReplyScreen({ navigation }: Props) {
 
     try {
       const result = await generateFlirtResponse({
-        herMessage: herMessage.trim(),
-        girl,
+        theirMessage: theirMessage.trim(),
+        contact,
         userCulture: userCulture,
         apiKey,
         tone: selectedTone,
@@ -132,7 +132,7 @@ export function QuickReplyScreen({ navigation }: Props) {
     } finally {
       setIsLoading(false);
     }
-  }, [herMessage, pickedGirl, selectedTone, userCulture, apiKey]);
+  }, [theirMessage, pickedContact, selectedTone, userCulture, apiKey]);
 
   const handleCopySuggestion = async (text: string, index: number) => {
     try {
@@ -186,66 +186,66 @@ export function QuickReplyScreen({ navigation }: Props) {
               borderColor: theme.colors.border,
             },
           ]}
-          placeholder="Paste her message here..."
+          placeholder="Paste their message here..."
           placeholderTextColor={theme.colors.textTertiary}
-          value={herMessage}
+          value={theirMessage}
           onChangeText={setHerMessage}
           multiline
           maxLength={500}
-          autoFocus={!herMessage}
+          autoFocus={!theirMessage}
           returnKeyType="done"
           blurOnSubmit
         />
 
-        {/* Girl picker */}
+        {/* Contact picker */}
         <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Who is she?</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.girlPicker}
-          contentContainerStyle={styles.girlPickerContent}
+          style={styles.contactPicker}
+          contentContainerStyle={styles.contactPickerContent}
         >
           <TouchableOpacity
             style={[
-              styles.girlChip,
+              styles.contactChip,
               {
-                backgroundColor: !pickedGirl ? theme.colors.primary + '20' : theme.colors.surface,
-                borderColor: !pickedGirl ? theme.colors.primary : theme.colors.border,
+                backgroundColor: !pickedContact ? theme.colors.primary + '20' : theme.colors.surface,
+                borderColor: !pickedContact ? theme.colors.primary : theme.colors.border,
               },
             ]}
-            onPress={() => setPickedGirl(null)}
+            onPress={() => setPickedContact(null)}
           >
             <Text
               style={[
-                styles.girlChipText,
-                { color: !pickedGirl ? theme.colors.primary : theme.colors.textSecondary },
+                styles.contactChipText,
+                { color: !pickedContact ? theme.colors.primary : theme.colors.textSecondary },
               ]}
             >
               🆕 New person
             </Text>
           </TouchableOpacity>
-          {girls.map((g) => (
+          {contacts.map((g) => (
             <TouchableOpacity
               key={g.id}
               style={[
-                styles.girlChip,
+                styles.contactChip,
                 {
                   backgroundColor:
-                    pickedGirl?.id === g.id ? theme.colors.primary + '20' : theme.colors.surface,
-                  borderColor: pickedGirl?.id === g.id ? theme.colors.primary : theme.colors.border,
+                    pickedContact?.id === g.id ? theme.colors.primary + '20' : theme.colors.surface,
+                  borderColor: pickedContact?.id === g.id ? theme.colors.primary : theme.colors.border,
                 },
               ]}
               onPress={() => {
-                setPickedGirl(g);
-                selectGirl(g);
+                setPickedContact(g);
+                selectContact(g);
               }}
             >
               <Text
                 style={[
-                  styles.girlChipText,
+                  styles.contactChipText,
                   {
                     color:
-                      pickedGirl?.id === g.id ? theme.colors.primary : theme.colors.textSecondary,
+                      pickedContact?.id === g.id ? theme.colors.primary : theme.colors.textSecondary,
                   },
                 ]}
               >
@@ -263,11 +263,11 @@ export function QuickReplyScreen({ navigation }: Props) {
           style={[
             styles.getReplyBtn,
             {
-              backgroundColor: herMessage.trim() ? theme.colors.primary : theme.colors.border,
+              backgroundColor: theirMessage.trim() ? theme.colors.primary : theme.colors.border,
             },
           ]}
           onPress={handleGetReply}
-          disabled={!herMessage.trim() || isLoading}
+          disabled={!theirMessage.trim() || isLoading}
           activeOpacity={0.7}
         >
           {isLoading ? (
@@ -363,20 +363,20 @@ const styles = StyleSheet.create({
     maxHeight: 150,
     textAlignVertical: 'top',
   },
-  girlPicker: {
+  contactPicker: {
     marginBottom: 4,
   },
-  girlPickerContent: {
+  contactPickerContent: {
     gap: 8,
     paddingVertical: 4,
   },
-  girlChip: {
+  contactChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
   },
-  girlChipText: {
+  contactChipText: {
     fontSize: 14,
   },
   getReplyBtn: {

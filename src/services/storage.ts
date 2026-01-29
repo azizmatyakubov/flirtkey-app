@@ -5,7 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import { Girl, User, Culture } from '../types';
+import { Contact, User, Culture } from '../types';
 import { ConversationEntry, CachedSuggestion } from '../stores/useStore';
 
 // ==========================================
@@ -17,7 +17,7 @@ export interface ExportData {
   exportedAt: string;
   data: {
     user: User | null;
-    girls: Girl[];
+    contacts: Contact[];
     conversationHistory: ConversationEntry[];
     userCulture: Culture;
     // Note: apiKey is NOT exported for security
@@ -27,7 +27,7 @@ export interface ExportData {
 
 export interface StorageStats {
   totalSize: number;
-  girlsCount: number;
+  contactsCount: number;
   conversationsCount: number;
   cacheSize: number;
   oldConversationsCount: number;
@@ -146,7 +146,7 @@ export const exportData = async (): Promise<ExportData> => {
     exportedAt: new Date().toISOString(),
     data: {
       user: state.user || null,
-      girls: state.girls || [],
+      contacts: state.contacts || [],
       conversationHistory: state.conversationHistory || [],
       userCulture: state.userCulture || 'universal',
     },
@@ -172,7 +172,7 @@ export const exportDataAsJson = async (): Promise<string> => {
 export interface ImportResult {
   success: boolean;
   imported: {
-    girls: number;
+    contacts: number;
     conversations: number;
   };
   errors: string[];
@@ -188,7 +188,7 @@ export const validateImportData = (data: unknown): data is ExportData => {
   if (typeof d['checksum'] !== 'string') return false;
 
   const inner = d['data'] as Record<string, unknown>;
-  if (!Array.isArray(inner['girls'])) return false;
+  if (!Array.isArray(inner['contacts'])) return false;
   if (!Array.isArray(inner['conversationHistory'])) return false;
 
   // Verify checksum
@@ -204,7 +204,7 @@ export const importData = async (
 ): Promise<ImportResult> => {
   const result: ImportResult = {
     success: false,
-    imported: { girls: 0, conversations: 0 },
+    imported: { contacts: 0, conversations: 0 },
     errors: [],
   };
 
@@ -225,26 +225,26 @@ export const importData = async (
       existingData.state = {
         ...existingData.state,
         user: importPayload.data.user,
-        girls: importPayload.data.girls,
+        contacts: importPayload.data.contacts,
         conversationHistory: importPayload.data.conversationHistory,
         userCulture: importPayload.data.userCulture,
       };
 
-      result.imported.girls = importPayload.data.girls.length;
+      result.imported.contacts = importPayload.data.contacts.length;
       result.imported.conversations = importPayload.data.conversationHistory.length;
     } else {
       // Merge mode - add new data without duplicates
-      const existingGirlIds = new Set((existingData.state.girls || []).map((g: Girl) => g.id));
+      const existingGirlIds = new Set((existingData.state.contacts || []).map((g: Contact) => g.id));
       const existingConvIds = new Set(
         (existingData.state.conversationHistory || []).map((c: ConversationEntry) => c.id)
       );
 
-      const newGirls = importPayload.data.girls.filter((g: Girl) => !existingGirlIds.has(g.id));
+      const newGirls = importPayload.data.contacts.filter((g: Contact) => !existingGirlIds.has(g.id));
       const newConversations = importPayload.data.conversationHistory.filter(
         (c: ConversationEntry) => !existingConvIds.has(c.id)
       );
 
-      existingData.state.girls = [...(existingData.state.girls || []), ...newGirls];
+      existingData.state.contacts = [...(existingData.state.contacts || []), ...newGirls];
       existingData.state.conversationHistory = [
         ...(existingData.state.conversationHistory || []),
         ...newConversations,
@@ -254,7 +254,7 @@ export const importData = async (
         existingData.state.user = importPayload.data.user;
       }
 
-      result.imported.girls = newGirls.length;
+      result.imported.contacts = newGirls.length;
       result.imported.conversations = newConversations.length;
     }
 
@@ -308,7 +308,7 @@ export const getStorageStats = async (): Promise<StorageStats> => {
 
   const stats: StorageStats = {
     totalSize: mainSize,
-    girlsCount: 0,
+    contactsCount: 0,
     conversationsCount: 0,
     cacheSize: 0,
     oldConversationsCount: 0,
@@ -319,7 +319,7 @@ export const getStorageStats = async (): Promise<StorageStats> => {
       const parsed = JSON.parse(mainData);
       const state = parsed.state || {};
 
-      stats.girlsCount = (state.girls || []).length;
+      stats.contactsCount = (state.contacts || []).length;
       stats.conversationsCount = (state.conversationHistory || []).length;
       stats.cacheSize = (state.suggestionsCache || []).length;
 

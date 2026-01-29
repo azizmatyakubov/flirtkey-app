@@ -148,9 +148,9 @@ export const getInterestLevelAccessibilityLabel = (level: number): string => {
 };
 
 /**
- * Generate accessibility label for girl profile card
+ * Generate accessibility label for contact profile card
  */
-export const getGirlCardAccessibilityLabel = (
+export const getContactCardAccessibilityLabel = (
   name: string,
   stage: string,
   messageCount: number

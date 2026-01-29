@@ -11,15 +11,15 @@ import {
   validateAge,
   validateName,
   validateApiKey,
-  validateGirl,
-  validateCreateGirl,
+  validateContact,
+  validateCreateContact,
   validateSuggestion,
   validateAIResponse,
   getValidationError,
   ValidationErrors,
   CultureSchema,
   RelationshipStageSchema,
-  GirlSchema,
+  ContactSchema,
 } from '../../utils/validation';
 
 describe('Validation Utilities', () => {
@@ -294,22 +294,22 @@ describe('Validation Utilities', () => {
   // Full Object Validation Tests (9.1.5, 9.1.14)
   // ==========================================
 
-  describe('validateGirl', () => {
-    const validGirl = {
+  describe('validateContact', () => {
+    const validContact = {
       id: 1,
       name: 'Anna',
       messageCount: 5,
       relationshipStage: 'talking',
     };
 
-    it('validates valid girl', () => {
-      const result = validateGirl(validGirl);
+    it('validates valid contact', () => {
+      const result = validateContact(validContact);
       expect(result.success).toBe(true);
     });
 
-    it('validates girl with all optional fields', () => {
-      const fullGirl = {
-        ...validGirl,
+    it('validates contact with all optional fields', () => {
+      const fullContact = {
+        ...validContact,
         nickname: 'Annie',
         age: 25,
         culture: 'western',
@@ -319,39 +319,39 @@ describe('Validation Utilities', () => {
         howMet: 'Dating app',
         insideJokes: 'The coffee incident',
       };
-      const result = validateGirl(fullGirl);
+      const result = validateContact(fullContact);
       expect(result.success).toBe(true);
     });
 
-    it('rejects girl without name', () => {
-      const noName = { ...validGirl, name: '' };
-      const result = validateGirl(noName);
+    it('rejects contact without name', () => {
+      const noName = { ...validContact, name: '' };
+      const result = validateContact(noName);
       expect(result.success).toBe(false);
     });
 
-    it('rejects girl with invalid age', () => {
-      const underAge = { ...validGirl, age: 17 };
-      const result = validateGirl(underAge);
+    it('rejects contact with invalid age', () => {
+      const underAge = { ...validContact, age: 17 };
+      const result = validateContact(underAge);
       expect(result.success).toBe(false);
     });
 
-    it('rejects girl with negative message count', () => {
-      const negativeCount = { ...validGirl, messageCount: -1 };
-      const result = validateGirl(negativeCount);
+    it('rejects contact with negative message count', () => {
+      const negativeCount = { ...validContact, messageCount: -1 };
+      const result = validateContact(negativeCount);
       expect(result.success).toBe(false);
     });
   });
 
-  describe('validateCreateGirl', () => {
-    it('validates minimal girl creation', () => {
-      const minGirl = { name: 'Anna' };
-      const result = validateCreateGirl(minGirl);
+  describe('validateCreateContact', () => {
+    it('validates minimal contact creation', () => {
+      const minContact = { name: 'Anna' };
+      const result = validateCreateContact(minContact);
       expect(result.success).toBe(true);
     });
 
     it('does not require id or messageCount', () => {
-      const girl = { name: 'Anna', age: 25 };
-      const result = validateCreateGirl(girl);
+      const contact = { name: 'Anna', age: 25 };
+      const result = validateCreateContact(contact);
       expect(result.success).toBe(true);
     });
   });
@@ -448,7 +448,7 @@ describe('Validation Utilities', () => {
 
   describe('getValidationError', () => {
     it('extracts error message from Zod error', () => {
-      const result = GirlSchema.safeParse({ id: 1, name: '' });
+      const result = ContactSchema.safeParse({ id: 1, name: '' });
       if (!result.success) {
         const message = getValidationError(result.error);
         expect(message).toContain('Name');

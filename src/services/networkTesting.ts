@@ -8,7 +8,7 @@
  */
 
 import { AIService, classifyError, getUserFriendlyMessage } from './ai';
-import type { Girl, Culture, AnalysisResult, APIError } from '../types';
+import type { Contact, Culture, AnalysisResult, APIError } from '../types';
 
 // ==========================================
 // Network Condition Types
@@ -139,12 +139,12 @@ export interface NetworkTestSuiteResult {
 // ==========================================
 
 /**
- * Creates a mock girl for testing
+ * Creates a mock contact for testing
  */
-function createTestGirl(): Girl {
+function createTestContact(): Contact {
   return {
     id: 999,
-    name: 'Test Girl',
+    name: 'Test Contact',
     age: 25,
     culture: 'western',
     personality: 'Friendly and outgoing',
@@ -179,7 +179,7 @@ export async function runNetworkTest(
 ): Promise<NetworkTestResult> {
   const config = NETWORK_CONDITIONS[condition];
   const startTime = Date.now();
-  const testGirl = createTestGirl();
+  const testContact = createTestContact();
   const testMessage = TEST_MESSAGES[messageType];
 
   // Initialize result
@@ -207,8 +207,8 @@ export async function runNetworkTest(
 
     // Make actual API call (with cache disabled to test fresh requests)
     const response = await AIService.generateFlirtResponse({
-      girl: testGirl,
-      herMessage: testMessage,
+      contact: testContact,
+      theirMessage: testMessage,
       userCulture: 'western' as Culture,
       apiKey,
       useCache: false,
@@ -325,8 +325,8 @@ export async function testOfflineBehavior(): Promise<{
   try {
     // This should fail gracefully
     await AIService.generateFlirtResponse({
-      girl: createTestGirl(),
-      herMessage: 'Test offline',
+      contact: createTestContact(),
+      theirMessage: 'Test offline',
       userCulture: 'western' as Culture,
       apiKey: 'test-key',
     });
@@ -368,8 +368,8 @@ export async function testRetryBehavior(apiKey: string): Promise<{
   try {
     // Make a request that might need retries
     await AIService.generateFlirtResponse({
-      girl: createTestGirl(),
-      herMessage: 'Test retry',
+      contact: createTestContact(),
+      theirMessage: 'Test retry',
       userCulture: 'western' as Culture,
       apiKey,
     });
@@ -387,8 +387,8 @@ export async function testRetryBehavior(apiKey: string): Promise<{
 
   try {
     await AIService.generateFlirtResponse({
-      girl: createTestGirl(),
-      herMessage: 'Test no retry',
+      contact: createTestContact(),
+      theirMessage: 'Test no retry',
       userCulture: 'western' as Culture,
       apiKey: 'invalid-key-12345',
     });
@@ -416,8 +416,8 @@ export async function testCancellation(apiKey: string): Promise<{
 
   // Start a request
   const requestPromise = AIService.generateFlirtResponse({
-    girl: createTestGirl(),
-    herMessage: 'Test cancellation',
+    contact: createTestContact(),
+    theirMessage: 'Test cancellation',
     userCulture: 'western' as Culture,
     apiKey,
   });
@@ -463,7 +463,7 @@ export const NetworkTestingService = {
   testCancellation,
 
   // Utility
-  createTestGirl,
+  createTestContact,
 };
 
 export default NetworkTestingService;

@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { Girl, User, Culture, Suggestion } from '../types';
+import { Contact, User, Culture, Suggestion } from '../types';
 
 // Get API key from env config (falls back to empty string)
 const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | undefined)?.['openaiApiKey'] || '';
@@ -14,9 +14,9 @@ const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | und
 // Conversation history entry
 export interface ConversationEntry {
   id: string;
-  girlId: number;
+  contactId: number;
   timestamp: number;
-  herMessage: string;
+  theirMessage: string;
   suggestions: Suggestion[];
   selectedSuggestion?: Suggestion;
   proTip?: string;
@@ -25,8 +25,8 @@ export interface ConversationEntry {
 
 // Cached suggestion
 export interface CachedSuggestion {
-  key: string; // Hash of input (girlId + message)
-  girlId: number;
+  key: string; // Hash of input (contactId + message)
+  contactId: number;
   inputMessage: string;
   suggestions: Suggestion[];
   proTip?: string;
@@ -43,33 +43,33 @@ interface AppState {
   user: User | null;
   setUser: (user: User) => void;
 
-  // Girls
-  girls: Girl[];
-  selectedGirl: Girl | null;
-  addGirl: (
-    girl: Omit<Girl, 'id' | 'messageCount'> & { relationshipStage?: Girl['relationshipStage'] }
+  // Contacts
+  contacts: Contact[];
+  selectedContact: Contact | null;
+  addContact: (
+    contact: Omit<Contact, 'id' | 'messageCount'> & { relationshipStage?: Contact['relationshipStage'] }
   ) => void;
-  updateGirl: (id: number, data: Partial<Girl>) => void;
-  deleteGirl: (id: number) => void;
-  selectGirl: (girl: Girl | null) => void;
+  updateContact: (id: number, data: Partial<Contact>) => void;
+  deleteContact: (id: number) => void;
+  selectContact: (contact: Contact | null) => void;
 
   // Conversation History (2.1.11)
   conversationHistory: ConversationEntry[];
   addConversation: (entry: Omit<ConversationEntry, 'id' | 'timestamp'>) => void;
-  getConversationsForGirl: (girlId: number) => ConversationEntry[];
-  clearConversationHistory: (girlId?: number) => void;
+  getConversationsForContact: (contactId: number) => ConversationEntry[];
+  clearConversationHistory: (contactId?: number) => void;
   selectSuggestion: (conversationId: string, suggestion: Suggestion) => void;
-  getLastConversationForGirl: (girlId: number) => ConversationEntry | null;
+  getLastConversationForContact: (contactId: number) => ConversationEntry | null;
 
   // Suggestions Cache (2.1.12)
   suggestionsCache: CachedSuggestion[];
   cacheSuggestions: (
-    girlId: number,
+    contactId: number,
     inputMessage: string,
     suggestions: Suggestion[],
     proTip?: string
   ) => void;
-  getCachedSuggestions: (girlId: number, inputMessage: string) => CachedSuggestion | null;
+  getCachedSuggestions: (contactId: number, inputMessage: string) => CachedSuggestion | null;
   clearSuggestionsCache: () => void;
 
   // Settings
@@ -93,8 +93,8 @@ const CURRENT_VERSION = 1;
 interface PersistedState {
   _version?: number;
   user?: User | null;
-  girls?: Girl[];
-  selectedGirl?: Girl | null;
+  contacts?: Contact[];
+  selectedContact?: Contact | null;
   conversationHistory?: ConversationEntry[];
   suggestionsCache?: CachedSuggestion[];
   userCulture?: Culture;
@@ -126,9 +126,9 @@ const migrate = (persistedState: unknown, version: number): PersistedState => {
 // Helper Functions
 // ==========================================
 
-const generateCacheKey = (girlId: number, message: string): string => {
+const generateCacheKey = (contactId: number, message: string): string => {
   // Simple hash for cache key
-  const str = `${girlId}:${message.toLowerCase().trim()}`;
+  const str = `${contactId}:${message.toLowerCase().trim()}`;
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
@@ -140,7 +140,7 @@ const generateCacheKey = (girlId: number, message: string): string => {
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_CACHE_SIZE = 100;
-const MAX_HISTORY_PER_GIRL = 50;
+const MAX_HISTORY_PER_CONTACT = 50;
 
 // ==========================================
 // Store Creation
@@ -156,41 +156,41 @@ const storeCreator: AppStateCreator = (set, get) => ({
   user: null,
   setUser: (user) => set({ user }),
 
-  // Girls
-  girls: [],
-  selectedGirl: null,
+  // Contacts
+  contacts: [],
+  selectedContact: null,
 
-  addGirl: (girlData) => {
-    const girls = get().girls;
-    const newGirl: Girl = {
-      ...girlData,
+  addContact: (contactData) => {
+    const contacts = get().contacts;
+    const newGirl: Contact = {
+      ...contactData,
       id: Date.now(),
       messageCount: 0,
-      relationshipStage: girlData.relationshipStage || 'just_met',
+      relationshipStage: contactData.relationshipStage || 'just_met',
     };
-    set({ girls: [...girls, newGirl], selectedGirl: newGirl });
+    set({ contacts: [...contacts, newGirl], selectedContact: newGirl });
   },
 
-  updateGirl: (id, data) => {
-    const girls = get().girls.map((g) => (g.id === id ? { ...g, ...data } : g));
-    const selectedGirl = get().selectedGirl;
+  updateContact: (id, data) => {
+    const contacts = get().contacts.map((g) => (g.id === id ? { ...g, ...data } : g));
+    const selectedContact = get().selectedContact;
     set({
-      girls,
-      selectedGirl: selectedGirl?.id === id ? { ...selectedGirl, ...data } : selectedGirl,
+      contacts,
+      selectedContact: selectedContact?.id === id ? { ...selectedContact, ...data } : selectedContact,
     });
   },
 
-  deleteGirl: (id) => {
+  deleteContact: (id) => {
     // Also clear related conversation history
-    const conversationHistory = get().conversationHistory.filter((c) => c.girlId !== id);
+    const conversationHistory = get().conversationHistory.filter((c) => c.contactId !== id);
     set({
-      girls: get().girls.filter((g) => g.id !== id),
-      selectedGirl: get().selectedGirl?.id === id ? null : get().selectedGirl,
+      contacts: get().contacts.filter((g) => g.id !== id),
+      selectedContact: get().selectedContact?.id === id ? null : get().selectedContact,
       conversationHistory,
     });
   },
 
-  selectGirl: (girl) => set({ selectedGirl: girl }),
+  selectContact: (contact) => set({ selectedContact: contact }),
 
   // Conversation History (2.1.11)
   conversationHistory: [],
@@ -203,35 +203,35 @@ const storeCreator: AppStateCreator = (set, get) => ({
     };
 
     const history = get().conversationHistory;
-    const girlHistory = history.filter((c) => c.girlId === entry.girlId);
+    const contactHistory = history.filter((c) => c.contactId === entry.contactId);
 
-    // Limit history per girl
+    // Limit history per contact
     let updatedHistory = [...history, newEntry];
-    if (girlHistory.length >= MAX_HISTORY_PER_GIRL) {
-      // Remove oldest entries for this girl
-      const toRemove = girlHistory.slice(0, girlHistory.length - MAX_HISTORY_PER_GIRL + 1);
+    if (contactHistory.length >= MAX_HISTORY_PER_CONTACT) {
+      // Remove oldest entries for this contact
+      const toRemove = contactHistory.slice(0, contactHistory.length - MAX_HISTORY_PER_CONTACT + 1);
       const toRemoveIds = new Set(toRemove.map((c) => c.id));
       updatedHistory = updatedHistory.filter((c) => !toRemoveIds.has(c.id));
     }
 
-    // Update girl's message count
-    const girls = get().girls.map((g) =>
-      g.id === entry.girlId ? { ...g, messageCount: g.messageCount + 1 } : g
+    // Update contact's message count
+    const contacts = get().contacts.map((g) =>
+      g.id === entry.contactId ? { ...g, messageCount: g.messageCount + 1 } : g
     );
 
-    set({ conversationHistory: updatedHistory, girls });
+    set({ conversationHistory: updatedHistory, contacts });
   },
 
-  getConversationsForGirl: (girlId) => {
+  getConversationsForContact: (contactId) => {
     return get()
-      .conversationHistory.filter((c) => c.girlId === girlId)
+      .conversationHistory.filter((c) => c.contactId === contactId)
       .sort((a, b) => b.timestamp - a.timestamp);
   },
 
-  clearConversationHistory: (girlId) => {
-    if (girlId !== undefined) {
+  clearConversationHistory: (contactId) => {
+    if (contactId !== undefined) {
       set({
-        conversationHistory: get().conversationHistory.filter((c) => c.girlId !== girlId),
+        conversationHistory: get().conversationHistory.filter((c) => c.contactId !== contactId),
       });
     } else {
       set({ conversationHistory: [] });
@@ -245,9 +245,9 @@ const storeCreator: AppStateCreator = (set, get) => ({
     set({ conversationHistory: updatedHistory });
   },
 
-  getLastConversationForGirl: (girlId) => {
+  getLastConversationForContact: (contactId) => {
     const convos = get()
-      .conversationHistory.filter((c) => c.girlId === girlId)
+      .conversationHistory.filter((c) => c.contactId === contactId)
       .sort((a, b) => b.timestamp - a.timestamp);
     return convos.length > 0 ? (convos[0] ?? null) : null;
   },
@@ -255,13 +255,13 @@ const storeCreator: AppStateCreator = (set, get) => ({
   // Suggestions Cache (2.1.12)
   suggestionsCache: [],
 
-  cacheSuggestions: (girlId, inputMessage, suggestions, proTip) => {
-    const key = generateCacheKey(girlId, inputMessage);
+  cacheSuggestions: (contactId, inputMessage, suggestions, proTip) => {
+    const key = generateCacheKey(contactId, inputMessage);
     const now = Date.now();
 
     const newCacheEntry: CachedSuggestion = {
       key,
-      girlId,
+      contactId,
       inputMessage,
       suggestions,
       proTip,
@@ -289,8 +289,8 @@ const storeCreator: AppStateCreator = (set, get) => ({
     set({ suggestionsCache: cache });
   },
 
-  getCachedSuggestions: (girlId, inputMessage) => {
-    const key = generateCacheKey(girlId, inputMessage);
+  getCachedSuggestions: (contactId, inputMessage) => {
+    const key = generateCacheKey(contactId, inputMessage);
     const now = Date.now();
     const cached = get().suggestionsCache.find((c) => c.key === key && c.expiresAt > now);
     return cached || null;
@@ -312,8 +312,8 @@ const storeCreator: AppStateCreator = (set, get) => ({
   clearAllData: () => {
     set({
       user: null,
-      girls: [],
-      selectedGirl: null,
+      contacts: [],
+      selectedContact: null,
       conversationHistory: [],
       suggestionsCache: [],
       userCulture: 'universal',
@@ -331,8 +331,8 @@ const persistConfig: PersistOptions<AppState, PersistedState> = {
   partialize: (state) => ({
     _version: state._version,
     user: state.user,
-    girls: state.girls,
-    selectedGirl: state.selectedGirl,
+    contacts: state.contacts,
+    selectedContact: state.selectedContact,
     conversationHistory: state.conversationHistory,
     // suggestionsCache excluded — ephemeral, rebuilt on use
     userCulture: state.userCulture,
@@ -358,32 +358,32 @@ export const useStore = create<AppState>()(persist(storeCreator, persistConfig))
 // Selectors (2.1.15)
 // ==========================================
 
-// Get girl by ID
-export const selectGirlById = (id: number) => (state: AppState) =>
-  state.girls.find((g) => g.id === id);
+// Get contact by ID
+export const selectContactById = (id: number) => (state: AppState) =>
+  state.contacts.find((g) => g.id === id);
 
-// Get girls sorted by recent activity
-export const selectGirlsSortedByRecent = (state: AppState) =>
-  [...state.girls].sort((a, b) => {
+// Get contacts sorted by recent activity
+export const selectContactsSortedByRecent = (state: AppState) =>
+  [...state.contacts].sort((a, b) => {
     const aTime = a.lastMessageDate ? new Date(a.lastMessageDate).getTime() : 0;
     const bTime = b.lastMessageDate ? new Date(b.lastMessageDate).getTime() : 0;
     return bTime - aTime;
   });
 
-// Get girls by relationship stage
-export const selectGirlsByStage = (stage: Girl['relationshipStage']) => (state: AppState) =>
-  state.girls.filter((g) => g.relationshipStage === stage);
+// Get contacts by relationship stage
+export const selectContactsByStage = (stage: Contact['relationshipStage']) => (state: AppState) =>
+  state.contacts.filter((g) => g.relationshipStage === stage);
 
 // Get total message count
 export const selectTotalMessageCount = (state: AppState) =>
-  state.girls.reduce((sum, g) => sum + g.messageCount, 0);
+  state.contacts.reduce((sum, g) => sum + g.messageCount, 0);
 
-// Get girls count
-export const selectGirlsCount = (state: AppState) => state.girls.length;
+// Get contacts count
+export const selectContactsCount = (state: AppState) => state.contacts.length;
 
 // Check if user has any data
 export const selectHasData = (state: AppState) =>
-  state.girls.length > 0 || state.conversationHistory.length > 0;
+  state.contacts.length > 0 || state.conversationHistory.length > 0;
 
 // Check if API key is set
 export const selectHasApiKey = (state: AppState) => state.apiKey.length > 0;
@@ -394,15 +394,15 @@ export const selectRecentConversations =
   (state: AppState) =>
     [...state.conversationHistory].sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
 
-// Get conversation count for a girl
-export const selectConversationCountForGirl = (girlId: number) => (state: AppState) =>
-  state.conversationHistory.filter((c) => c.girlId === girlId).length;
+// Get conversation count for a contact
+export const selectConversationCountForContact = (contactId: number) => (state: AppState) =>
+  state.conversationHistory.filter((c) => c.contactId === contactId).length;
 
-// Search girls by name
-export const selectGirlsBySearch = (query: string) => (state: AppState) => {
+// Search contacts by name
+export const selectContactsBySearch = (query: string) => (state: AppState) => {
   const lowerQuery = query.toLowerCase().trim();
-  if (!lowerQuery) return state.girls;
-  return state.girls.filter(
+  if (!lowerQuery) return state.contacts;
+  return state.contacts.filter(
     (g) =>
       g.name.toLowerCase().includes(lowerQuery) ||
       g.nickname?.toLowerCase().includes(lowerQuery) ||

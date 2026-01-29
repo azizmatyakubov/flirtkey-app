@@ -44,7 +44,7 @@ export interface AnnotationRegion {
   y: number;
   width: number;
   height: number;
-  type: 'her-message' | 'your-message' | 'key-point' | 'warning';
+  type: 'their-message' | 'your-message' | 'key-point' | 'warning';
   label?: string;
 }
 
@@ -74,8 +74,8 @@ function getAnnotationColor(type: string): string {
       return darkColors.error;
     case 'tip':
       return darkColors.primary;
-    case 'her-message':
-      return '#FF6B9D'; // Pink for her
+    case 'their-message':
+      return '#FF6B9D'; // Pink for them
     case 'your-message':
       return accentColors.gradientPurple; // Purple for you
     case 'key-point':

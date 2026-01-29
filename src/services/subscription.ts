@@ -31,7 +31,7 @@ export interface SubscriptionState {
 
 export interface PlanLimits {
   dailySuggestions: number;
-  maxGirls: number;
+  maxContacts: number;
   hasSoundLikeMe: boolean;
   hasRescueAlerts: boolean;
   hasAnalytics: boolean;
@@ -49,7 +49,7 @@ export const UNLIMITED = 999999;
 export const PLAN_LIMITS: Record<SubscriptionTier, PlanLimits> = {
   free: {
     dailySuggestions: 5,
-    maxGirls: 1,
+    maxContacts: 1,
     hasSoundLikeMe: false,
     hasRescueAlerts: false,
     hasAnalytics: false,
@@ -58,7 +58,7 @@ export const PLAN_LIMITS: Record<SubscriptionTier, PlanLimits> = {
   },
   pro: {
     dailySuggestions: UNLIMITED,
-    maxGirls: UNLIMITED,
+    maxContacts: UNLIMITED,
     hasSoundLikeMe: true,
     hasRescueAlerts: true,
     hasAnalytics: true,
@@ -67,7 +67,7 @@ export const PLAN_LIMITS: Record<SubscriptionTier, PlanLimits> = {
   },
   lifetime: {
     dailySuggestions: UNLIMITED,
-    maxGirls: UNLIMITED,
+    maxContacts: UNLIMITED,
     hasSoundLikeMe: true,
     hasRescueAlerts: true,
     hasAnalytics: true,
@@ -166,7 +166,7 @@ const PRO_FEATURES = [
   'rescueAlerts',
   'analytics',
   'gifs',
-  'unlimitedGirls',
+  'unlimitedContacts',
   'unlimitedSuggestions',
 ];
 
