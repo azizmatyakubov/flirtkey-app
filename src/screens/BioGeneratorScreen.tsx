@@ -18,11 +18,12 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, SlideInDown, SlideInRight } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import * as Clipboard from 'expo-clipboard';
 import { apiClient } from '../services/apiClient';
 import { useStore } from '../stores/useStore';
 import { humanize } from '../services/humanizer';
 import { TONES, type ToneKey } from '../constants/tones';
+import { CopyButton } from '../components/CopyButton';
+import { addHistoryEntry } from '../services/historyService';
 import { darkColors, spacing, borderRadius, fontSizes } from '../constants/theme';
 
 // ==========================================
@@ -171,6 +172,17 @@ Remember: authentic, not cringe, match the ${toneConfig.name.toLowerCase()} tone
             return { text, isEditing: false };
           });
           setBios(generatedBios);
+
+          // Record to global history
+          for (const bio of generatedBios) {
+            addHistoryEntry({
+              screenType: 'bio',
+              input: userDetails,
+              output: bio.text,
+              meta: { platform: platform.name, tone: TONES[selectedTone].name },
+            }).catch(() => {});
+          }
+
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
           throw new Error('Invalid response format');
@@ -186,13 +198,6 @@ Remember: authentic, not cringe, match the ${toneConfig.name.toLowerCase()} tone
       setLoading(false);
     }
   }, [apiKey, apiMode, age, interests, occupation, lookingFor, traits, selectedPlatform, selectedTone, platform, userStyle]);
-
-  const handleCopy = useCallback(async (bio: GeneratedBio) => {
-    const text = bio.editedText || bio.text;
-    await Clipboard.setStringAsync(text);
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert('Copied!', 'Bio copied to clipboard');
-  }, []);
 
   const handleToggleEdit = useCallback((index: number) => {
     setBios(prev => prev.map((bio, i) => {
@@ -422,12 +427,11 @@ Remember: authentic, not cringe, match the ${toneConfig.name.toLowerCase()} tone
                   )}
 
                   <View style={styles.bioActions}>
-                    <TouchableOpacity
-                      style={styles.bioAction}
-                      onPress={() => handleCopy(bio)}
-                    >
-                      <Text style={styles.bioActionText}>📋 Copy</Text>
-                    </TouchableOpacity>
+                    <CopyButton
+                      text={bio.editedText ?? bio.text}
+                      size="sm"
+                      label="Copy"
+                    />
                     <TouchableOpacity
                       style={styles.bioAction}
                       onPress={() => handleToggleEdit(index)}

@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideInRight } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import * as Clipboard from 'expo-clipboard';
 import { useStore } from '../stores/useStore';
 import { apiClient } from '../services/apiClient';
 import { useImagePicker } from '../hooks/useImagePicker';
@@ -30,6 +29,8 @@ import { LoadingShimmer } from '../components/ShimmerEffect';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { CoachingTip } from '../components/CoachingTip';
 import { useSettingsStore } from '../stores/settingsStore';
+import { CopyButton } from '../components/CopyButton';
+import { addHistoryEntry } from '../services/historyService';
 import { darkColors, spacing, borderRadius, fontSizes } from '../constants/theme';
 
 // ==========================================
@@ -179,6 +180,17 @@ Return ONLY JSON:
           }));
 
           setOpeners(generated);
+
+          // Record to global history
+          for (const opener of generated) {
+            addHistoryEntry({
+              screenType: 'opener',
+              input: profileText.substring(0, 200),
+              output: opener.text,
+              meta: { tone: TONES[opener.tone]?.name || opener.tone },
+            }).catch(() => {});
+          }
+
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
           throw new Error('Invalid response format');
@@ -200,12 +212,6 @@ Return ONLY JSON:
     setLastToneFilter(tone);
     await generateOpeners(extractedText, tone);
   }, [extractedText, generateOpeners]);
-
-  const handleCopy = useCallback(async (text: string) => {
-    await Clipboard.setStringAsync(text);
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert('Copied!', 'Opener copied to clipboard');
-  }, []);
 
   const handleRetake = useCallback(() => {
     imagePicker.clear();
@@ -366,12 +372,8 @@ Return ONLY JSON:
                   )}
 
                   <View style={styles.openerActions}>
-                    <TouchableOpacity
-                      style={styles.copyButton}
-                      onPress={() => handleCopy(opener.text)}
-                    >
-                      <Text style={styles.copyButtonText}>📋 Copy</Text>
-                    </TouchableOpacity>
+                    <CopyButton text={opener.text} size="sm" label="Copy" />
+
                     <TouchableOpacity
                       style={styles.moreLikeButton}
                       onPress={() => handleMoreLikeThis(opener.tone)}
@@ -607,17 +609,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: darkColors.border,
     paddingTop: spacing.sm,
-  },
-  copyButton: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    backgroundColor: darkColors.primary,
-    borderRadius: borderRadius.md,
-  },
-  copyButtonText: {
-    color: '#fff',
-    fontSize: fontSizes.sm,
-    fontWeight: '500',
   },
   moreLikeButton: {
     paddingVertical: spacing.xs,

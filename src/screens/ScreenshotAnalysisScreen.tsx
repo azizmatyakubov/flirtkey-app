@@ -52,6 +52,7 @@ import { LoadingShimmer } from '../components/ShimmerEffect';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { OfflineIndicator } from '../components/OfflineIndicator';
 import type { AnalysisResult, Suggestion, Contact } from '../types';
+import { addHistoryEntry } from '../services/historyService';
 import { darkColors, accentColors, spacing, borderRadius, fontSizes, shadows } from '../constants/theme';
 
 // ==========================================
@@ -150,6 +151,22 @@ export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalys
       });
 
       setResult(analysisResult);
+
+      // Record to global history
+      if (analysisResult.suggestions) {
+        for (const s of analysisResult.suggestions) {
+          addHistoryEntry({
+            screenType: 'screenshot',
+            input: 'Screenshot analysis',
+            output: s.text,
+            meta: {
+              ...(selectedContactForAnalysis ? { contact: selectedContactForAnalysis.name } : {}),
+              tone: s.type,
+            },
+          }).catch(() => {});
+        }
+      }
+
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       // Add to history (7.2.10)

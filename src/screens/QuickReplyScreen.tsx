@@ -24,6 +24,8 @@ import { useStore } from '../stores/useStore';
 import { useSettingsStore } from '../stores/settingsStore';
 import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { ToneSelector } from '../components/ToneSelector';
+import { CopyButton } from '../components/CopyButton';
+import { addHistoryEntry } from '../services/historyService';
 import { Contact } from '../types';
 import { generateFlirtResponse } from '../services/ai';
 import type { ToneKey } from '../constants/tones';
@@ -123,6 +125,20 @@ export function QuickReplyScreen({ navigation }: Props) {
 
       if (result && result.suggestions && result.suggestions.length > 0) {
         setSuggestions(result.suggestions.map((s) => s.text));
+
+        // Record to global history
+        for (const s of result.suggestions) {
+          addHistoryEntry({
+            screenType: 'quick_reply',
+            input: theirMessage.trim(),
+            output: s.text,
+            meta: {
+              contact: pickedContact?.name || 'Someone new',
+              ...(selectedTone ? { tone: selectedTone } : {}),
+            },
+          }).catch(() => {});
+        }
+
         // Record subscription usage (same as ChatScreen)
         const subStore = useSubscriptionStore.getState();
         subStore.recordSuggestionUse();
@@ -306,16 +322,19 @@ export function QuickReplyScreen({ navigation }: Props) {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.suggestionText, { color: theme.colors.text }]}>{text}</Text>
-                <Text
-                  style={[
-                    styles.copyHint,
-                    {
-                      color: copiedIndex === i ? theme.colors.success : theme.colors.textTertiary,
-                    },
-                  ]}
-                >
-                  {copiedIndex === i ? '✅ Copied! Go paste it 📋' : 'Tap to copy'}
-                </Text>
+                <View style={styles.suggestionFooter}>
+                  <CopyButton text={text} size="sm" label="Copy" />
+                  <Text
+                    style={[
+                      styles.copyHint,
+                      {
+                        color: copiedIndex === i ? theme.colors.success : theme.colors.textTertiary,
+                      },
+                    ]}
+                  >
+                    {copiedIndex === i ? '✅ Copied!' : 'Tap card to copy'}
+                  </Text>
+                </View>
               </TouchableOpacity>
             ))}
           </View>
@@ -414,6 +433,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     marginBottom: 8,
+  },
+  suggestionFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   copyHint: {
     fontSize: 12,

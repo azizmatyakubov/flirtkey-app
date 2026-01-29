@@ -46,6 +46,7 @@ import { RegenerateButton } from '../components/SuggestionRegenerate';
 import { InterestLevelChart } from '../components/InterestLevelChart';
 import { OfflineIndicator } from '../components/OfflineIndicator';
 import { useOrientation } from '../hooks/useOrientation';
+import { addHistoryEntry } from '../services/historyService';
 import { darkColors, fontSizes, spacing, borderRadius, accentColors, shadows } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 import type { RootNavigationProp } from '../types/navigation';
@@ -254,6 +255,16 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         proTip: response.proTip,
         interestLevel: response.interestLevel,
       });
+
+      // Record to global history service
+      for (const s of response.suggestions) {
+        addHistoryEntry({
+          screenType: 'chat_reply',
+          input: theirMessage,
+          output: s.text,
+          meta: { contact: selectedContact.name, tone: s.type },
+        }).catch(() => {});
+      }
 
       // Record subscription usage
       useSubscriptionStore.getState().recordSuggestionUse();
