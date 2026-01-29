@@ -18,6 +18,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useStore } from '../stores/useStore';
+import { useSubscriptionStore } from '../stores/subscriptionStore';
+import { PLAN_LIMITS } from '../services/subscription';
 import { Culture, RelationshipStage } from '../types';
 import { TextInput } from '../components/TextInput';
 import { Select } from '../components/Select';
@@ -54,6 +56,7 @@ interface FormErrors {
 
 export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }) {
   const addGirl = useStore((s) => s.addGirl);
+  const girlsCount = useStore((s) => s.girls.length);
   const { showToast } = useToast();
   const { pickFromLibrary, image: selectedImage, clear: clearImage } = useImagePicker({
     allowsEditing: true,
@@ -145,6 +148,15 @@ export function AddGirlScreen({ navigation }: { navigation: RootNavigationProp }
 
   const handleSavePress = () => {
     dismissKeyboard();
+
+    // Enforce free tier maxGirls limit
+    const tier = useSubscriptionStore.getState().getEffectiveTier();
+    const limits = PLAN_LIMITS[tier as keyof typeof PLAN_LIMITS];
+    if (limits && girlsCount >= limits.maxGirls) {
+      navigation.navigate('Paywall');
+      return;
+    }
+
     if (!validateForm()) {
       showToast({
         message: 'Please fix the errors above',
