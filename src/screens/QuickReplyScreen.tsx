@@ -34,7 +34,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'QuickReply'>;
 
 export function QuickReplyScreen({ navigation }: Props) {
   const { theme } = useTheme();
-  const { contacts, selectedContact, selectContact, userCulture, apiKey, apiMode } = useStore();
+  const { contacts, selectedContact, selectContact, userCulture, apiKey, apiMode, userStyle } = useStore();
   const { preferences, accessibility } = useSettingsStore();
 
   const [theirMessage, setHerMessage] = useState('');
@@ -118,6 +118,7 @@ export function QuickReplyScreen({ navigation }: Props) {
         apiKey,
         tone: selectedTone,
         apiMode,
+        userStyle,
       });
 
       if (result && result.suggestions && result.suggestions.length > 0) {

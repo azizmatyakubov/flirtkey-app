@@ -138,10 +138,12 @@ export interface FlirtPromptParams {
   theirMessage: string;
   userCulture: Culture;
   context?: string;
+  /** User's texting style profile — injected into the prompt so AI matches their voice */
+  stylePrompt?: string;
 }
 
 export function buildFlirtPrompt(params: FlirtPromptParams): { prompt: string; metadata: PromptMetadata } {
-  const { contact, theirMessage, userCulture, context } = params;
+  const { contact, theirMessage, userCulture, context, stylePrompt } = params;
   const culture = CULTURE_STYLES[contact.culture as Culture || userCulture || 'universal'];
   const stage = STAGES[contact.relationshipStage || 'just_met'];
   
@@ -171,7 +173,7 @@ AVOID: ${culture.avoid.join(', ')}
 ## STAGE TIPS (${stage.name}):
 ${stage.tips.map((t) => `- ${t}`).join('\n')}
 
-${safeContext ? `## ADDITIONAL CONTEXT:\n${safeContext}\n` : ''}
+${stylePrompt ? `${stylePrompt}\n` : ''}${safeContext ? `## ADDITIONAL CONTEXT:\n${safeContext}\n` : ''}
 ## HER MESSAGE:
 "${safeMessage}"
 

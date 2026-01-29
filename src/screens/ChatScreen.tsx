@@ -72,6 +72,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
   const selectedContact = useStore((s) => s.selectedContact);
   const apiKey = useStore((s) => s.apiKey);
   const apiMode = useStore((s) => s.apiMode);
+  const userStyle = useStore((s) => s.userStyle);
   const updateContact = useStore((s) => s.updateContact);
   const userCulture = useStore((s) => s.userCulture);
   const addConversation = useStore((s) => s.addConversation);
@@ -224,7 +225,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
     setLoading(true);
 
     try {
-      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture, apiMode);
+      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture, apiMode, userStyle);
 
       // Guard against state updates after unmount (e.g., rotation mid-generation)
       if (!isMountedRef.current) return;
@@ -300,7 +301,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setLoading(false);
       }
     }
-  }, [selectedContact, theirMessage, apiKey, apiMode, userCulture, buttonScale, updateContact, addConversation]);
+  }, [selectedContact, theirMessage, apiKey, apiMode, userStyle, userCulture, buttonScale, updateContact, addConversation]);
 
   // Handle regeneration (6.2.13)
   const handleRegenerate = useCallback(async (type?: Suggestion['type']) => {
@@ -308,7 +309,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
     setLoading(true);
 
     try {
-      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture, apiMode);
+      const response = await generateResponse(apiKey, selectedContact, theirMessage, userCulture, apiMode, userStyle);
 
       if (!isMountedRef.current) return;
 
@@ -332,7 +333,7 @@ export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
         setLoading(false);
       }
     }
-  }, [selectedContact, theirMessage, apiKey, apiMode, userCulture, result]);
+  }, [selectedContact, theirMessage, apiKey, apiMode, userStyle, userCulture, result]);
 
   // Handle screenshot
   const handleScreenshot = useCallback(async () => {

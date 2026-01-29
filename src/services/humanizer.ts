@@ -143,31 +143,45 @@ export function humanize(text: string, options: Partial<HumanizeOptions> = {}): 
 
 /**
  * Match the energy/length of their message.
- * Short their message = short response. Long = can be longer.
+ * Short their message = shorter response. Long = can be longer.
+ *
+ * We use a proportional approach rather than hard cutoffs:
+ * - Very short input (1-10 chars, e.g. "hi", "hey"): cap at ~120 chars
+ * - Short input (10-30 chars): cap at ~150 chars
+ * - Medium input (30-100 chars): cap at ~200 chars
+ * - Long input (100+ chars): no cap
+ *
+ * The cap is applied by trimming at the nearest sentence boundary.
  */
 function matchEnergy(text: string, herLength: number): string {
-  // If their message is very short (< 20 chars), keep response short too
-  if (herLength < 20 && text.length > 80) {
-    // Take first sentence or first 80 chars
-    const firstSentence = text.split(/[.!?]/)[0];
-    if (firstSentence && firstSentence.length <= 80) {
-      return firstSentence;
-    }
-    return text.substring(0, 80).trim();
+  let maxChars: number;
+  if (herLength <= 10) {
+    maxChars = 120;
+  } else if (herLength <= 30) {
+    maxChars = 150;
+  } else if (herLength <= 100) {
+    maxChars = 200;
+  } else {
+    return text; // no cap for long messages
   }
 
-  // If their message is medium (20-80), keep response moderate
-  if (herLength < 80 && text.length > 150) {
-    const sentences = text.split(/(?<=[.!?])\s+/);
-    let result = '';
-    for (const sentence of sentences) {
-      if ((result + sentence).length > 150) break;
-      result += (result ? ' ' : '') + sentence;
-    }
-    return result || text.substring(0, 150).trim();
+  if (text.length <= maxChars) return text;
+
+  // Try to cut at a sentence boundary
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  let result = '';
+  for (const sentence of sentences) {
+    if ((result + (result ? ' ' : '') + sentence).length > maxChars) break;
+    result += (result ? ' ' : '') + sentence;
   }
 
-  return text;
+  // If we got at least one sentence, use it
+  if (result && result.length >= 20) return result;
+
+  // Otherwise truncate at word boundary
+  const truncated = text.substring(0, maxChars);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return lastSpace > maxChars * 0.6 ? truncated.substring(0, lastSpace) : truncated;
 }
 
 /**
@@ -221,20 +235,29 @@ function applyAbbreviations(text: string, level: number): string {
 
 /**
  * Add a natural filler word/phrase.
+ * Only add if the text is long enough to benefit from it.
  */
 function addFiller(text: string, level: number): string {
+  // Don't add fillers to very short messages — they'd dominate
+  if (text.length < 30) return text;
+
   const pool = level > 0.7 ? [...FILLERS, ...THINKING_WORDS, ...CASUAL_STARTERS] : FILLERS;
   const filler = pool[Math.floor(seededRandom() * pool.length)];
 
-  // Add at start sometimes
-  if (seededRandom() < 0.6) {
+  // Casual starters (haha, lol) go at start; thinking words too
+  if (seededRandom() < 0.5 && (CASUAL_STARTERS.includes(filler) || THINKING_WORDS.includes(filler))) {
     return `${filler} ${text.charAt(0).toLowerCase() + text.slice(1)}`;
   }
 
-  // Insert after first phrase
+  // Discourse fillers (tbh, ngl, honestly) go after first clause
   const commaIndex = text.indexOf(',');
-  if (commaIndex > 0 && commaIndex < 30) {
+  if (commaIndex > 0 && commaIndex < 40) {
     return `${text.substring(0, commaIndex + 1)} ${filler}${text.substring(commaIndex + 1)}`;
+  }
+
+  // As a last resort, prepend — but only for soft fillers
+  if (['honestly', 'tbh', 'ngl', 'actually'].includes(filler)) {
+    return `${filler} ${text.charAt(0).toLowerCase() + text.slice(1)}`;
   }
 
   return text;

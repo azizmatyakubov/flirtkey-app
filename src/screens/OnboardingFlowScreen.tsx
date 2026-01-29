@@ -346,7 +346,7 @@ export function OnboardingFlowScreen({ navigation }: any) {
   const [suggestion, setSuggestion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { addContact, setUserStyle, apiKey, apiMode } = useStore();
+  const { addContact, setUserStyle, apiKey, apiMode, userStyle } = useStore();
 
   const handleQuizDone = () => {
     // Convert quiz to UserStyle
@@ -390,7 +390,7 @@ export function OnboardingFlowScreen({ navigation }: any) {
         const storeContacts = useStore.getState().contacts;
         const addedContact = storeContacts[storeContacts.length - 1];
         if (addedContact) {
-          const result = await generateResponse(apiKey, addedContact, 'Hey!', 'universal', apiMode);
+          const result = await generateResponse(apiKey, addedContact, 'Hey!', 'universal', apiMode, userStyle);
           if (result.suggestions.length > 0 && result.suggestions[0]) {
             setSuggestion(result.suggestions[0].text);
           }

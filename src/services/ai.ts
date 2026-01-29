@@ -39,6 +39,9 @@ import {
   type TimingParams,
 } from '../constants/prompts';
 import { apiClient, ApiMode } from './apiClient';
+import { buildStylePrompt } from './styleAnalyzer';
+import { humanize } from './humanizer';
+import type { UserStyle } from '../types';
 
 // Re-export for backward compatibility
 export { CULTURE_STYLES, STAGES };
@@ -540,6 +543,8 @@ export interface GenerateFlirtRequest {
   tone?: string;
   /** API mode: 'proxy' (server key) or 'byok' (user's key). Defaults to 'byok' for backward compat. */
   apiMode?: ApiMode;
+  /** User's texting style profile — for Sound Like Me feature */
+  userStyle?: UserStyle | null;
 }
 
 export interface AnalyzeScreenshotRequest {
@@ -794,7 +799,7 @@ async function makeAPICall(
 export async function generateFlirtResponse(
   request: GenerateFlirtRequest
 ): Promise<AnalysisResult> {
-  const { contact, theirMessage, userCulture, context, apiKey, model = 'gpt-4o-mini', useCache = true, apiMode = 'byok' } = request;
+  const { contact, theirMessage, userCulture, context, apiKey, model = 'gpt-4o-mini', useCache = true, apiMode = 'byok', userStyle } = request;
   
   // Check cache first
   if (useCache) {
@@ -805,7 +810,10 @@ export async function generateFlirtResponse(
     }
   }
   
-  const { prompt } = buildFlirtPrompt({ contact, theirMessage, userCulture, context });
+  // Build style prompt if user has a style profile (Sound Like Me)
+  const stylePrompt = userStyle ? buildStylePrompt(userStyle) : undefined;
+  
+  const { prompt } = buildFlirtPrompt({ contact, theirMessage, userCulture, context, stylePrompt });
   const requestId = `flirt-${Date.now()}`;
   
   return withRetry(async () => {
@@ -839,6 +847,21 @@ export async function generateFlirtResponse(
     if (!parsed) {
       if (__DEV__) console.warn('Failed to parse response, using fallback');
       return getFallbackResponse('default');
+    }
+    
+    // Apply "Sound Like Me" humanizer post-processing if user has a style profile
+    if (userStyle) {
+      const hOpts = {
+        casualLevel: 1 - (userStyle.formality ?? 0.5),
+        useAbbreviations: userStyle.useAbbreviations ?? true,
+        addTypos: false, // Never add typos to core suggestions
+        matchEnergyLevel: true,
+        theirMessageLength: theirMessage.length,
+      };
+      parsed.suggestions = parsed.suggestions.map(s => ({
+        ...s,
+        text: humanize(s.text, hOpts),
+      }));
     }
     
     // Cache successful response
@@ -1202,9 +1225,10 @@ export async function generateResponse(
   contact: Contact,
   theirMessage: string,
   userCulture: Culture,
-  apiMode: ApiMode = 'byok'
+  apiMode: ApiMode = 'byok',
+  userStyle?: UserStyle | null
 ): Promise<AnalysisResult> {
-  return generateFlirtResponse({ contact, theirMessage, userCulture, apiKey, apiMode });
+  return generateFlirtResponse({ contact, theirMessage, userCulture, apiKey, apiMode, userStyle });
 }
 
 export async function analyzeScreenshotLegacy(
