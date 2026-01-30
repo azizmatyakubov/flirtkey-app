@@ -182,3 +182,9 @@ export { ContactCard } from './ContactCard';
 // Chat Components
 export { ChatBubble } from './ChatBubble';
 export type { ChatMessage, MessageSender } from './ChatBubble';
+
+// Engagement & Quality Components
+export { DailyTipCard } from './DailyTipCard';
+export { StreakBadge } from './StreakBadge';
+export { ResponseQualityIndicator } from './ResponseQualityIndicator';
+export type { ToneType } from './ResponseQualityIndicator';

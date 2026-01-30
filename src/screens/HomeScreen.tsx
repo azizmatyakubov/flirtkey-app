@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useStore } from '../stores/useStore';
 import { useHistory } from '../hooks/useHistory';
 import { Contact } from '../types';
@@ -30,11 +31,19 @@ import { SwipeableRow } from '../components/SwipeableRow';
 import { EmptyState } from '../components/EmptyState';
 import { DeleteDialog } from '../components/ConfirmDialog';
 import { useToast } from '../components/Toast';
-import { darkColors, spacing, accentColors, shadows, borderRadius, fontSizes } from '../constants/theme';
+import {
+  darkColors,
+  spacing,
+  accentColors,
+  shadows,
+  borderRadius,
+  fontSizes,
+} from '../constants/theme';
 import { fonts } from '../constants/fonts';
+import { DailyTipCard } from '../components/DailyTipCard';
+import { StreakBadge } from '../components/StreakBadge';
 import type { RootNavigationProp } from '../types/navigation';
 import { ScreenErrorBoundary } from '../components/ErrorBoundary';
-
 
 // Enable layout animations on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -124,6 +133,7 @@ function HomeScreenInner({ navigation }: { navigation: RootNavigationProp }) {
   // Handle contact selection
   const handleSelectContact = useCallback(
     (contact: Contact) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
       selectContact(contact);
       navigation.navigate('Chat');
     },
@@ -197,7 +207,10 @@ function HomeScreenInner({ navigation }: { navigation: RootNavigationProp }) {
             },
           ]}
         >
-          <SwipeableRow onDelete={() => handleDeleteContact(item)} onEdit={() => handleEditContact(item)}>
+          <SwipeableRow
+            onDelete={() => handleDeleteContact(item)}
+            onEdit={() => handleEditContact(item)}
+          >
             <TouchableOpacity
               style={styles.contactCard}
               onPress={() => handleSelectContact(item)}
@@ -289,6 +302,7 @@ function HomeScreenInner({ navigation }: { navigation: RootNavigationProp }) {
             <Text style={styles.subtitle}>Your secret texting weapon</Text>
           </View>
           <View style={styles.headerButtons}>
+            <StreakBadge />
             <TouchableOpacity
               style={styles.settingsButton}
               onPress={() => navigation.navigate('History' as any)}
@@ -339,6 +353,9 @@ function HomeScreenInner({ navigation }: { navigation: RootNavigationProp }) {
         ListHeaderComponent={
           contacts.length > 0 ? (
             <View style={styles.quickActions}>
+              {/* Daily Tip */}
+              <DailyTipCard />
+
               {/* Stats row */}
               {totalCount > 0 && (
                 <TouchableOpacity

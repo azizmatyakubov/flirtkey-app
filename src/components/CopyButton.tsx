@@ -4,7 +4,7 @@
  * Used across all AI response screens: chat reply, bio, opener, quick reply, screenshot analysis.
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -37,7 +37,7 @@ interface CopyButtonProps {
 
 const FEEDBACK_DURATION = 2000;
 
-export function CopyButton({
+function CopyButtonBase({
   text,
   size = 'md',
   label = 'Copy',
@@ -154,5 +154,8 @@ const styles = StyleSheet.create({
     color: darkColors.success,
   },
 });
+
+export const CopyButton = memo(CopyButtonBase);
+CopyButton.displayName = 'CopyButton';
 
 export default CopyButton;

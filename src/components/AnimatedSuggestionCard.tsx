@@ -16,8 +16,16 @@ import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Suggestion } from '../types';
 import { LinearGradient } from 'expo-linear-gradient';
-import { darkColors, accentColors, fontSizes, spacing, borderRadius, shadows } from '../constants/theme';
+import {
+  darkColors,
+  accentColors,
+  fontSizes,
+  spacing,
+  borderRadius,
+  shadows,
+} from '../constants/theme';
 import { fonts } from '../constants/fonts';
+import { ResponseQualityIndicator } from './ResponseQualityIndicator';
 
 const SUGGESTION_COLORS = {
   safe: { bg: `${darkColors.safe}15`, border: darkColors.safe, label: 'SAFE' },
@@ -132,9 +140,7 @@ function AnimatedSuggestionCardBase({
         <View style={styles.header}>
           <View style={[styles.typeBadge, { backgroundColor: `${colors.border}25` }]}>
             <View style={[styles.typeDot, { backgroundColor: colors.border }]} />
-            <Text style={[styles.type, { color: colors.border }]}>
-              {colors.label}
-            </Text>
+            <Text style={[styles.type, { color: colors.border }]}>{colors.label}</Text>
           </View>
           <View style={styles.copyHintContainer}>
             <Ionicons
@@ -146,6 +152,11 @@ function AnimatedSuggestionCardBase({
               {copied ? 'Copied!' : 'Tap to copy'}
             </Text>
           </View>
+        </View>
+
+        {/* Tone & Confidence Indicators */}
+        <View style={styles.qualityRow}>
+          <ResponseQualityIndicator suggestion={suggestion} compact />
         </View>
 
         {/* Text */}
@@ -163,22 +174,17 @@ function AnimatedSuggestionCardBase({
           style={styles.sendThisWrapper}
         >
           <LinearGradient
-            colors={sent
-              ? [darkColors.success, darkColors.success]
-              : [accentColors.gradientStart, accentColors.gradientEnd]
+            colors={
+              sent
+                ? [darkColors.success, darkColors.success]
+                : [accentColors.gradientStart, accentColors.gradientEnd]
             }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.sendThisButton}
           >
-            <Ionicons
-              name={sent ? 'checkmark-circle' : 'send'}
-              size={16}
-              color="#fff"
-            />
-            <Text style={styles.sendThisText}>
-              {sent ? 'Copied! Go send it 💬' : 'Send This'}
-            </Text>
+            <Ionicons name={sent ? 'checkmark-circle' : 'send'} size={16} color="#fff" />
+            <Text style={styles.sendThisText}>{sent ? 'Copied! Go send it 💬' : 'Send This'}</Text>
           </LinearGradient>
         </TouchableOpacity>
       )}
@@ -270,6 +276,9 @@ const styles = StyleSheet.create({
   copyHint: {
     color: darkColors.textSecondary,
     fontSize: fontSizes.xs,
+  },
+  qualityRow: {
+    marginBottom: spacing.sm,
   },
   text: {
     color: darkColors.text,
