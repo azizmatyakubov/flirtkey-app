@@ -175,23 +175,6 @@ function ChatScreenInner({ navigation }: { navigation: RootNavigationProp }) {
     }
   }, [selectedContact, getConversationsForContact]);
 
-  if (!selectedContact) {
-    return (
-      <View style={[styles.container, styles.noContactContainer]}>
-        <Ionicons name="person-outline" size={48} color={darkColors.textSecondary} />
-        <Text style={styles.noContact}>Select someone first</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Home')}
-          style={styles.noContactButton}
-          accessibilityLabel="Go to home screen"
-          accessibilityRole="button"
-        >
-          <Text style={styles.noContactButtonText}>Go to Home</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   // Handle generate (with haptics - 6.1.13)
   const handleGenerate = useCallback(async () => {
     if (!selectedContact) return;
@@ -457,6 +440,24 @@ function ChatScreenInner({ navigation }: { navigation: RootNavigationProp }) {
 
   // Check if suggestion is favorite
   const isFavorite = useCallback((suggestion: Suggestion) => favorites.some((f) => f.text === suggestion.text), [favorites]);
+
+  // Early return if no contact selected (placed after all hooks per Rules of Hooks)
+  if (!selectedContact) {
+    return (
+      <View style={[styles.container, styles.noContactContainer]}>
+        <Ionicons name="person-outline" size={48} color={darkColors.textSecondary} />
+        <Text style={styles.noContact}>Select someone first</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Home')}
+          style={styles.noContactButton}
+          accessibilityLabel="Go to home screen"
+          accessibilityRole="button"
+        >
+          <Text style={styles.noContactButtonText}>Go to Home</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   // Responsive styles for landscape/split-screen (6.1.19, 6.1.20)
   const containerStyle = [
