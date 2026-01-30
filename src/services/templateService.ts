@@ -584,18 +584,27 @@ export function getCategoryInfo(category: TemplateCategory): CategoryInfo {
 const STATS_KEY = 'flirtkey_template_stats';
 
 export async function loadTemplateStats(): Promise<TemplateStats[]> {
-  const data = await AsyncStorage.getItem(STATS_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    const data = await AsyncStorage.getItem(STATS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('[Templates] Failed to load template stats:', error);
+    return [];
+  }
 }
 
 export async function recordTemplateCopy(templateId: string): Promise<void> {
-  const stats = await loadTemplateStats();
-  const existing = stats.find((s) => s.templateId === templateId);
-  if (existing) {
-    existing.copyCount++;
-    existing.lastUsed = Date.now();
-  } else {
-    stats.push({ templateId, copyCount: 1, lastUsed: Date.now() });
+  try {
+    const stats = await loadTemplateStats();
+    const existing = stats.find((s) => s.templateId === templateId);
+    if (existing) {
+      existing.copyCount++;
+      existing.lastUsed = Date.now();
+    } else {
+      stats.push({ templateId, copyCount: 1, lastUsed: Date.now() });
+    }
+    await AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  } catch (error) {
+    console.error('[Templates] Failed to record template copy:', error);
   }
-  await AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
 }

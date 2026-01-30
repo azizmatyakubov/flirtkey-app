@@ -371,9 +371,12 @@ export function calculateBadges(
         break;
     }
 
+    // Cap progress at requirement to prevent progress bars exceeding 100%
+    const cappedProgress = Math.min(currentProgress, def.requirement);
+
     return {
       ...def,
-      currentProgress,
+      currentProgress: cappedProgress,
       earned: currentProgress >= def.requirement,
       earnedAt: currentProgress >= def.requirement ? Date.now() : undefined,
     };
@@ -387,12 +390,20 @@ export function calculateBadges(
 const INSIGHTS_KEY = 'flirtkey_insights';
 
 export async function saveInsights(data: InsightsData): Promise<void> {
-  await AsyncStorage.setItem(INSIGHTS_KEY, JSON.stringify(data));
+  try {
+    await AsyncStorage.setItem(INSIGHTS_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.error('[Insights] Failed to save insights:', error);
+  }
 }
 
 export async function loadInsights(): Promise<InsightsData> {
-  const raw = await AsyncStorage.getItem(INSIGHTS_KEY);
-  if (raw) return JSON.parse(raw);
+  try {
+    const raw = await AsyncStorage.getItem(INSIGHTS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (error) {
+    console.error('[Insights] Failed to load insights:', error);
+  }
   return {
     records: [],
     badges: [],

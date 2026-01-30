@@ -296,14 +296,23 @@ export function analyzeProfile(options?: {
 const REVIEWS_KEY = 'flirtkey_profile_reviews';
 
 export async function saveReview(review: ProfileReview): Promise<void> {
-  const existing = await loadReviews();
-  existing.unshift(review);
-  await AsyncStorage.setItem(REVIEWS_KEY, JSON.stringify(existing.slice(0, 20)));
+  try {
+    const existing = await loadReviews();
+    existing.unshift(review);
+    await AsyncStorage.setItem(REVIEWS_KEY, JSON.stringify(existing.slice(0, 20)));
+  } catch (error) {
+    console.error('[ProfileOptimizer] Failed to save review:', error);
+  }
 }
 
 export async function loadReviews(): Promise<ProfileReview[]> {
-  const data = await AsyncStorage.getItem(REVIEWS_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    const data = await AsyncStorage.getItem(REVIEWS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('[ProfileOptimizer] Failed to load reviews:', error);
+    return [];
+  }
 }
 
 export function getScoreColor(score: number): string {

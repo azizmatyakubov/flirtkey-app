@@ -33,6 +33,15 @@ import { CoachScreen } from './src/screens/CoachScreen';
 import { ProfileOptimizerScreen } from './src/screens/ProfileOptimizerScreen';
 import { TemplatesScreen } from './src/screens/TemplatesScreen';
 import { MatchInsightsScreen } from './src/screens/MatchInsightsScreen';
+import { AnalyticsScreen } from './src/screens/AnalyticsScreen';
+import { BioGeneratorScreen } from './src/screens/BioGeneratorScreen';
+import { OnboardingFlowScreen } from './src/screens/OnboardingFlowScreen';
+import { OpenerGeneratorScreen } from './src/screens/OpenerGeneratorScreen';
+import { PaywallScreen } from './src/screens/PaywallScreen';
+import { PrivacyPolicyScreen } from './src/screens/PrivacyPolicyScreen';
+import { QuickReplyScreen } from './src/screens/QuickReplyScreen';
+import { StyleSetupScreen } from './src/screens/StyleSetupScreen';
+import { TermsScreen } from './src/screens/TermsScreen';
 import { RootStackParamList } from './src/types';
 import { defaultScreenOptions, screenOptions, linking } from './src/constants';
 import { ToastProvider } from './src/components/Toast';
@@ -188,6 +197,81 @@ function AppContent() {
         <Stack.Screen
           name="MatchInsights"
           component={MatchInsightsScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+
+        {/* Previously unregistered screens */}
+        <Stack.Screen
+          name="Analytics"
+          component={AnalyticsScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="BioGenerator"
+          component={BioGeneratorScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="OnboardingFlow"
+          component={OnboardingFlowScreen}
+          options={{
+            headerShown: false,
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="OpenerGenerator"
+          component={OpenerGeneratorScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Paywall"
+          component={PaywallScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+            presentation: 'modal',
+          }}
+        />
+        <Stack.Screen
+          name="PrivacyPolicy"
+          component={PrivacyPolicyScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="QuickReply"
+          component={QuickReplyScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="StyleSetup"
+          component={StyleSetupScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="Terms"
+          component={TermsScreen}
           options={{
             headerShown: false,
             animation: 'slide_from_right',

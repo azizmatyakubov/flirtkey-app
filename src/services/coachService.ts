@@ -288,12 +288,21 @@ function getRandomItem<T>(arr: T[]): T {
 const SESSIONS_KEY = 'flirtkey_coach_sessions';
 
 export async function saveSessions(sessions: CoachSession[]): Promise<void> {
-  await AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+  try {
+    await AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+  } catch (error) {
+    console.error('[Coach] Failed to save sessions:', error);
+  }
 }
 
 export async function loadSessions(): Promise<CoachSession[]> {
-  const data = await AsyncStorage.getItem(SESSIONS_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    const data = await AsyncStorage.getItem(SESSIONS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('[Coach] Failed to load sessions:', error);
+    return [];
+  }
 }
 
 export function createSession(scenario: CoachScenario): CoachSession {
