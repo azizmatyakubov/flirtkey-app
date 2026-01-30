@@ -82,13 +82,15 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
 
             <View style={styles.buttons}>
-              <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
+              <TouchableOpacity style={styles.button} onPress={this.handleRetry} accessibilityRole="button" accessibilityLabel="Try again">
                 <Text style={styles.buttonText}>Try Again</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.button, styles.secondaryButton]}
                 onPress={this.handleRestart}
+                accessibilityRole="button"
+                accessibilityLabel="Restart app"
               >
                 <Text style={[styles.buttonText, styles.secondaryButtonText]}>Restart App</Text>
               </TouchableOpacity>
@@ -149,7 +151,7 @@ export class ScreenErrorBoundary extends Component<ScreenErrorBoundaryProps, Sta
               ? `There was a problem loading ${this.props.screenName}.`
               : 'There was a problem loading this screen.'}
           </Text>
-          <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry}>
+          <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry} accessibilityRole="button" accessibilityLabel="Tap to retry">
             <Text style={styles.retryButtonText}>Tap to Retry</Text>
           </TouchableOpacity>
         </View>

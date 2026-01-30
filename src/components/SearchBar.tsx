@@ -52,12 +52,16 @@ export function SearchBar({
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
+        accessibilityLabel={placeholder || 'Search'}
+        accessibilityRole="search"
       />
       {value.length > 0 && (
         <TouchableOpacity
           onPress={() => onChangeText('')}
           style={styles.clearButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityLabel="Clear search"
+          accessibilityRole="button"
         >
           <Ionicons name="close-circle" size={18} color={darkColors.textSecondary} />
         </TouchableOpacity>

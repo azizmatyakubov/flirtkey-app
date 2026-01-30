@@ -64,6 +64,9 @@ export const ContactCard = React.memo<ContactCardProps>(
             onPress={handlePress}
             onLongPress={handleLongPress}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`Contact: ${contact.name}. ${contact.relationshipStage || ''}`}
+            accessibilityHint="Tap to open conversation, long press for options"
           >
             <Avatar name={contact.name} imageUri={contact.avatar} size="md" />
             <View style={styles.contactInfo}>

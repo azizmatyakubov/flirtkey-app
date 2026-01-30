@@ -106,6 +106,7 @@ export const TextInput = forwardRef<RNTextInput, TextInputProps>(
             multiline={multiline}
             maxLength={maxLength}
             textAlignVertical={multiline ? 'top' : 'center'}
+            accessibilityLabel={label || props.placeholder}
             {...props}
           />
 

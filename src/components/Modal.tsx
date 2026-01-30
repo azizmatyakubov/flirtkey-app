@@ -124,6 +124,8 @@ export function Modal({
                     onPress={onClose}
                     style={styles.closeButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Close modal"
                   >
                     <Text style={styles.closeIcon}>✕</Text>
                   </TouchableOpacity>

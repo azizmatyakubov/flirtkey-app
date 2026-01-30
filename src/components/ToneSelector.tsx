@@ -54,6 +54,9 @@ export const ToneSelector = React.memo(function ToneSelector({ selectedTone, onS
               ]}
               onPress={() => handlePress(key)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`Tone: ${tone.name}`}
+              accessibilityState={{ selected: isSelected }}
             >
               <Text style={[styles.toneEmoji, compact && styles.toneEmojiCompact]}>
                 {tone.emoji}
