@@ -5,12 +5,11 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { darkColors, accentColors, spacing, borderRadius, fontSizes } from '../constants/theme';
+import { darkColors, accentColors, borderRadius, fontSizes } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 
 // ==========================================

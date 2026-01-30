@@ -7,7 +7,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
+import Animated, { SlideInRight } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Clipboard from 'expo-clipboard';
@@ -15,14 +15,7 @@ import * as Haptics from 'expo-haptics';
 import { useHistory } from '../hooks/useHistory';
 import { CopyButton } from '../components/CopyButton';
 import type { HistoryEntry, HistoryScreenType } from '../services/historyService';
-import {
-  darkColors,
-  accentColors,
-  spacing,
-  borderRadius,
-  fontSizes,
-  shadows,
-} from '../constants/theme';
+import { darkColors, accentColors, spacing, borderRadius, fontSizes } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 import type { RootNavigationProp } from '../types/navigation';
 
@@ -57,7 +50,7 @@ function formatRelativeTime(ts: number): string {
 type Tab = 'all' | 'favorites';
 
 export function HistoryScreen({ navigation }: { navigation: RootNavigationProp }) {
-  const { history, favorites, isLoading, toggleFavorite, remove, clear } = useHistory();
+  const { history, favorites, toggleFavorite, remove, clear } = useHistory();
   const [activeTab, setActiveTab] = useState<Tab>('all');
 
   const data = activeTab === 'favorites' ? favorites : history;

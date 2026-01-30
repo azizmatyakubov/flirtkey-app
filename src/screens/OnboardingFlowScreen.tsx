@@ -70,7 +70,9 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
 
   return (
     <View style={styles.stepContainer}>
-      <Animated.View style={[styles.welcomeContent, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+      <Animated.View
+        style={[styles.welcomeContent, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}
+      >
         <Text style={styles.welcomeEmoji}>🤝</Text>
         <Text style={styles.welcomeTitle}>I'm your AI wingman</Text>
         <Text style={styles.welcomeSubtitle}>
@@ -156,10 +158,7 @@ function QuizStep({
       <View style={styles.quizContent}>
         <View style={styles.progressDots}>
           {questions.map((_, i) => (
-            <View
-              key={i}
-              style={[styles.progressDot, i <= question && styles.progressDotActive]}
-            />
+            <View key={i} style={[styles.progressDot, i <= question && styles.progressDotActive]} />
           ))}
         </View>
         <Text style={styles.quizEmoji}>{current.emoji}</Text>
@@ -170,7 +169,8 @@ function QuizStep({
               key={opt.value}
               style={[
                 styles.quizOption,
-                answers[current.key as keyof QuizAnswers] === opt.value && styles.quizOptionSelected,
+                answers[current.key as keyof QuizAnswers] === opt.value &&
+                  styles.quizOptionSelected,
               ]}
               onPress={() => handleSelect(opt.value)}
               activeOpacity={0.7}
@@ -179,7 +179,8 @@ function QuizStep({
               <Text
                 style={[
                   styles.quizOptionText,
-                  answers[current.key as keyof QuizAnswers] === opt.value && styles.quizOptionTextSelected,
+                  answers[current.key as keyof QuizAnswers] === opt.value &&
+                    styles.quizOptionTextSelected,
                 ]}
               >
                 {opt.label}
@@ -208,7 +209,10 @@ function AddContactStep({
       style={styles.stepContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={styles.addContactContent} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.addContactContent}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.stepEmoji}>👩</Text>
         <Text style={styles.stepTitle}>Who are you talking to?</Text>
         <Text style={styles.stepSubtitle}>Add someone you're texting right now</Text>
@@ -317,9 +321,7 @@ function FirstSuggestionStep({
       {!loading && (
         <View style={styles.bottomAction}>
           <TouchableOpacity style={styles.primaryBtn} onPress={onDone} activeOpacity={0.8}>
-            <Text style={styles.primaryBtnText}>
-              {suggestion ? "Let's Go! 🚀" : 'Get Started'}
-            </Text>
+            <Text style={styles.primaryBtnText}>{suggestion ? "Let's Go! 🚀" : 'Get Started'}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -363,7 +365,8 @@ export function OnboardingFlowScreen({ navigation }: any) {
           : quizAnswers.emoji === 'some'
             ? { '😊': 1 }
             : {},
-      avgLength: quizAnswers.formality === 'formal' ? 80 : quizAnswers.formality === 'casual' ? 30 : 50,
+      avgLength:
+        quizAnswers.formality === 'formal' ? 80 : quizAnswers.formality === 'casual' ? 30 : 50,
     };
     setUserStyle(style);
     setStep('addContact');
@@ -390,7 +393,14 @@ export function OnboardingFlowScreen({ navigation }: any) {
         const storeContacts = useStore.getState().contacts;
         const addedContact = storeContacts[storeContacts.length - 1];
         if (addedContact) {
-          const result = await generateResponse(apiKey, addedContact, 'Hey!', 'universal', apiMode, userStyle);
+          const result = await generateResponse(
+            apiKey,
+            addedContact,
+            'Hey!',
+            'universal',
+            apiMode,
+            userStyle
+          );
           if (result.suggestions.length > 0 && result.suggestions[0]) {
             setSuggestion(result.suggestions[0].text);
           }
@@ -429,7 +439,13 @@ export function OnboardingFlowScreen({ navigation }: any) {
   }, [navigation]);
 
   // Step indicator
-  const stepMap: Record<Step, number> = { welcome: 0, quiz: 1, addContact: 2, firstSuggestion: 3, done: 4 };
+  const stepMap: Record<Step, number> = {
+    welcome: 0,
+    quiz: 1,
+    addContact: 2,
+    firstSuggestion: 3,
+    done: 4,
+  };
   const stepIndex = stepMap[step];
 
   return (
@@ -469,7 +485,11 @@ export function OnboardingFlowScreen({ navigation }: any) {
         <QuizStep answers={quizAnswers} setAnswers={setQuizAnswers} onNext={handleQuizDone} />
       )}
       {step === 'addContact' && (
-        <AddContactStep contactInput={contactInput} setContactInput={setContactInput} onNext={handleAddContact} />
+        <AddContactStep
+          contactInput={contactInput}
+          setContactInput={setContactInput}
+          onNext={handleAddContact}
+        />
       )}
       {step === 'firstSuggestion' && (
         <FirstSuggestionStep
@@ -521,8 +541,8 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   skipText: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.body,
+    color: darkColors.textSecondary,
   },
 
   // Step Container
@@ -559,8 +579,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   welcomeFeature: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.body,
+    color: darkColors.textSecondary,
   },
 
   // Bottom Action
@@ -575,18 +595,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 56,
     justifyContent: 'center',
-    ...shadows.glow, shadowColor: darkColors.primary,
+    ...shadows.glow,
+    shadowColor: darkColors.primary,
   },
   primaryBtnDisabled: {
     opacity: 0.4,
   },
   primaryBtnText: {
-    color: '#fff',
     ...TYPOGRAPHY.h2,
+    color: '#fff',
   },
   timeEstimate: {
-    color: darkColors.textTertiary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textTertiary,
     textAlign: 'center',
     marginTop: spacing.sm,
   },
@@ -641,14 +662,15 @@ const styles = StyleSheet.create({
   quizOptionSelected: {
     borderColor: darkColors.primary,
     backgroundColor: darkColors.primary + '15',
-    ...shadows.glow, shadowColor: darkColors.primary,
+    ...shadows.glow,
+    shadowColor: darkColors.primary,
   },
   quizOptionEmoji: {
     fontSize: 28,
   },
   quizOptionText: {
-    color: darkColors.text,
     ...TYPOGRAPHY.bodyBold,
+    color: darkColors.text,
   },
   quizOptionTextSelected: {
     color: darkColors.primary,
@@ -680,8 +702,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   inputLabel: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.caption,
+    color: darkColors.textSecondary,
     fontWeight: '500',
     marginBottom: spacing.xs,
   },
@@ -689,8 +711,8 @@ const styles = StyleSheet.create({
     backgroundColor: darkColors.surface,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
-    color: darkColors.text,
     ...TYPOGRAPHY.body,
+    color: darkColors.text,
     borderWidth: 1,
     borderColor: darkColors.border,
   },
@@ -711,13 +733,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   loadingText: {
-    color: darkColors.text,
     ...TYPOGRAPHY.h2,
+    color: darkColors.text,
     textAlign: 'center',
   },
   loadingSubtext: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.body,
+    color: darkColors.textSecondary,
     marginTop: spacing.xs,
   },
   wowEmoji: {
@@ -740,13 +762,13 @@ const styles = StyleSheet.create({
     ...shadows.md,
   },
   suggestionText: {
-    color: darkColors.text,
     ...TYPOGRAPHY.body,
+    color: darkColors.text,
     textAlign: 'center',
   },
   wowHint: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     textAlign: 'center',
     marginTop: spacing.md,
   },

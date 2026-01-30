@@ -1,7 +1,7 @@
 /**
  * Humanizer Service
  * Phase 1.2: Post-processor that makes AI output sound natural
- * 
+ *
  * Applies human imperfections and natural texting patterns to AI-generated text.
  */
 
@@ -63,24 +63,24 @@ const CASUAL_STARTERS = ['haha', 'lol', 'ooh', 'yo', 'ayy', 'damn'];
 
 // Common abbreviation mappings
 const ABBREVIATIONS: Record<string, string> = {
-  'you': 'u',
-  'your': 'ur',
+  you: 'u',
+  your: 'ur',
   "you're": 'ur',
-  'are': 'r',
-  'before': 'b4',
-  'tonight': '2nite',
-  'tomorrow': 'tmrw',
-  'because': 'cuz',
-  'probably': 'prob',
-  'definitely': 'def',
-  'something': 'smth',
-  'someone': 'sm1',
-  'about': 'abt',
-  'people': 'ppl',
-  'though': 'tho',
-  'through': 'thru',
-  'right': 'rite',
-  'please': 'pls',
+  are: 'r',
+  before: 'b4',
+  tonight: '2nite',
+  tomorrow: 'tmrw',
+  because: 'cuz',
+  probably: 'prob',
+  definitely: 'def',
+  something: 'smth',
+  someone: 'sm1',
+  about: 'abt',
+  people: 'ppl',
+  though: 'tho',
+  through: 'thru',
+  right: 'rite',
+  please: 'pls',
   'going to': 'gonna',
   'want to': 'wanna',
   'got to': 'gotta',
@@ -90,13 +90,13 @@ const ABBREVIATIONS: Record<string, string> = {
 
 // Common typo patterns (letter swaps for adjacent keys)
 const TYPO_SWAPS: Record<string, string> = {
-  'e': 'r',
-  'i': 'o',
-  'a': 's',
-  't': 'r',
-  'n': 'm',
-  'o': 'p',
-  'h': 'j',
+  e: 'r',
+  i: 'o',
+  a: 's',
+  t: 'r',
+  n: 'm',
+  o: 'p',
+  h: 'j',
 };
 
 /**
@@ -242,10 +242,13 @@ function addFiller(text: string, level: number): string {
   if (text.length < 30) return text;
 
   const pool = level > 0.7 ? [...FILLERS, ...THINKING_WORDS, ...CASUAL_STARTERS] : FILLERS;
-  const filler = pool[Math.floor(seededRandom() * pool.length)];
+  const filler = pool[Math.floor(seededRandom() * pool.length)] ?? 'honestly';
 
   // Casual starters (haha, lol) go at start; thinking words too
-  if (seededRandom() < 0.5 && (CASUAL_STARTERS.includes(filler) || THINKING_WORDS.includes(filler))) {
+  if (
+    seededRandom() < 0.5 &&
+    (CASUAL_STARTERS.includes(filler) || THINKING_WORDS.includes(filler))
+  ) {
     return `${filler} ${text.charAt(0).toLowerCase() + text.slice(1)}`;
   }
 
@@ -279,7 +282,8 @@ function addTypo(text: string): string {
   const charIndex = 1 + Math.floor(seededRandom() * (word.length - 2));
   const char = word[charIndex]?.toLowerCase();
   if (char && TYPO_SWAPS[char]) {
-    const typoWord = word.substring(0, charIndex) + TYPO_SWAPS[char] + word.substring(charIndex + 1);
+    const typoWord =
+      word.substring(0, charIndex) + TYPO_SWAPS[char] + word.substring(charIndex + 1);
     words[wordIndex] = typoWord;
     return words.join(' ');
   }

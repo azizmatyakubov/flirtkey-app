@@ -107,11 +107,9 @@ export function PaywallScreen({ navigation }: any) {
     subscribeTimeoutRef.current = setTimeout(() => {
       upgradeToPro(selectedPlan);
       setLoading(false);
-      Alert.alert(
-        '🎉 Welcome to Pro!',
-        'You now have unlimited access to all features.',
-        [{ text: "Let's Go!", onPress: () => navigation.goBack() }]
-      );
+      Alert.alert('🎉 Welcome to Pro!', 'You now have unlimited access to all features.', [
+        { text: "Let's Go!", onPress: () => navigation.goBack() },
+      ]);
     }, 800);
   }, [selectedPlan, upgradeToPro, navigation]);
 
@@ -123,11 +121,9 @@ export function PaywallScreen({ navigation }: any) {
     trialTimeoutRef.current = setTimeout(() => {
       startTrial();
       setLoading(false);
-      Alert.alert(
-        '🎉 Trial Activated!',
-        'Enjoy 3 days of unlimited Pro features.',
-        [{ text: 'Awesome!', onPress: () => navigation.goBack() }]
-      );
+      Alert.alert('🎉 Trial Activated!', 'Enjoy 3 days of unlimited Pro features.', [
+        { text: 'Awesome!', onPress: () => navigation.goBack() },
+      ]);
     }, 600);
   }, [startTrial, navigation]);
 
@@ -156,10 +152,7 @@ export function PaywallScreen({ navigation }: any) {
     };
 
     return (
-      <View
-        key={index}
-        style={[styles.featureRow, index % 2 === 0 && styles.featureRowAlt]}
-      >
+      <View key={index} style={[styles.featureRow, index % 2 === 0 && styles.featureRowAlt]}>
         <View style={styles.featureNameWrap}>
           <Text style={styles.featureIcon}>{feature.icon}</Text>
           <Text style={styles.featureName}>{feature.name}</Text>
@@ -187,23 +180,31 @@ export function PaywallScreen({ navigation }: any) {
       >
         {isSelected ? (
           <LinearGradient
-            colors={isBest ? [PREMIUM_COLORS.gold, PREMIUM_COLORS.goldDark] : [PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd]}
+            colors={
+              isBest
+                ? [PREMIUM_COLORS.gold, PREMIUM_COLORS.goldDark]
+                : [PREMIUM_COLORS.gradientStart, PREMIUM_COLORS.gradientEnd]
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.pricingCardGradientBorder}
           >
             <View style={[styles.pricingCard, styles.pricingCardSelectedInner]}>
               {plan.badge && (
-                <View style={[styles.pricingBadge, isBest && styles.pricingBadgeBest, isLifetime && styles.pricingBadgeLifetime]}>
+                <View
+                  style={[
+                    styles.pricingBadge,
+                    isBest && styles.pricingBadgeBest,
+                    isLifetime && styles.pricingBadgeLifetime,
+                  ]}
+                >
                   <Text style={styles.pricingBadgeText}>{plan.badge}</Text>
                 </View>
               )}
               <Text style={[styles.pricingLabel, styles.pricingLabelSelected]}>
                 {period.charAt(0).toUpperCase() + period.slice(1)}
               </Text>
-              <Text style={[styles.pricingPrice, styles.pricingPriceSelected]}>
-                {plan.label}
-              </Text>
+              <Text style={[styles.pricingPrice, styles.pricingPriceSelected]}>{plan.label}</Text>
               {'savings' in plan && plan.savings && (
                 <Text style={styles.pricingSavings}>Save {plan.savings}</Text>
               )}
@@ -215,7 +216,13 @@ export function PaywallScreen({ navigation }: any) {
         ) : (
           <View style={styles.pricingCard}>
             {plan.badge && (
-              <View style={[styles.pricingBadge, isBest && styles.pricingBadgeBest, isLifetime && styles.pricingBadgeLifetime]}>
+              <View
+                style={[
+                  styles.pricingBadge,
+                  isBest && styles.pricingBadgeBest,
+                  isLifetime && styles.pricingBadgeLifetime,
+                ]}
+              >
                 <Text style={styles.pricingBadgeText}>{plan.badge}</Text>
               </View>
             )}
@@ -235,10 +242,7 @@ export function PaywallScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       {/* Gradient background overlay */}
-      <LinearGradient
-        colors={['#1A0A2E', '#0F0F1A', '#0F0F1A']}
-        style={StyleSheet.absoluteFill}
-      />
+      <LinearGradient colors={['#1A0A2E', '#0F0F1A', '#0F0F1A']} style={StyleSheet.absoluteFill} />
 
       {/* Decorative gradient orbs for depth */}
       <View style={styles.orbTopRight} />
@@ -333,7 +337,9 @@ export function PaywallScreen({ navigation }: any) {
         {/* CTA Buttons — Single primary CTA to avoid confusion */}
         <Animated.View style={[styles.ctaSection, { opacity: ctaAnim }]}>
           {/* Show trial CTA if eligible, otherwise subscribe CTA */}
-          {!subscription.trialActive && subscription.tier === 'free' && !subscription.trialEndsAt ? (
+          {!subscription.trialActive &&
+          subscription.tier === 'free' &&
+          !subscription.trialEndsAt ? (
             <GradientButton
               title="Start 3-Day Free Trial"
               subtitle="No payment required • Then subscribe"
@@ -466,8 +472,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
   },
   socialProofText: {
-    color: darkColors.primary,
     ...TYPOGRAPHY.caption,
+    color: darkColors.primary,
     fontWeight: '600',
   },
 
@@ -490,8 +496,8 @@ const styles = StyleSheet.create({
   },
   featureHeaderLabel: {
     flex: 1,
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
@@ -499,8 +505,8 @@ const styles = StyleSheet.create({
   featureHeaderCell: {
     width: 56,
     textAlign: 'center',
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
@@ -527,16 +533,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   featureName: {
-    color: darkColors.text,
     ...TYPOGRAPHY.caption,
+    color: darkColors.text,
   },
   featureCell: {
     width: 56,
     alignItems: 'center',
   },
   featureCellText: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     textAlign: 'center',
   },
   featureCellIcon: {
@@ -557,8 +563,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   pricingSectionTitle: {
-    color: darkColors.text,
     ...TYPOGRAPHY.h2,
+    color: darkColors.text,
     marginBottom: spacing.md,
     textAlign: 'center',
   },
@@ -610,8 +616,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   pricingLabel: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.caption,
+    color: darkColors.textSecondary,
     fontWeight: '600',
     marginTop: spacing.xs,
   },
@@ -619,16 +625,16 @@ const styles = StyleSheet.create({
     color: darkColors.text,
   },
   pricingPrice: {
-    color: darkColors.text,
     ...TYPOGRAPHY.bodyBold,
+    color: darkColors.text,
     marginTop: spacing.xs,
   },
   pricingPriceSelected: {
     color: PREMIUM_COLORS.gold,
   },
   pricingSavings: {
-    color: PREMIUM_COLORS.gold,
     ...TYPOGRAPHY.small,
+    color: PREMIUM_COLORS.gold,
     fontWeight: '600',
     marginTop: 2,
   },
@@ -659,13 +665,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   restoreButtonText: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.caption,
+    color: darkColors.textSecondary,
     textDecorationLine: 'underline',
   },
   legalText: {
-    color: darkColors.textTertiary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textTertiary,
     textAlign: 'center',
     paddingHorizontal: spacing.md,
     marginTop: spacing.xs,

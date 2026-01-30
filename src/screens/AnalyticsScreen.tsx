@@ -378,12 +378,12 @@ const styles = StyleSheet.create({
     borderBottomColor: darkColors.border,
   },
   backButton: {
-    color: darkColors.primary,
     ...TYPOGRAPHY.body,
+    color: darkColors.primary,
   },
   headerTitle: {
-    color: darkColors.text,
     ...TYPOGRAPHY.h2,
+    color: darkColors.text,
   },
   content: {
     flex: 1,
@@ -439,12 +439,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   statValue: {
-    color: darkColors.text,
     ...TYPOGRAPHY.h2,
+    color: darkColors.text,
   },
   statLabel: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     textAlign: 'center',
     marginTop: 4,
   },
@@ -466,12 +466,12 @@ const styles = StyleSheet.create({
     fontSize: 36,
   },
   streakTitle: {
-    color: PREMIUM_COLORS.gold,
     ...TYPOGRAPHY.bodyBold,
+    color: PREMIUM_COLORS.gold,
   },
   streakSubtitle: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     marginTop: 2,
   },
 
@@ -480,8 +480,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionTitle: {
-    color: darkColors.text,
     ...TYPOGRAPHY.bodyBold,
+    color: darkColors.text,
     marginBottom: spacing.sm,
   },
   barChart: {
@@ -511,8 +511,8 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   barLabel: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     marginTop: spacing.xs,
   },
   barCount: {
@@ -538,8 +538,8 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   convoName: {
-    color: darkColors.text,
     ...TYPOGRAPHY.caption,
+    color: darkColors.text,
     fontWeight: '600',
     marginBottom: spacing.xs,
   },
@@ -553,8 +553,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   convoStatusText: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
   },
   convoScoreBar: {
     height: 5,
@@ -578,8 +578,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   toneName: {
-    color: darkColors.text,
     ...TYPOGRAPHY.caption,
+    color: darkColors.text,
     width: 75,
   },
   toneBarWrap: {
@@ -595,8 +595,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   tonePct: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     fontWeight: '600',
     width: 38,
     textAlign: 'right',
@@ -613,13 +613,13 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   summaryTitle: {
-    color: darkColors.text,
     ...TYPOGRAPHY.bodyBold,
+    color: darkColors.text,
     marginBottom: spacing.sm,
   },
   summaryText: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.caption,
+    color: darkColors.textSecondary,
     lineHeight: 22,
   },
 
@@ -641,12 +641,12 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   allTimeValue: {
-    color: darkColors.primary,
     ...TYPOGRAPHY.h2,
+    color: darkColors.primary,
   },
   allTimeLabel: {
-    color: darkColors.textSecondary,
     ...TYPOGRAPHY.small,
+    color: darkColors.textSecondary,
     marginTop: spacing.xs,
   },
 });
