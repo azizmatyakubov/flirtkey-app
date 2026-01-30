@@ -25,6 +25,8 @@ import { TONES, type ToneKey } from '../constants/tones';
 import { CopyButton } from '../components/CopyButton';
 import { addHistoryEntry } from '../services/historyService';
 import { darkColors, spacing, borderRadius, fontSizes } from '../constants/theme';
+import { ScreenErrorBoundary } from '../components/ErrorBoundary';
+
 
 // ==========================================
 // Types
@@ -63,7 +65,7 @@ const BIO_TONES: ToneKey[] = ['funny', 'deep', 'bold', 'sweet', 'witty'];
 // Component
 // ==========================================
 
-export function BioGeneratorScreen({ navigation }: any) {
+function BioGeneratorScreenInner({ navigation }: any) {
   const { apiKey, apiMode, userStyle } = useStore();
 
   // Form state
@@ -678,5 +680,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+// Wrap with error boundary for crash resilience
+export function BioGeneratorScreen(props: any) {
+  return (
+    <ScreenErrorBoundary screenName="BioGeneratorScreen">
+      <BioGeneratorScreenInner {...props} />
+    </ScreenErrorBoundary>
+  );
+}
 
 export default BioGeneratorScreen;

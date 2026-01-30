@@ -50,6 +50,8 @@ import { addHistoryEntry } from '../services/historyService';
 import { darkColors, fontSizes, spacing, borderRadius, accentColors, shadows } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 import type { RootNavigationProp } from '../types/navigation';
+import { ScreenErrorBoundary } from '../components/ErrorBoundary';
+
 
 const MAX_INPUT_LENGTH = 500;
 const INPUT_ACCESSORY_ID = 'chat-input-accessory';
@@ -69,7 +71,7 @@ interface FavoriteSuggestion {
   savedAt: number;
 }
 
-export function ChatScreen({ navigation }: { navigation: RootNavigationProp }) {
+function ChatScreenInner({ navigation }: { navigation: RootNavigationProp }) {
   const selectedContact = useStore((s) => s.selectedContact);
   const apiKey = useStore((s) => s.apiKey);
   const apiMode = useStore((s) => s.apiMode);
@@ -994,3 +996,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+// Wrap with error boundary for crash resilience
+export function ChatScreen(props: any) {
+  return (
+    <ScreenErrorBoundary screenName="ChatScreen">
+      <ChatScreenInner {...props} />
+    </ScreenErrorBoundary>
+  );
+}
+
+export default ChatScreen;

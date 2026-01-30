@@ -51,8 +51,8 @@ const mockAddEventListener = jest.fn((callback: any) => {
 });
 
 jest.mock('@react-native-community/netinfo', () => ({
-  addEventListener: (...args: any[]) => mockAddEventListener(...args),
-  refresh: (...args: any[]) => mockRefresh(...args),
+  addEventListener: (cb: any) => mockAddEventListener(cb),
+  refresh: () => mockRefresh(),
 }));
 
 import { OfflineIndicator, useNetworkStatus } from '../../components/OfflineIndicator';
@@ -164,7 +164,7 @@ describe('OfflineIndicator', () => {
   it('shows "Back online" message when recovering', async () => {
     jest.useFakeTimers();
 
-    const { getByText, queryByText } = render(<OfflineIndicator showWhenOnline={true} />);
+    const { getByText } = render(<OfflineIndicator showWhenOnline={true} />);
 
     // Go offline
     act(() => {

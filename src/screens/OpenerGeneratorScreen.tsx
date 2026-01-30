@@ -32,6 +32,8 @@ import { useSettingsStore } from '../stores/settingsStore';
 import { CopyButton } from '../components/CopyButton';
 import { addHistoryEntry } from '../services/historyService';
 import { darkColors, spacing, borderRadius, fontSizes } from '../constants/theme';
+import { ScreenErrorBoundary } from '../components/ErrorBoundary';
+
 
 // ==========================================
 // Types
@@ -47,7 +49,7 @@ interface GeneratedOpener {
 // Component
 // ==========================================
 
-export function OpenerGeneratorScreen({ navigation }: any) {
+function OpenerGeneratorScreenInner({ navigation }: any) {
   const { apiKey, apiMode, userStyle } = useStore();
   const { preferences } = useSettingsStore();
   const coachingEnabled = preferences.coachingMode !== false; // default ON
@@ -638,5 +640,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+// Wrap with error boundary for crash resilience
+export function OpenerGeneratorScreen(props: any) {
+  return (
+    <ScreenErrorBoundary screenName="OpenerGeneratorScreen">
+      <OpenerGeneratorScreenInner {...props} />
+    </ScreenErrorBoundary>
+  );
+}
 
 export default OpenerGeneratorScreen;

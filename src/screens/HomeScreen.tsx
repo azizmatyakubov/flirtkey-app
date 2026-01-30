@@ -33,6 +33,8 @@ import { useToast } from '../components/Toast';
 import { darkColors, spacing, accentColors, shadows, borderRadius, fontSizes } from '../constants/theme';
 import { fonts } from '../constants/fonts';
 import type { RootNavigationProp } from '../types/navigation';
+import { ScreenErrorBoundary } from '../components/ErrorBoundary';
+
 
 // Enable layout animations on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -55,7 +57,7 @@ const STAGE_ORDER: Record<Contact['relationshipStage'], number> = {
   serious: 5,
 };
 
-export function HomeScreen({ navigation }: { navigation: RootNavigationProp }) {
+function HomeScreenInner({ navigation }: { navigation: RootNavigationProp }) {
   const contacts = useStore((s) => s.contacts);
   const selectContact = useStore((s) => s.selectContact);
   const deleteContact = useStore((s) => s.deleteContact);
@@ -702,5 +704,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// Wrap with error boundary for crash resilience
+export function HomeScreen(props: any) {
+  return (
+    <ScreenErrorBoundary screenName="HomeScreen">
+      <HomeScreenInner {...props} />
+    </ScreenErrorBoundary>
+  );
+}
 
 export default HomeScreen;

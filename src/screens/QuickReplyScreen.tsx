@@ -31,10 +31,12 @@ import { generateFlirtResponse } from '../services/ai';
 import type { ToneKey } from '../constants/tones';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types';
+import { ScreenErrorBoundary } from '../components/ErrorBoundary';
+
 
 type Props = NativeStackScreenProps<RootStackParamList, 'QuickReply'>;
 
-export function QuickReplyScreen({ navigation }: Props) {
+function QuickReplyScreenInner({ navigation }: Props) {
   const { theme } = useTheme();
   const { contacts, selectedContact, selectContact, userCulture, apiKey, apiMode, userStyle } = useStore();
   const { preferences, accessibility } = useSettingsStore();
@@ -444,5 +446,14 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 });
+
+// Wrap with error boundary for crash resilience
+export function QuickReplyScreen(props: any) {
+  return (
+    <ScreenErrorBoundary screenName="QuickReplyScreen">
+      <QuickReplyScreenInner {...props} />
+    </ScreenErrorBoundary>
+  );
+}
 
 export default QuickReplyScreen;

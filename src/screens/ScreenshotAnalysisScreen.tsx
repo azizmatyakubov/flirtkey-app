@@ -60,6 +60,8 @@ import { darkColors, accentColors, spacing, borderRadius, fontSizes, shadows } f
 // ==========================================
 
 import type { ScreenshotAnalysisScreenProps } from '../types/navigation';
+import { ScreenErrorBoundary } from '../components/ErrorBoundary';
+
 
 interface AnalysisHistory {
   id: string;
@@ -73,7 +75,7 @@ interface AnalysisHistory {
 // Component
 // ==========================================
 
-export function ScreenshotAnalysisScreen({ navigation, route }: ScreenshotAnalysisScreenProps) {
+function ScreenshotAnalysisScreenInner({ navigation, route }: ScreenshotAnalysisScreenProps) {
   const apiKey = useStore((s) => s.apiKey);
   const apiMode = useStore((s) => s.apiMode);
   const selectedContact = useStore((s) => s.selectedContact);
@@ -1012,5 +1014,14 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+
+// Wrap with error boundary for crash resilience
+export function ScreenshotAnalysisScreen(props: any) {
+  return (
+    <ScreenErrorBoundary screenName="ScreenshotAnalysisScreen">
+      <ScreenshotAnalysisScreenInner {...props} />
+    </ScreenErrorBoundary>
+  );
+}
 
 export default ScreenshotAnalysisScreen;

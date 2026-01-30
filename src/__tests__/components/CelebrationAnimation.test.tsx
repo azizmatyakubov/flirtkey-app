@@ -5,7 +5,6 @@
  * We test the logic (visibility gating, haptic triggers) rather than animations.
  */
 
-import React from 'react';
 import * as Haptics from 'expo-haptics';
 
 // Mock the entire component module to test behavior without animation internals
@@ -13,7 +12,7 @@ jest.mock('../../components/CelebrationAnimation', () => {
   const React = require('react');
   const Haptics = require('expo-haptics');
 
-  const CelebrationAnimation = React.memo(({ visible, onComplete, centerX, centerY }: any) => {
+  const CelebrationAnimation = React.memo(({ visible, centerX, centerY }: any) => {
     React.useEffect(() => {
       if (visible) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
