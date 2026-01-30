@@ -432,6 +432,65 @@ function HomeScreenInner({ navigation }: { navigation: RootNavigationProp }) {
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
+
+              {/* New Feature Cards */}
+              <View style={styles.quickActionCards}>
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('Coach' as any)}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#FF8E5320', '#FF8E5308']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>🎯</Text>
+                    <Text style={styles.quickActionLabel}>Coach</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('ProfileOptimizer' as any)}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#FFD70020', '#FFD70008']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>📸</Text>
+                    <Text style={styles.quickActionLabel}>Profile</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('Templates' as any)}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#FF69B420', '#FF69B408']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>💬</Text>
+                    <Text style={styles.quickActionLabel}>Templates</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.quickActionCard}
+                  onPress={() => navigation.navigate('MatchInsights' as any)}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={['#2ED57320', '#2ED57308']}
+                    style={styles.quickActionGradient}
+                  >
+                    <Text style={styles.quickActionEmoji}>📈</Text>
+                    <Text style={styles.quickActionLabel}>Insights</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : null
         }

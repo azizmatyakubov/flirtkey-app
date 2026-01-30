@@ -115,6 +115,14 @@ export type RootStackParamList = {
   OpenerGenerator: undefined;
   OnboardingFlow: undefined;
   History: undefined;
+  // Hour 1: Coach
+  Coach: undefined;
+  // Hour 2: Profile Optimizer
+  ProfileOptimizer: undefined;
+  // Hour 3: Smart Reply Templates
+  Templates: undefined;
+  // Hour 4: Match Insights
+  MatchInsights: undefined;
 };
 
 // Navigation prop types for screens

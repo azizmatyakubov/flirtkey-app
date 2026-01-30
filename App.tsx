@@ -29,6 +29,10 @@ import { ChatHistoryScreen } from './src/screens/ChatHistoryScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
 import { PreferencesScreen } from './src/screens/PreferencesScreen';
 import { AboutScreen } from './src/screens/AboutScreen';
+import { CoachScreen } from './src/screens/CoachScreen';
+import { ProfileOptimizerScreen } from './src/screens/ProfileOptimizerScreen';
+import { TemplatesScreen } from './src/screens/TemplatesScreen';
+import { MatchInsightsScreen } from './src/screens/MatchInsightsScreen';
 import { RootStackParamList } from './src/types';
 import { defaultScreenOptions, screenOptions, linking } from './src/constants';
 import { ToastProvider } from './src/components/Toast';
@@ -150,6 +154,40 @@ function AppContent() {
         <Stack.Screen
           name="About"
           component={AboutScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+
+        {/* New Feature Screens */}
+        <Stack.Screen
+          name="Coach"
+          component={CoachScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="ProfileOptimizer"
+          component={ProfileOptimizerScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="Templates"
+          component={TemplatesScreen}
+          options={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="MatchInsights"
+          component={MatchInsightsScreen}
           options={{
             headerShown: false,
             animation: 'slide_from_right',
