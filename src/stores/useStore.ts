@@ -6,7 +6,8 @@ import { Contact, User, Culture, Suggestion, UserStyle } from '../types';
 import type { ApiMode } from '../services/apiClient';
 
 // Get API key from env config (falls back to empty string)
-const ENV_API_KEY = (Constants.expoConfig?.extra as Record<string, string> | undefined)?.['openaiApiKey'] || '';
+const ENV_API_KEY =
+  (Constants.expoConfig?.extra as Record<string, string> | undefined)?.['openaiApiKey'] || '';
 
 // ==========================================
 // State Types
@@ -48,7 +49,9 @@ interface AppState {
   contacts: Contact[];
   selectedContact: Contact | null;
   addContact: (
-    contact: Omit<Contact, 'id' | 'messageCount'> & { relationshipStage?: Contact['relationshipStage'] }
+    contact: Omit<Contact, 'id' | 'messageCount'> & {
+      relationshipStage?: Contact['relationshipStage'];
+    }
   ) => void;
   updateContact: (id: number, data: Partial<Contact>) => void;
   deleteContact: (id: number) => void;
@@ -172,9 +175,11 @@ const storeCreator: AppStateCreator = (set, get) => ({
 
   addContact: (contactData) => {
     const contacts = get().contacts;
+    // Use max existing ID + 1 to avoid collisions (Date.now can repeat in same ms)
+    const maxId = contacts.reduce((max, c) => Math.max(max, c.id), 0);
     const newGirl: Contact = {
       ...contactData,
-      id: Date.now(),
+      id: Math.max(Date.now(), maxId + 1),
       messageCount: 0,
       relationshipStage: contactData.relationshipStage || 'just_met',
     };
@@ -186,7 +191,8 @@ const storeCreator: AppStateCreator = (set, get) => ({
     const selectedContact = get().selectedContact;
     set({
       contacts,
-      selectedContact: selectedContact?.id === id ? { ...selectedContact, ...data } : selectedContact,
+      selectedContact:
+        selectedContact?.id === id ? { ...selectedContact, ...data } : selectedContact,
     });
   },
 

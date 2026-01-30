@@ -17,6 +17,7 @@ module.exports = {
     '^expo-clipboard$': '<rootDir>/src/__tests__/__mocks__/expo-clipboard.ts',
     '^react-native-reanimated$': '<rootDir>/src/__tests__/__mocks__/react-native-reanimated.ts',
     '^react-native-gesture-handler$': '<rootDir>/src/__tests__/__mocks__/react-native-gesture-handler.ts',
+    '^expo-constants$': '<rootDir>/src/__tests__/__mocks__/expo-constants.ts',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
