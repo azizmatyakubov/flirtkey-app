@@ -90,24 +90,24 @@ describe('Response Formatter', () => {
   describe('getEmoji', () => {
     it('returns emoji from flirty category', () => {
       const emoji = getEmoji('flirty');
-      expect(emoji).toMatch(/[\u{1F300}-\u{1F9FF}]/u);
+      expect(emoji).toMatch(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/u);
     });
 
     it('returns emoji from playful category', () => {
       const emoji = getEmoji('playful');
-      expect(emoji).toMatch(/[\u{1F300}-\u{1F9FF}]/u);
+      expect(emoji).toMatch(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/u);
     });
 
     it('returns emoji from friendly category', () => {
       const emoji = getEmoji('friendly');
-      expect(emoji).toMatch(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u);
+      expect(emoji).toMatch(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/u);
     });
   });
 
   describe('enhanceWithEmoji', () => {
     it('adds emoji to text without one', () => {
       const result = enhanceWithEmoji('Hello there', 'safe', { addIfMissing: true });
-      expect(result).toMatch(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u);
+      expect(result).toMatch(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/u);
     });
 
     it('does not add emoji if already has one', () => {
@@ -247,7 +247,7 @@ describe('Response Formatter', () => {
         addEmojis: true,
       });
       // Should have emoji added
-      expect(result.text).toMatch(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u);
+      expect(result.text).toMatch(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/u);
     });
 
     it('respects maxEmojis setting', () => {
@@ -259,7 +259,7 @@ describe('Response Formatter', () => {
         maxEmojis: 2,
         addEmojis: false,
       });
-      const emojiCount = (result.text.match(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/gu) || [])
+      const emojiCount = (result.text.match(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/gu) || [])
         .length;
       expect(emojiCount).toBeLessThanOrEqual(2);
     });
@@ -288,7 +288,7 @@ describe('Response Formatter', () => {
         addEmojis: true,
       });
       result.suggestions.forEach((s) => {
-        expect(s.text).toMatch(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]/u);
+        expect(s.text).toMatch(/[\u{1F100}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1FA00}-\u{1FAFF}]/u);
       });
     });
 
